@@ -27,31 +27,31 @@ if (DocCoverage_FOUND)
       message(FATAL_ERROR "unable to find target doc-${module}, please call add_doc command for your module")
     endif()
 
-    get_target_property(CMAKE_DOXYGEN_OUTPUT doc-${module} OUTPUT_DIR)
-    set(CMAKE_DOCCOVERAGE_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
+    get_target_property(DocCoverage_DOXYGEN_OUTPUT doc-${module} OUTPUT_DIR)
+    set(DocCoverage_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
     add_custom_command(
-      OUTPUT ${CMAKE_DOCCOVERAGE_OUTPUT}/doc-coverage.info
-      COMMAND mkdir -p ${CMAKE_DOCCOVERAGE_OUTPUT}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${CMAKE_DOXYGEN_OUTPUT}/xml/ --output ${CMAKE_DOCCOVERAGE_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src
-      DEPENDS ${CMAKE_DOXYGEN_OUTPUT}/xml/index.xml
+      OUTPUT ${DocCoverage_OUTPUT}/doc-coverage.info
+      COMMAND mkdir -p ${DocCoverage_OUTPUT}
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverage_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverage_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src
+      DEPENDS ${DocCoverage_DOXYGEN_OUTPUT}/xml/index.xml
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating ${module} documentation coverage informations" VERBATIM)
 
     add_custom_command(
-      OUTPUT ${CMAKE_DOCCOVERAGE_OUTPUT}/index.html
-      COMMAND mkdir -p ${CMAKE_DOCCOVERAGE_OUTPUT}
-      COMMAND ${Genhtml_EXECUTABLE} --no-function-coverage --no-branch-coverage ${CMAKE_DOCCOVERAGE_OUTPUT}/doc-coverage.info -o ${CMAKE_DOCCOVERAGE_OUTPUT}/
-      DEPENDS ${CMAKE_DOCCOVERAGE_OUTPUT}/doc-coverage.info
+      OUTPUT ${DocCoverage_OUTPUT}/index.html
+      COMMAND mkdir -p ${DocCoverage_OUTPUT}
+      COMMAND ${Genhtml_EXECUTABLE} --no-function-coverage --no-branch-coverage ${DocCoverage_OUTPUT}/doc-coverage.info -o ${DocCoverage_OUTPUT}/
+      DEPENDS ${DocCoverage_OUTPUT}/doc-coverage.info
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating ${module} documentation coverage result interface" VERBATIM)
 
     add_custom_target(doc-coverage-${module}
-      DEPENDS ${CMAKE_DOCCOVERAGE_OUTPUT}/index.html)
+      DEPENDS ${DocCoverage_OUTPUT}/index.html)
     set_target_properties(doc-coverage-${module}
-      PROPERTIES OUTPUT_DIR "${CMAKE_DOCCOVERAGE_OUTPUT}")
+      PROPERTIES OUTPUT_DIR "${DocCoverage_OUTPUT}")
     add_custom_target(doc-coverage-${module}-clean
-      COMMAND rm -rf ${CMAKE_DOCCOVERAGE_OUTPUT})
+      COMMAND rm -rf ${DocCoverage_OUTPUT})
 
     add_dependencies(doc-coverage       doc-coverage-${module})
     add_dependencies(doc-coverage-clean doc-coverage-${module}-clean)

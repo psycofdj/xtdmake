@@ -33,6 +33,11 @@ if (Doc_FOUND)
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Updating reports data for target doc" VERBATIM)
+  add_custom_command(TARGET doc-clean
+    POST_BUILD
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Updating reports data for target doc-clean" VERBATIM)
 endif()
 
 if (DocCoverage_FOUND)
@@ -41,6 +46,11 @@ if (DocCoverage_FOUND)
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Updating reports data for target doc-coverage" VERBATIM)
+  add_custom_command(TARGET doc-coverage-clean
+    POST_BUILD
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Updating reports data for target doc-coverage-clean" VERBATIM)
 endif()
 
 if (Cloc_FOUND)
@@ -49,6 +59,11 @@ if (Cloc_FOUND)
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Updating reports data for target cloc" VERBATIM)
+  add_custom_command(TARGET cloc-clean
+    POST_BUILD
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Updating reports data for target cloc-clean" VERBATIM)
 endif()
 
 if (Cppcheck_FOUND)
@@ -57,6 +72,11 @@ if (Cppcheck_FOUND)
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Updating reports data for target cppcheck" VERBATIM)
+  add_custom_command(TARGET cppcheck-clean
+    POST_BUILD
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Updating reports data for target cppcheck-clean" VERBATIM)
 endif()
 
 
@@ -64,10 +84,11 @@ add_custom_target(reports
   DEPENDS doc doc-coverage cloc cppcheck
 )
 
+add_custom_target(reports-clean
+  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean
+)
+
 add_custom_target(reports-show
   COMMAND sensible-browser ${CMAKE_REPORT_OUTPUT}/index.html &
   DEPENDS ${CMAKE_REPORT_OUTPUT}/index.html ${CMAKE_REPORT_OUTPUT}/data.js
 )
-
-add_custom_target(reports-clean
-  COMMAND rm -rf ${CMAKE_REPORT_OUTPUT})
