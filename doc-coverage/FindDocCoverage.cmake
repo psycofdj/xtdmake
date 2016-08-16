@@ -31,9 +31,10 @@ if (DocCoverage_FOUND)
     set(DocCoverage_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
     add_custom_command(
-      OUTPUT ${DocCoverage_OUTPUT}/doc-coverage.info
+      OUTPUT ${DocCoverage_OUTPUT}/doc-coverage.info ${DocCoverage_OUTPUT}/data.json
       COMMAND mkdir -p ${DocCoverage_OUTPUT}
       COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverage_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverage_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverage_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverage_OUTPUT}/data.json --json --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src
       DEPENDS ${DocCoverage_DOXYGEN_OUTPUT}/xml/index.xml
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating ${module} documentation coverage informations" VERBATIM)
@@ -47,7 +48,7 @@ if (DocCoverage_FOUND)
       COMMENT "Generating ${module} documentation coverage result interface" VERBATIM)
 
     add_custom_target(doc-coverage-${module}
-      DEPENDS ${DocCoverage_OUTPUT}/index.html)
+      DEPENDS ${DocCoverage_OUTPUT}/index.html ${DocCoverage_OUTPUT}/data.json)
     set_target_properties(doc-coverage-${module}
       PROPERTIES OUTPUT_DIR "${DocCoverage_OUTPUT}")
     add_custom_target(doc-coverage-${module}-clean

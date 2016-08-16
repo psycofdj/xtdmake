@@ -193,6 +193,11 @@ This target will generate a report showing how complete is documentation.
   sensible-browser ./reports/<module_name>/doc-coverage/index.html
   ```
 
+  Note that it will also produce an json version of the report in :
+  ```
+  ./reports/<module_name>/doc-coverage/data.json
+  ```
+
   Output :
   ![Summary](./documentation/coverage-summary.png)
   ![Summary](./documentation/coverage-details.png)
@@ -230,7 +235,7 @@ of your module.
   sensible-browser ./reports/<module_name>/cloc/index.html
   ```
 
-  Note that it will also produce an xml version of the documentation in :
+  Note that it will also produce an xml version of the report in :
   ```
   ./reports/<module_name>/cloc/index.xml
   ```
@@ -273,7 +278,7 @@ cppcheck output.
   sensible-browser ./reports/<module_name>/cppcheck/index.html
   ```
 
-  Note that it will also produce an xml version of the documentation in :
+  Note that it will also produce an xml version of the report in :
   ```
   ./reports/<module_name>/cppcheck/index.xml
   ```
