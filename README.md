@@ -197,7 +197,7 @@ This target will generate a report showing how complete is documentation.
 
 2. In your module's CMakeLists.txt :
   ```cmake
-  add_doc_coverage(<module_name>))
+  add_doc_coverage(<module_name>)
   ```
 
 3. Generate the reports :
@@ -239,7 +239,7 @@ of your module.
 
 2. In your module's CMakeLists.txt :
   ```cmake
-  add_cloc(<module_name>))
+  add_cloc(<module_name>)
   ```
 
 3. Generate the reports :
@@ -282,7 +282,7 @@ cppcheck output.
 
 2. In your module's CMakeLists.txt :
   ```cmake
-  add_cppcheck(<module_name>))
+  add_cppcheck(<module_name>)
   ```
 
 3. Generate the reports :
