@@ -1,0 +1,21 @@
+{
+  "name": "xtdmake-interface",
+  "homepage": "https://github.com/psycofdj/xtdcpp",
+  "authors": [
+    "Xavier MARCELET <xavier@marcelet.com>"
+  ],
+  "description": "simple gui interface for compilation reports",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-treeview": "^1.2.0"
+  }
+}

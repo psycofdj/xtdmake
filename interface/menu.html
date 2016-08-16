@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.css" rel="stylesheet">
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="data.js"></script>
+    <style>
+     .list-group-item {
+       padding:5px 10px;
+     }
+     body {
+       border-right:1px #ddd solid;
+     }
+    </style>
+
+    <script lang="javascript">
+     $.extend({
+       getUrlVars: function(){
+         var vars = [], hash;
+         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+         for(var i = 0; i < hashes.length; i++)
+           {
+             hash = hashes[i].split('=');
+             vars.push(hash[0]);
+             vars[hash[0]] = hash[1];
+           }
+         return vars;
+       },
+       getUrlVar: function(name){
+         return $.getUrlVars()[name];
+       }
+     });
+
+     $(document).ready(function() {
+       var tree = []
+       var l_nodeID = 0;
+       if (!g_data) {
+         g_data = []
+       }
+       $.each(g_data, function(c_idx, c_item) {
+         var l_parentID = l_nodeID;
+         var l_childs = [];
+         $.each(c_item.childs, function(c_idx, c_child) {
+           l_childs.push({
+             text : c_child.name,
+             href : "#",
+             src : c_child.file
+           });
+           l_nodeID += 1;
+         });
+         tree.push({
+           text :  c_item.name,
+           nodes : l_childs
+         });
+         l_nodeID += 1;
+       });
+
+       $('#tree').treeview({
+         data: tree,
+         levels:2,
+         onNodeSelected: function(p_event, p_data) {
+           var l_src = p_data.src;
+           if (l_src) {
+             top.frames["droite"].location.href = l_src;
+           }
+         }
+       });
+     });
+    </script>
+  </head>
+  <body>
+    <div id="tree"></div>
+  </body>
+</html>

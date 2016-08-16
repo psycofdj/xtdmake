@@ -1,0 +1,136 @@
+#!/bin/bash
+set -e
+
+l_progName=$(basename $0)
+l_topSrcDir=""
+l_bin=""
+l_target=""
+l_opts=""
+l_flags=""
+l_objects=""
+
+function usage
+{
+  cat - <<EOF
+usage : ${l_progName} \\
+  --top-srcdir=DIR \\
+  --bin=BIN \\
+  --opts=<ar options> \\
+  --target=<archive> \\
+  --flags=<link flags> \\
+  --objects=<archive objects>
+
+[details]
+  --top-srcdir : version control root directory
+  --bin        : ar binary path
+  --opts       : ar command
+  --target     : ar target file
+  --flags      : ar link flags
+  --objects    : ar object list
+EOF
+  exit 1
+}
+
+
+function read_options
+{
+  while true; do
+    case "$1" in
+      --top-srcdir)
+        l_topSrcDir=$2;
+        shift 2;;
+      --bin)
+        l_bin=$2;
+        shift 2;;
+      --opts)
+        l_opts=$2;
+        shift 2;;
+      --target)
+        l_target=$2;
+        shift 2;;
+      --flags)
+        l_flags=$2;
+        shift 2;;
+      --objects)
+        l_objects=$2;
+        shift 2;;
+      --help)
+				usage;;
+      --)
+        shift;
+        break;;
+      *)
+        echo "error: internal problem while parsing options"
+        usage;;
+    esac
+  done
+}
+
+function error
+{
+  echo "error : $@"
+  usage
+}
+
+function check_options
+{
+  test ! -d "${l_topSrcDir}" && error "invalid input --top-srcdir='${l_top_srcdir}'" || true
+  test ! -f "${l_bin}"       && error "invalid input --bin='${l_bin}'"               || true
+  test -z  "${l_target}"     && error "invalid input --taget='${l_target}'"          || true
+  test -z  "${l_objects}"    && error "invalid input --objects='${l_objects}'"       || true
+}
+
+
+function get_revision
+{
+  if [ -d "${l_topSrcDir}/.git" ]; then
+    l_revno=$(cd "${l_topSrcDir}" && git rev-parse HEAD)
+  elif [ -d "${l_topSrcDir}/.bzr" ]; then
+    l_revno=$(cat "${l_topSrcDir}/.bzr/branch/last-revision")
+  else
+    l_revno="unhandled vcs system"
+  fi
+  echo ${l_revno}
+}
+
+
+function add_info
+{
+  l_output=$1;  shift
+  l_name=$1;    shift
+  l_section=$1; shift
+  l_value=$1;   shift
+
+  l_header=$(printf '$archive: [%s] (%s)' "${l_name}" "${l_section}")
+  printf "%s %s $  " "${l_header}" "${l_value}" >> ${l_output}
+}
+
+function generate_archive
+{
+  l_libName=${l_target%.*}
+  l_tmpDir=$(mktemp -d)
+  l_tmpFile=${l_tmpDir}/.version
+
+  add_info "${l_tmpFile}" "${l_libName}" "time"  "$(date +'%H:%M:%S')"
+  add_info "${l_tmpFile}" "${l_libName}" "date"  "$(date +'%d-%m-%Y')"
+  add_info "${l_tmpFile}" "${l_libName}" "revno" "$(get_revision)"
+
+  ${l_bin} ${l_opts} ${l_target} ${l_flags} ${l_objects} ${l_tmpFile}
+  rm -rf ${l_tmpDir}
+}
+
+
+
+l_parseResult=`/usr/bin/getopt -o h\
+		--long top-srcdir:,bin:,opts:,target:,flags:,objects:,help \
+	-n "${l_progName}" -- "$@"`
+
+if [ $? != 0 ]; then
+  usage
+fi
+
+eval set -- "${l_parseResult}"
+
+read_options "$@"
+check_options
+generate_archive
