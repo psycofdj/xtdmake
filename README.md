@@ -1,3 +1,22 @@
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+**Table of Contents**
+
+- [What is it ?](#what-is-it-)
+- [Install](#install)
+- [Features](#features)
+    - [Binary identity tracking](#binary-identity-tracking)
+    - [Building both shared and static library](#building-both-shared-and-static-library)
+    - [Code quality reports](#code-quality-reports)
+        - [Documentation](#documentation)
+        - [Documentation Coverage](#documentation-coverage)
+        - [Count lines of code](#count-lines-of-code)
+        - [Cppcheck static analysis](#cppcheck-static-analysis)
+        - [Unit tests](#unit-tests)
+        - [Unit tests code coverage](#unit-tests-code-coverage)
+        - [Report Interface](#report-interface)
+
+<!-- markdown-toc end -->
+
 What is it ?
 ============
 
@@ -46,10 +65,9 @@ Install
   include(xtdmake/loader.cmake)
   ```
 
-Features
-========
+# Features
 
-### Binary identity tracking
+## Binary identity tracking
 
 This feature configures your C/C++ build to add information about when and how your
 binaries were constructed. Behind the scene, cmake will wrap your linker to add a
@@ -87,7 +105,7 @@ CMakeLists.txt :
 find_package(Tracking REQUIRED)
 ```
 
-### Building both shared and static library
+## Building both shared and static library
 
 XTDMake provides a way to easily produce both static and shared library from a single
 call. In addition it will optimize your build to produce only one set of object files
@@ -97,13 +115,13 @@ Note: This means that objects generated with -fPIC are used to create static arc
 This may have a performance impact.
 
 ```cmake
-# in CMakeLists.txt
+ # in CMakeLists.txt
 add_shared_static_library(<library_name> <file1> <file2> ....)
 ```
 
 This will create two CMake targets :
-- `<library_name>`   : that will produce `lib<library_name>.so`
-- `<library_name>_s` : that will produce `lib<library_name>_s.a`
+ - `<library_name>`   : that will produce `lib<library_name>.so`
+ - `<library_name>_s` : that will produce `lib<library_name>_s.a`
 
 You may customize theses target at will using standard CMake functions.
 
@@ -114,7 +132,7 @@ module by adding the following directive too your project's root CMakeLists.txt 
 find_package(StaticShared REQUIRED)
 ```
 
-### Code quality reports
+## Code quality reports
 
 XTDMake provides a bunch of modules producing code quality measurements targets.
 
@@ -143,7 +161,7 @@ C++ compilation being already slow enough, XTDMake's code-measurement targets ar
 designed to be fully incremental with a fine dependency tracking.
 
 
-**Documentation**
+### Documentation
 
 This target generate documentation with doxygen.
 
@@ -184,7 +202,7 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
   ```
 
 
-**Documentation Coverage**
+### Documentation Coverage
 
 This target will generate a report showing how complete is documentation.
 
@@ -227,7 +245,7 @@ This target will generate a report showing how complete is documentation.
   ![Summary](./documentation/coverage-details.png)
 
 
-**Count lines of code**
+### Count lines of code
 
 This target generates a report counting the number of code, blank and comments lines
 of your module.
@@ -269,7 +287,7 @@ of your module.
 
 
 
-**Cppcheck static analysis**
+### Cppcheck static analysis
 
 
 Cppcheck is a static C++ code analyzer tool. This target will produce a report of
@@ -311,15 +329,15 @@ cppcheck output.
   ![Cppcheck](./documentation/cppcheck.png)
 
 
-**Unit tests**
+### Unit tests
 
 TBD
 
-**Unit tests code coverage**
+### Unit tests code coverage
 
 TBD
 
-**Report Interface**
+### Report Interface
 
 In order to make all these reports as accessible as possible, XTDMake provides a
 little locally consultatble web interface that helps the developer to navigate
