@@ -1,6 +1,27 @@
 What is it ?
 ============
 
+XTDMake is a set of CMake modules that provides easy-to-use targets that generate
+code quality measurements reports
+
+Install
+=======
+
+1. Download latest release archive
+  ```bash
+  wget "https://github.com/psycofdj/xtdmake/archive/<version>.tar.gz"
+  ```
+
+2. Uncompress archive in your project's root
+  ```bash
+  tar xvzf <version>.tar.gz
+  ```
+
+3. Load XTDMake in your project's root CMakeLists.txt
+  ```cmake
+  include(xtdmake/loader.cmake)
+  ```
+
 Features
 ========
 
