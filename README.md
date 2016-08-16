@@ -152,7 +152,7 @@ Developer's being responsible for the KPIs, they should be able to
 run the measurement tools before pushing new code.
 
 
-Because industrial applications' code is usually segmented designed in different module,
+Because industrial applications' code is usually segmented in different module
 with a different purpose and levels of criticity, XTDMake's KPIs reports are
 generated per module, allowing a finer interpretation of the indicators.
 
