@@ -7,7 +7,31 @@ code quality measurements reports
 Install
 =======
 
-1. Download latest release archive
+0. Prerequisites
+  ```bash
+  # Doxygen (Generate documentation from source code)
+  sudo apt-get install doxygen
+
+  # Dot (Generate pictures from graphs)
+  sudo apt-get install graphviz
+
+  # xsltproc (Transform XML files from XSLT stylesheets)
+  sudo apt-get install xsltproc
+
+  # lcov (Generate HTML results from code-coverage informations)
+  sudo apt-get install lcov
+
+  # coverxygen (Generate documentation-coverage informations from doxygen documentation)
+  sudo pip3 install coverxygen
+
+  # cloc (Count line of codes)
+  sudo apt-get install cloc
+
+  # cppcheck (C++ static code analysis tool)
+  sudo apt-get install cppcheck
+  ```
+
+1. Download latest release xtdmake archive
   ```bash
   wget "https://github.com/psycofdj/xtdmake/archive/<version>.tar.gz"
   ```
@@ -59,7 +83,7 @@ $archive: [libcommon_s] (revno) 98b7d3e224e9ad32affab425c52bfe19f2ce302d $
 
 This feature can be enabled by adding the following directive to your project's root
 CMakeLists.txt :
-```
+```cmake
 find_package(Tracking REQUIRED)
 ```
 
@@ -72,7 +96,7 @@ that will be used for both targets.
 Note: This means that objects generated with -fPIC are used to create static archives.
 This may have a performance impact.
 
-```
+```cmake
 # in CMakeLists.txt
 add_shared_static_library(<library_name> <file1> <file2> ....)
 ```
@@ -86,7 +110,7 @@ You may customize theses target at will using standard CMake functions.
 
 In order to use `add_shared_static_library` function, you must load the StaticShared
 module by adding the following directive too your project's root CMakeLists.txt :
-```
+```cmake
 find_package(StaticShared REQUIRED)
 ```
 
