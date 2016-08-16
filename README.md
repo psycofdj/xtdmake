@@ -98,6 +98,23 @@ $archive: [libcommon_s] (date) 16-08-2016 $
 $archive: [libcommon_s] (revno) 98b7d3e224e9ad32affab425c52bfe19f2ce302d $
 ```
 
+This also works on shared libraries :
+```bash
+# compile our shared library libcommon.so
+make common
+
+# extract informations from generated file
+ident libcommon.so
+
+# output result
+$date: 16-08-2016 $
+$time: 13:40:35 $
+$name: libcommon.so $
+$user: psyco $
+$host: xmarcelet $
+$pwd: /home/psyco/dev/xtdcpp/.release/common $
+$revno: 8fb0f8e916078257552470ce22761dcead79158c $
+```
 
 This feature can be enabled by adding the following directive to your project's root
 CMakeLists.txt :
