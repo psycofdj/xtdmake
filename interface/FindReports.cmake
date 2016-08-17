@@ -81,7 +81,13 @@ endif()
 
 
 add_custom_target(reports
-  DEPENDS doc doc-coverage cloc cppcheck
+  DEPENDS
+  doc
+  doc-coverage
+  cloc
+  cppcheck
+  ${CMAKE_REPORT_OUTPUT}/menu.html
+  ${CMAKE_REPORT_OUTPUT}/index.html
 )
 
 add_custom_target(reports-clean
