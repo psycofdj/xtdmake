@@ -16,11 +16,11 @@ else()
   message(STATUS "Found Doc : TRUE")
   add_custom_target(doc)
   add_custom_target(doc-clean)
+
   function(add_doc module)
     set(multiValueArgs  EXCLUDE FILE_PATTERNS CALL_GRAPHS)
     set(oneValueArgs    EXAMPLE)
     set(options         WERROR)
-
     cmake_parse_arguments(Doc
       "${options}"
       "${oneValueArgs}"
@@ -63,9 +63,14 @@ else()
       endif()
     endif()
 
-    if (NOT "${Doc_EXCLUDE}" STREQUAL "")
-      string(REPLACE ";" " " Doc_EXCLUDE "${Doc_EXCLUDE}")
-    endif()
+    set(l_excludes "${Doc_EXCLUDE}")
+    set(Doc_EXCLUDE "")
+    foreach(c_file ${l_excludes})
+      if (NOT IS_ABSOLUTE ${c_file})
+        set(c_file ${CMAKE_CURRENT_SOURCE_DIR}/${c_file})
+      endif()
+      set(Doc_EXCLUDE "${Doc_EXCLUDE} ${c_file}")
+    endforeach()
 
     # compute target dependencies, we apply patterns to each input
     set(Doc_DEPENDS "")
