@@ -186,7 +186,7 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
 
 1. In your project's root CMakeLists.txt :
   ```cmake
-  find_package(Doc REQUIRED)
+  find_package(DocRule REQUIRED)
   ```
 
 2. In your module's CMakeLists.txt :
@@ -227,7 +227,7 @@ This target will generate a report showing how complete is documentation.
 1. In your project's root CMakeLists.txt :
   ```cmake
   # note that this depends on Doc module
-  find_package(DocCoverage REQUIRED)
+  find_package(DocCoverageRule REQUIRED)
   ```
 
 2. In your module's CMakeLists.txt :
@@ -269,7 +269,7 @@ of your module.
 
 1. In your project's root CMakeLists.txt :
   ```cmake
-  find_package(Cloc REQUIRED)
+  find_package(ClocRule REQUIRED)
   ```
 
 2. In your module's CMakeLists.txt :
@@ -312,7 +312,7 @@ cppcheck output.
 
 1. In your project's root CMakeLists.txt :
   ```cmake
-  find_package(Cppcheck REQUIRED)
+  find_package(CppcheckRule REQUIRED)
   ```
 
 2. In your module's CMakeLists.txt :

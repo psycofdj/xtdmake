@@ -27,7 +27,7 @@ add_custom_command(
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Installing report interface" VERBATIM)
 
-if (Doc_FOUND)
+if (DocRule_FOUND)
   add_custom_command(TARGET doc
     POST_BUILD
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
@@ -40,7 +40,7 @@ if (Doc_FOUND)
     COMMENT "Updating reports data for target doc-clean" VERBATIM)
 endif()
 
-if (DocCoverage_FOUND)
+if (DocCoverageRule_FOUND)
   add_custom_command(TARGET doc-coverage
     POST_BUILD
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
@@ -53,7 +53,7 @@ if (DocCoverage_FOUND)
     COMMENT "Updating reports data for target doc-coverage-clean" VERBATIM)
 endif()
 
-if (Cloc_FOUND)
+if (ClocRule_FOUND)
   add_custom_command(TARGET cloc
     POST_BUILD
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
@@ -66,7 +66,7 @@ if (Cloc_FOUND)
     COMMENT "Updating reports data for target cloc-clean" VERBATIM)
 endif()
 
-if (Cppcheck_FOUND)
+if (CppcheckRule_FOUND)
   add_custom_command(TARGET cppcheck
     POST_BUILD
     COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js

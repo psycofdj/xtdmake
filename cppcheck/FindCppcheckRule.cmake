@@ -2,32 +2,42 @@ xtdmake_find_program(Cppcheck
   NAMES cppcheck
   DOC "cppcheck static code anylyser tool"
   URL "http://cppcheck.sourceforge.net/"
-  REQUIRED Cppcheck_FIND_REQUIRED
+  REQUIRED CppcheckRule_FIND_REQUIRED
   VERSION_OPT "--version"
   VERSION_POS 1)
 
-if (Cppcheck_FIND_REQUIRED)
-  find_package(Xsltproc REQUIRED)
-else()
-  find_package(Xsltproc)
-endif()
+xtdmake_find_program(Xsltproc
+  NAMES xsltproc
+  DOC "rendering xslt stylehseets"
+  URL "http://xmlsoft.org/"
+  VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
+  VERSION_POS "0"
+  REQUIRED CppcheckRule_FIND_REQUIRED)
 
 if (NOT Xsltproc_FOUND)
-  if (Cppcheck_FIND_REQUIRED)
-    message(SEND_ERROR "Cannot use Cppcheck without xsltproc package")
-  else()
-    message(STATUS "Found Cppcheck : FALSE, cannot use without xsltproc package")
+  set(CppcheckRule_FOUND 0)
+  message(STATUS "Found module CppcheckRule : FALSE (unmet required dependencies)")
+  if (CppcheckRule_FIND_REQUIRED)
+    message(FATAL_ERROR "Unable to load required module CppcheckRule")
   endif()
 else()
-  set(Cppcheck_FOUND 1)
-  message(STATUS "Found Cppcheck : TRUE")
+  set(CppcheckRule_FOUND 1)
+  message(STATUS "Found module CppcheckRule : TRUE")
 endif()
 
 
-if(Cppcheck_FOUND)
-  add_custom_target(cppcheck)
-  add_custom_target(cppcheck-clean)
-
+add_custom_target(cppcheck)
+add_custom_target(cppcheck-clean)
+if(NOT CppcheckRule_FOUND)
+  function(add_cppcheck module)
+    add_custom_target(cppcheck-${module}
+      COMMAND echo "warning: cppcheck rule is disabled due to missing dependencies")
+    add_custom_target(cppcheck-${module}-clean
+      COMMAND echo "warning: cppcheck rule is disabled due to missing dependencies")
+    add_dependencies(cppcheck       cppcheck-${module})
+    add_dependencies(cppcheck-clean cppcheck-${module}-clean)
+  endfunction()
+else()
   function(add_cppcheck module)
     set(CMAKE_CPPCHECK_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cppcheck")
     file(GLOB_RECURSE files_cppcheck

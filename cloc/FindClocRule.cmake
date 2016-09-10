@@ -1,38 +1,42 @@
-find_program(Cloc_EXECUTABLE
+xtdmake_find_program(Cloc
   NAMES cloc
-  DOC "cloc code line counting tool (http://cloc.sourceforge.net/)"
-)
+  DOC "cloc code line counting tool"
+  URL "http://cloc.sourceforge.net/"
+  VERSION_OPT "--version"
+  VERSION_POS "0"
+  REQUIRED ClocRule_FIND_REQUIRED)
 
-if (Cppcheck_FIND_REQUIRED)
-  find_package(Xsltproc REQUIRED)
-else()
-  find_package(Xsltproc)
-endif()
+xtdmake_find_program(Xsltproc
+  NAMES xsltproc
+  DOC "rendering xslt stylehseets"
+  URL "http://xmlsoft.org/"
+  VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
+  VERSION_POS "0"
+  REQUIRED ClocRule_FIND_REQUIRED)
 
-set(Cloc_FOUND 0)
-if (NOT Cloc_EXECUTABLE)
-  if (Cloc_FIND_REQUIRED)
-    message(SEND_ERROR "Cannot find Cloc required program, please install (http://cloc.sourceforge.net/)")
-  else()
-    message(STATUS "Found Cloc : FALSE")
+if (NOT Cloc_FOUND OR NOT Xsltproc_FOUND)
+  set(ClocRule_FOUND 0)
+  message(STATUS "Found module ClocRule : FALSE (unmet required dependencies)")
+  if (ClocRule_FIND_REQUIRED)
+    message(FATAL_ERROR "Unable to load required module ClocRule")
   endif()
 else()
-  if (NOT Xsltproc_FOUND)
-    if (Cppcheck_FIND_REQUIRED)
-      message(SEND_ERROR "Cannot use Cloc without xsltproc package")
-    else()
-      message(STATUS "Found Cloc : FALSE, cannot use without xsltproc package")
-    endif()
-  else()
-    set(Cloc_FOUND 1)
-    message(STATUS "Found Cloc : TRUE")
-  endif()
+  set(ClocRule_FOUND 1)
+  message(STATUS "Found module ClocRule : TRUE")
 endif()
 
-
-if (Cloc_FOUND)
-  add_custom_target(cloc)
-  add_custom_target(cloc-clean)
+add_custom_target(cloc)
+add_custom_target(cloc-clean)
+if (NOT ClocRule_FOUND)
+  function(add_cloc module)
+    add_custom_target(cloc-${module}
+      COMMAND echo "warning: cloc rule disabled due to missing dependencies")
+    add_custom_target(cloc-${module}-clean
+      COMMAND echo "warning: cloc rule disabled due to missing dependencies")
+    add_dependencies(cloc       cloc-${module})
+    add_dependencies(cloc-clean cloc-${module}-clean)
+  endfunction()
+else()
   function(add_cloc module)
     set(CMAKE_CLOC_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cloc")
     file(GLOB_RECURSE files_cloc
@@ -64,6 +68,3 @@ if (Cloc_FOUND)
     add_dependencies(cloc-clean cloc-${module}-clean)
   endfunction()
 endif()
-
-
-
