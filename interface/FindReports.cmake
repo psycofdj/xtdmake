@@ -80,18 +80,33 @@ if (CppcheckRule_FOUND)
 endif()
 
 
+if (CheckRule_FOUND)
+  add_custom_command(TARGET check
+    POST_BUILD
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Updating reports data for target check" VERBATIM)
+  add_custom_command(TARGET check-clean
+    POST_BUILD
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Updating reports data for target check-clean" VERBATIM)
+endif()
+
+
 add_custom_target(reports
   DEPENDS
   doc
   doc-coverage
   cloc
   cppcheck
+  check
   ${CMAKE_REPORT_OUTPUT}/menu.html
   ${CMAKE_REPORT_OUTPUT}/index.html
 )
 
 add_custom_target(reports-clean
-  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean
+  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean
 )
 
 add_custom_target(reports-show

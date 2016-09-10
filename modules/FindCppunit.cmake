@@ -25,12 +25,18 @@ find_library(Cppunit_DEBUG_LIBRARY cppunit
   /usr/local/lib
   /usr/lib)
 
-if(Cppunit_INCLUDE_DIR)
-  if(Cppunit_LIBRARY)
-    set(Cppunit_FOUND "YES")
-    set(Cppunit_LIBRARIES ${Cppunit_LIBRARY} ${CMAKE_DL_LIBS})
-    set(Cppunit_DEBUG_LIBRARIES ${Cppunit_DEBUG_LIBRARY}
-      ${CMAKE_DL_LIBS})
+
+
+
+if(Cppunit_INCLUDE_DIR AND Cppunit_LIBRARY)
+  message(STATUS "Found library Cppunit : TRUE (${Cppunit_INCLUDE_DIR})")
+  set(Cppunit_FOUND "YES")
+  set(Cppunit_LIBRARIES ${Cppunit_LIBRARY} ${CMAKE_DL_LIBS})
+  set(Cppunit_DEBUG_LIBRARIES ${Cppunit_DEBUG_LIBRARY}
+    ${CMAKE_DL_LIBS})
+else()
+  message(STATUS "Found library Cppunit : FALSE")
+  if (Cppunit_FIND_REQUIRED)
+    message(FATAL_ERROR "Unable to find library Cppunit, please install at http://cppunit.sourceforge.net/")
   endif()
 endif()
-
