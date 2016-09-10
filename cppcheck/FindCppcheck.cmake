@@ -1,7 +1,10 @@
-find_program(Cppcheck_EXECUTABLE
+xtdmake_find_program(Cppcheck
   NAMES cppcheck
-  DOC "cppcheck static code anylyser tool (http://cppcheck.sourceforge.net/)"
-)
+  DOC "cppcheck static code anylyser tool"
+  URL "http://cppcheck.sourceforge.net/"
+  REQUIRED Cppcheck_FIND_REQUIRED
+  VERSION_OPT "--version"
+  VERSION_POS 1)
 
 if (Cppcheck_FIND_REQUIRED)
   find_package(Xsltproc REQUIRED)
@@ -9,24 +12,15 @@ else()
   find_package(Xsltproc)
 endif()
 
-set(Cppcheck_FOUND 0)
-if (NOT Cppcheck_EXECUTABLE)
+if (NOT Xsltproc_FOUND)
   if (Cppcheck_FIND_REQUIRED)
-    message(SEND_ERROR "Cannot find cppcheck required program, please install (http://cppcheck.sourceforge.net/)")
+    message(SEND_ERROR "Cannot use Cppcheck without xsltproc package")
   else()
-    message(STATUS "Found Cppcheck : FALSE")
+    message(STATUS "Found Cppcheck : FALSE, cannot use without xsltproc package")
   endif()
 else()
-  if (NOT Xsltproc_FOUND)
-    if (Cppcheck_FIND_REQUIRED)
-      message(SEND_ERROR "Cannot use Cppcheck without xsltproc package")
-    else()
-      message(STATUS "Found Cppcheck : FALSE, cannot use without xsltproc package")
-    endif()
-  else()
-    set(Cppcheck_FOUND 1)
-    message(STATUS "Found Cppcheck : TRUE")
-  endif()
+  set(Cppcheck_FOUND 1)
+  message(STATUS "Found Cppcheck : TRUE")
 endif()
 
 
