@@ -25,11 +25,52 @@
       <body bgcolor="#ffffff" style="padding-top:50px;">
         <div class="container-fluid">
           <div class="row">
+            <div class="col-lg-4 col-lg-offset-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">Summary report</div>
+                <div class="panel-body">
+
+                  <xsl:variable name="tests_total">
+                    <xsl:value-of select="count(./Site/Testing/Test)"/>
+                  </xsl:variable>
+                  <xsl:variable name="tests_failed">
+                    <xsl:value-of select="count(./Site/Testing/Test[@Status!='passed'])"/>
+                  </xsl:variable>
+                  <xsl:variable name="tests_passed">
+                    <xsl:value-of select="count(./Site/Testing/Test[@Status='passed'])"/>
+                  </xsl:variable>
+
+                  <table class="table table-striped table-bordered table-condensed small">
+                    <tbody>
+                      <tr>
+                        <th>Total tests</th>
+                        <td><xsl:value-of select="$tests_total"/></td>
+                      </tr>
+                      <tr>
+                        <th>Test passed</th>
+                        <td><xsl:value-of select="$tests_passed"/> (<xsl:value-of select="format-number($tests_passed div $tests_total * 100, '###.##')"/>%) </td>
+                      </tr>
+                      <tr>
+                        <th>Test failed</th>
+                        <td><xsl:value-of select="$tests_failed"/> (<xsl:value-of select="format-number($tests_failed div $tests_total * 100, '###.##')"/>%) </td>
+                      </tr>
+                      <tr>
+                        <th>Duration</th>
+                        <td><xsl:value-of select="./Site/Testing/EndTestTime - ./Site/Testing/StartTestTime"/> sec(s)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
             <div class="col-lg-10 col-lg-offset-1">
               <div class="panel panel-default">
-                <div class="panel-heading">Check reprort</div>
+                <div class="panel-heading">Full report</div>
                 <div class="panel-body">
-                  <table class="table table-striped table-bordered table-hover table-condensed">
+                  <table class="table table-striped table-bordered table-condensed small">
                     <thead>
                       <tr>
                         <th style="width:50px;"></th>
@@ -40,7 +81,7 @@
                         <th>Executime Time (sec)</th>
                       </tr>
                     </thead>
-                    <tbody class="small">
+                    <tbody>
                       <xsl:apply-templates select="./Site/Testing/Test"/>
                     </tbody>
                     <xsl:if test="count(./Site/Testing/Test) = 0">
@@ -98,7 +139,7 @@
     <tr id="{generate-id(Name)}-details" style="display: none;">
       <td colspan="6">
         <div>
-          <table class="table table-striped table-bordered table-hover table-condensed small">
+          <table class="table table-striped table-bordered table-condensed small">
             <tbody>
               <tr>
                 <td>Command line</td>
@@ -107,8 +148,13 @@
               <tr>
                 <td>Logs</td>
                 <td>
-                  <pre>
-                    <xsl:value-of select="./Results/Measurement/Value"/>
+                  <pre style="max-height:300px; overflow:scroll;" class="small">
+                    <xsl:choose>
+                      <xsl:when test="./Results/Measurement/Value = ''">[ no output from test ]</xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="./Results/Measurement/Value"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
                   </pre>
                 </td>
               </tr>
