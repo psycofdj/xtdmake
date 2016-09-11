@@ -32,7 +32,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "xtdcpp [@CMAKE_DOXYGEN_MODULE@]"
+PROJECT_NAME           = "@CMAKE_PROJECT_NAME@ [@DocRule_MODULE@]"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @CMAKE_DOXYGEN_OUTPUT@
+OUTPUT_DIRECTORY       = @DocRule_OUTPUT@
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -227,10 +227,7 @@ TAB_SIZE               = 4
 # documentation, which will result in a user-defined paragraph with heading
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines.
-
-#ALIASES                =
-ALIASES = "startuml{1}=\image html \1\n\image latex \1\n\if DontIgnorePlantUMLCode"
-ALIASES += "enduml=\endif"
+ALIASES                =
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
@@ -745,7 +742,7 @@ WARN_NO_PARAMDOC       = NO
 # a warning is encountered.
 # The default value is: NO.
 
-WARN_AS_ERROR          = @CMAKE_DOXYGEN_WERROR@
+WARN_AS_ERROR          = @DocRule_WERROR@
 
 # The WARN_FORMAT tag determines the format of the warning messages that doxygen
 # can produce. The string should contain the $file, $line, and $text tags, which
@@ -773,7 +770,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @CMAKE_DOXYGEN_INPUT@
+INPUT                  = @DocRule_INPUT@
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -798,7 +795,7 @@ INPUT_ENCODING         = UTF-8
 # *.m, *.markdown, *.md, *.mm, *.dox, *.py, *.pyw, *.f90, *.f, *.for, *.tcl,
 # *.vhd, *.vhdl, *.ucf, *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = @CMAKE_DOXYGEN_FILE_PATTERNS@
+FILE_PATTERNS          = @DocRule_FILE_PATTERNS@
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -813,7 +810,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = @CMAKE_DOXYGEN_EXCLUDE@
+EXCLUDE                = @DocRule_EXCLUDE@
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -846,7 +843,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = @CMAKE_DOXYGEN_EXAMPLE@
+EXAMPLE_PATH           = @DocRule_EXAMPLE@
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -866,7 +863,7 @@ EXAMPLE_RECURSIVE      = YES
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             = @CMAKE_DOXYGEN_IMAGE@
+IMAGE_PATH             = @DocRule_IMAGE@
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -2271,7 +2268,7 @@ INCLUDED_BY_GRAPH      = YES
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-CALL_GRAPH             = @CMAKE_DOXYGEN_CALL_GRAPHS@
+CALL_GRAPH             = @DocRule_CALL_GRAPHS@
 
 # If the CALLER_GRAPH tag is set to YES then doxygen will generate a caller
 # dependency graph for every global function or class method.
@@ -2283,7 +2280,7 @@ CALL_GRAPH             = @CMAKE_DOXYGEN_CALL_GRAPHS@
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-CALLER_GRAPH           = @CMAKE_DOXYGEN_CALL_GRAPHS@
+CALLER_GRAPH           = @DocRule_CALL_GRAPHS@
 
 # If the GRAPHICAL_HIERARCHY tag is set to YES then doxygen will graphical
 # hierarchy of all classes instead of a textual one.
@@ -2360,8 +2357,7 @@ DIAFILE_DIRS           =
 # PlantUML is not used or called during a preprocessing step. Doxygen will
 # generate a warning when it encounters a \startuml command in this case and
 # will not generate output for the diagram.
-
-PLANTUML_JAR_PATH      = /usr/share/plantuml/plantuml.jar
+PLANTUML_JAR_PATH      = @DocRule_PLANTUML@
 
 # When using plantuml, the specified paths are searched for files specified by
 # the !include statement in a plantuml block.

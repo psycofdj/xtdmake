@@ -1,5 +1,5 @@
 set(StaticShared_FOUND 1)
-message(STATUS "Found StaticShared : TRUE")
+message(STATUS "Found module StaticShared : TRUE")
 
 function(add_shared_static_library name)
   set(multiValueArgs  INSTALL_HEADERS_PATTERNS)
