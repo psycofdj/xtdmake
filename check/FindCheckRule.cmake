@@ -66,7 +66,7 @@ function(add_check module)
         COMMAND ${c_name_clean} ${CheckRule_ARGS})
       list(APPEND l_test_list ${c_name_clean})
       add_custom_target(${c_name_clean}-gdb
-        COMMAND ${CheckRule_ENV} gdb ${c_name_clean})
+        COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} -n)
     endforeach()
   endforeach()
 
