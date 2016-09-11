@@ -41,24 +41,22 @@ else()
   function(add_cppcheck module)
     set(CMAKE_CPPCHECK_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cppcheck")
     file(GLOB_RECURSE files_cppcheck
-      "${CMAKE_CURRENT_SOURCE_DIR}/doc/*.cc"
-      "${CMAKE_CURRENT_SOURCE_DIR}/doc/*.hh"
-      "${CMAKE_CURRENT_SOURCE_DIR}/doc/*.hxx")
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hxx"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
 
     add_custom_command(
-      OUTPUT ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml
+      COMMENT "Generating ${module} cppcheck HTML and XML reports"
+      OUTPUT ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
+      DEPENDS ${files_cppcheck}
       COMMAND mkdir -p ${CMAKE_CPPCHECK_OUTPUT}
       COMMAND ${Cppcheck_EXECUTABLE} -q --xml ${CMAKE_CURRENT_SOURCE_DIR}/src 2> ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml
-      DEPENDS ${files_cppcheck}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${module} cppcheck xml report" VERBATIM)
-
-    add_custom_command(
-      OUTPUT ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
-      COMMAND xsltproc ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml > ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
-      DEPENDS ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Transforming ${module} cppcheck xml into html" VERBATIM)
+      COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml > ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
+      VERBATIM)
 
     add_custom_target(cppcheck-${module}
       DEPENDS ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html)

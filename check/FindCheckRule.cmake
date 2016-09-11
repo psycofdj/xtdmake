@@ -1,6 +1,12 @@
 enable_testing()
 add_custom_target(check)
+add_custom_target(check-verbose)
 add_custom_target(check-clean)
+
+define_property(TARGET
+  PROPERTY MYDEPENDS
+  BRIEF_DOCS "Internal property to communicate check dependencies to other rules"
+  FULL_DOCS "Internal property to communicate check dependencies to other rules")
 
 function(add_check module)
   set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
@@ -62,26 +68,42 @@ function(add_check module)
 
   string(REPLACE ";" "\\|" l_test_names   "${l_test_list}")
   string(REPLACE ";" ";"   l_test_depends "${l_test_list}")
+
+
+  add_custom_target(check-${module}-build
+    DEPENDS ${l_test_depends})
+
+  set_target_properties(check-${module}-build
+    PROPERTIES MYDEPENDS "${l_test_depends}")
+
+  add_custom_target(check-${module}-forced-run
+    COMMAND ${CheckRule_ENV} ctest  -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true)
+
+  add_custom_target(check-${module}-verbose
+    COMMAND $(MAKE) check-${module}-build
+    COMMAND ${CheckRule_ENV} ctest --output-on-failure -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true)
+
+  add_custom_target(check-${module}-run
+    DEPENDS check-${module}-build
+    COMMAND $(MAKE) check-${module}-forced-run)
+
   add_custom_command(
-    OUTPUT ${CheckRule_OUTPUT}/tests.xml
-    DEPENDS ${l_test_depends}
+    COMMENT "Generating ${module} tests HTML and XML reports"
+    OUTPUT ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html
+    DEPENDS ${l_test_depends} check-${module}-build ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
     COMMAND mkdir -p ${CheckRule_OUTPUT}
     COMMAND rm -rf Testing/
     COMMAND touch DartConfiguration.tcl
-    COMMAND ${CheckRule_ENV} ctest --output-on-failure -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true
+    COMMAND $(MAKE) check-${module}-forced-run
     COMMAND cp Testing/*/*.xml ${CheckRule_OUTPUT}/tests.xml
-    )
-
-  add_custom_command(
-    OUTPUT ${CheckRule_OUTPUT}/index.html
-    DEPENDS ${CheckRule_OUTPUT}/tests.xml ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
-    COMMAND xsltproc ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl ${CheckRule_OUTPUT}/tests.xml > ${CheckRule_OUTPUT}/index.html
+    COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl ${CheckRule_OUTPUT}/tests.xml > ${CheckRule_OUTPUT}/index.html
     )
 
   add_custom_target(check-${module}
-    DEPENDS ${CheckRule_OUTPUT}/index.html)
+    DEPENDS ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html)
   add_custom_target(check-${module}-clean
     COMMAND rm -rf ${CheckRule_OUTPUT} Testing DartConfiguration.tcl)
-  add_dependencies(check       check-${module})
-  add_dependencies(check-clean check-${module}-clean)
+  add_dependencies(check         check-${module})
+  add_dependencies(check-verbose check-${module}-verbose)
+  add_dependencies(check-clean    check-${module}-clean)
 endfunction()

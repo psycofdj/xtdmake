@@ -139,12 +139,12 @@ else()
     configure_file(${DocRule_CONFIGURE_TEMPLATE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg @ONLY)
 
     add_custom_command(
+      COMMENT "Generating ${module} API documentation"
       OUTPUT ${DocRule_OUTPUT}/html/index.html ${DocRule_OUTPUT}/xml/index.xml
+      DEPENDS ${DocRule_DEPENDS} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
       COMMAND mkdir -p ${DocRule_OUTPUT}
       COMMAND ${Doxygen_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
-      DEPENDS ${DocRule_DEPENDS} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${module} API documentation with doxygen" VERBATIM)
+      VERBATIM)
 
     add_custom_target(doc-${module}
       DEPENDS ${DocRule_OUTPUT}/html/index.html)

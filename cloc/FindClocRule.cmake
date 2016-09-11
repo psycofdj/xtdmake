@@ -40,25 +40,22 @@ else()
   function(add_cloc module)
     set(CMAKE_CLOC_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cloc")
     file(GLOB_RECURSE files_cloc
-      "${CMAKE_CURRENT_SOURCE_DIR}/doc/*.cc"
-      "${CMAKE_CURRENT_SOURCE_DIR}/doc/*.hh"
-      "${CMAKE_CURRENT_SOURCE_DIR}/doc/*.hxx")
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hxx"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
 
     add_custom_command(
-      OUTPUT ${CMAKE_CLOC_OUTPUT}/cloc.xml
+      COMMENT "Generating ${module} cloc HTML and XML reports"
+      OUTPUT ${CMAKE_CLOC_OUTPUT}/cloc.xml ${CMAKE_CLOC_OUTPUT}/cloc.html
       COMMAND mkdir -p ${CMAKE_CLOC_OUTPUT}
       COMMAND ${Cloc_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src --xml --out ${CMAKE_CLOC_OUTPUT}/cloc.xml --by-file-by-lang
+      COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${CMAKE_CLOC_OUTPUT}/cloc.xml > ${CMAKE_CLOC_OUTPUT}/cloc.html
       DEPENDS ${files_cloc}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${module} cloc report" VERBATIM)
-
-    add_custom_command(
-      OUTPUT ${CMAKE_CLOC_OUTPUT}/cloc.html
-      COMMAND mkdir -p ${CMAKE_CLOC_OUTPUT}
-      COMMAND xsltproc ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${CMAKE_CLOC_OUTPUT}/cloc.xml > ${CMAKE_CLOC_OUTPUT}/cloc.html
-      DEPENDS ${CMAKE_CLOC_OUTPUT}/cloc.xml
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${module} cloc report" VERBATIM)
+      VERBATIM)
 
     add_custom_target(cloc-${module}
       DEPENDS ${CMAKE_CLOC_OUTPUT}/cloc.html)

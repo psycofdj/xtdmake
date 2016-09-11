@@ -16,13 +16,13 @@ xtdmake_find_program(Coverxygen
 
 set(DocCoverageRule_FOUND 0)
 if (NOT Coverxygen_FOUND OR NOT Genhtml_FOUND OR NOT DocRule_FOUND)
-  message(STATUS "Found module DocCoverage : FALSE (unmet required dependencies)")
+  message(STATUS "Found module DocCoverageRule : FALSE (unmet required dependencies)")
   if (DocCoverageRule_FIND_REQUIRED)
     message(FATAL_ERROR "Unable to load required module DocCoverageRule")
   endif()
 else()
   set(DocCoverageRule_FOUND 1)
-  message(STATUS "Found module DocCoverage : TRUE")
+  message(STATUS "Found module DocCoverageRule : TRUE")
 endif()
 
 
@@ -47,21 +47,21 @@ else()
     set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
     add_custom_command(
+      COMMENT "Generating ${module} documentation coverage informations"
       OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json
+      DEPENDS doc-${module} ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
       COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src
       COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src
-      DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${module} documentation coverage informations" VERBATIM)
+      VERBATIM)
 
     add_custom_command(
+      COMMENT "Generating ${module} documentation coverage HTML report"
       OUTPUT ${DocCoverageRule_OUTPUT}/index.html
-      COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Genhtml_EXECUTABLE} --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/
       DEPENDS ${DocCoverageRule_OUTPUT}/doc-coverage.info
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating ${module} documentation coverage result interface" VERBATIM)
+      COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
+      COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ > /dev/null 2>&1
+      VERBATIM)
 
     add_custom_target(doc-coverage-${module}
       DEPENDS ${DocCoverageRule_OUTPUT}/index.html ${DocCoverageRule_OUTPUT}/data.json)
