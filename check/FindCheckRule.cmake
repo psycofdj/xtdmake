@@ -3,7 +3,7 @@ add_custom_target(check)
 add_custom_target(check-clean)
 
 function(add_check module)
-  set(multiValueArgs  PATTERNS INCLUDES LINKS ENV)
+  set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
   set(oneValueArgs    DIRECTORY PREFIX JOBS)
   set(options         NO_DEFAULT_ENV)
   cmake_parse_arguments(CheckRule
@@ -39,7 +39,9 @@ function(add_check module)
 
   string(REPLACE ";" " " ${CheckRule_ENV}      "${CheckRule_ENV}")
   string(REPLACE ";" " " ${CheckRule_INCLUDES} "${CheckRule_INCLUDES}")
-  string(REPLACE ";" " " ${CheckRule_LINKS}    "${CheckRul_LINKS}")
+  string(REPLACE ";" " " ${CheckRule_LINKS}    "${CheckRule_LINKS}")
+  string(REPLACE ";" " " ${CheckRule_ARGS}    "${CheckRule_ARGS}")
+
   set(${l_test_list} "")
   foreach(c_pattern ${CheckRule_PATTERNS})
     file(GLOB_RECURSE l_tests ${CheckRule_DIRECTORY}/${CheckRule_PREFIX}*${c_pattern})
@@ -51,7 +53,7 @@ function(add_check module)
         PUBLIC ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
       target_link_libraries(${c_name_clean} ${CheckRule_LINKS} ${Cppunit_LIBRARY})
       add_test(NAME ${c_name_clean}
-        COMMAND ${c_name_clean})
+        COMMAND ${c_name_clean} ${CheckRule_ARGS})
       list(APPEND l_test_list ${c_name_clean})
       add_custom_target(${c_name_clean}-gdb
         COMMAND ${CheckRule_ENV} gdb ${c_name_clean})
@@ -64,7 +66,9 @@ function(add_check module)
     OUTPUT ${CheckRule_OUTPUT}/tests.xml
     DEPENDS ${l_test_depends}
     COMMAND mkdir -p ${CheckRule_OUTPUT}
-    COMMAND ${CheckRule_ENV} ctest -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true
+    COMMAND rm -rf Testing/
+    COMMAND touch DartConfiguration.tcl
+    COMMAND ${CheckRule_ENV} ctest --output-on-failure -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true
     COMMAND cp Testing/*/*.xml ${CheckRule_OUTPUT}/tests.xml
     )
 
@@ -77,7 +81,7 @@ function(add_check module)
   add_custom_target(check-${module}
     DEPENDS ${CheckRule_OUTPUT}/index.html)
   add_custom_target(check-${module}-clean
-    COMMAND rm -rf ${CheckRule_OUTPUT})
+    COMMAND rm -rf ${CheckRule_OUTPUT} Testing DartConfiguration.tcl)
   add_dependencies(check       check-${module})
   add_dependencies(check-clean check-${module}-clean)
 endfunction()
