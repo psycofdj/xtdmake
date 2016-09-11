@@ -1,9 +1,7 @@
 set(CMAKE_REPORT_OUTPUT "${CMAKE_BINARY_DIR}/reports")
 
-add_custom_command(
+add_custom_target(reports-update
   COMMENT "Updating reports data"
-  OUTPUT  ${CMAKE_REPORT_OUTPUT}/data.js
-  DEPENDS ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
   VERBATIM)
@@ -24,9 +22,6 @@ add_custom_command(
   COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/interface/index.html           ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp -r ${PROJECT_SOURCE_DIR}/xtdmake/interface/bower_components/ ${CMAKE_REPORT_OUTPUT}/
   VERBATIM)
-
-add_custom_target(reports-update
-  DEPENDS ${CMAKE_REPORT_OUTPUT}/data.js)
 
 if (DocRule_FOUND)
   add_custom_command(TARGET doc

@@ -17,7 +17,7 @@
               <div class="panel panel-default">
                 <div class="panel-heading">Summary</div>
                 <div class="panel-body">
-                  <table class="table table-striped table-bordered table-hover table-condensed">
+                  <table class="table table-striped table-bordered table-hover table-condensed small">
                     <thead>
                       <tr>
                         <th>File</th>

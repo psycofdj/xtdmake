@@ -70,7 +70,7 @@ else()
       COMMAND find . -name '*.gcda' | xargs rm -f
       COMMAND $(MAKE) check-${module}-forced-run  > /dev/null 2>&1
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -c -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
-      COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 --no-recursion -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 --no-recursion -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "${CMAKE_CURRENT_SOURCE_DIR}/*" -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${CovRule_DEFAULT_EXCLUDE_PATTERNS} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       VERBATIM)
@@ -79,7 +79,7 @@ else()
       COMMENT "Generating ${module} coverage HTML and XML reports"
       OUTPUT ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ -p ${CMAKE_CURRENT_SOURCE_DIR}/ --function-coverage --branch-coverage -t "${module} unit test coverage" --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --legend -s
+      COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ --function-coverage --branch-coverage -t "${module} unit test coverage" --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --legend -s
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${CMAKE_CURRENT_BINARY_DIR}/coverage.info -d -o ${CovRule_OUTPUT}/coverage.xml
       )
 

@@ -52,7 +52,7 @@ else()
     add_custom_command(
       COMMENT "Generating ${module} cppcheck HTML and XML reports"
       OUTPUT ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
-      DEPENDS ${files_cppcheck}
+      DEPENDS ${files_cppcheck} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl
       COMMAND mkdir -p ${CMAKE_CPPCHECK_OUTPUT}
       COMMAND ${Cppcheck_EXECUTABLE} -q --xml ${CMAKE_CURRENT_SOURCE_DIR}/src 2> ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml
       COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml > ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html

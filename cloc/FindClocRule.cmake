@@ -51,10 +51,10 @@ else()
     add_custom_command(
       COMMENT "Generating ${module} cloc HTML and XML reports"
       OUTPUT ${CMAKE_CLOC_OUTPUT}/cloc.xml ${CMAKE_CLOC_OUTPUT}/cloc.html
+      DEPENDS ${files_cloc} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl
       COMMAND mkdir -p ${CMAKE_CLOC_OUTPUT}
       COMMAND ${Cloc_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src --xml --out ${CMAKE_CLOC_OUTPUT}/cloc.xml --by-file-by-lang
       COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${CMAKE_CLOC_OUTPUT}/cloc.xml > ${CMAKE_CLOC_OUTPUT}/cloc.html
-      DEPENDS ${files_cloc}
       VERBATIM)
 
     add_custom_target(cloc-${module}

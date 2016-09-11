@@ -86,7 +86,7 @@
                     </tbody>
                     <xsl:if test="count(./Site/Testing/Test) = 0">
                       <tfoot>
-                        <tr><td class="text-center" colspan="4">No test found</td></tr>
+                        <tr><td class="text-center" colspan="6">No test found</td></tr>
                       </tfoot>
                     </xsl:if>
                   </table>
