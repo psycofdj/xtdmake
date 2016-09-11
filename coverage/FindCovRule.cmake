@@ -19,7 +19,7 @@ xtdmake_find_program(Genhtml
 
 
 set(CovRule_FOUND 0)
-if (NOT Coverxygen_FOUND OR NOT Genhtml_FOUND OR NOT DocRule_FOUND)
+if (NOT Lcov_FOUND OR NOT Genhtml_FOUND OR NOT CheckRule_FOUND)
   message(STATUS "Found module CovRule : FALSE (unmet required dependencies)")
   if (CovRule_FIND_REQUIRED)
     message(FATAL_ERROR "Unable to load required module CovRule")
@@ -30,7 +30,14 @@ else()
 endif()
 
 if (NOT CovRule_FOUND)
-  message("here")
+  function(add_cov module)
+    add_custom_target(cov-${module}
+      COMMAND echo "warning: cov rule is disabled due to missing dependencies")
+    add_custom_target(cov-${module}-clean
+      COMMAND echo "warning: cov rule is disabled due to missing dependencies")
+    add_dependencies(cov       cov-${module})
+    add_dependencies(cov-clean cov-${module}-clean)
+  endfunction()
 else()
   function(add_cov module)
     set(multiValueArgs  EXCLUDE_PATTERNS DEFAULT_EXCLUDE_PATTERNS)
@@ -47,7 +54,7 @@ else()
 
 
     if ("${CovRule_DEFAULT_EXCLUDE_PATTERNS}" STREQUAL "")
-      set(CovRule_DEFAULT_EXCLUDE_PATTERNS "'*Test*.*'")
+      set(CovRule_DEFAULT_EXCLUDE_PATTERNS "*Test*.*")
     endif()
 
     string(REPLACE ";" " " "${CovRule_EXCLUDE_PATTERNS}"         "${CovRule_EXCLUDE_PATTERNS}")
@@ -57,21 +64,22 @@ else()
     add_custom_command(
       COMMENT "Generating ${module} coverage informations"
       OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      DEPENDS check-${module}-build check-${module}-run ${l_check_dependencies}
+      DEPENDS check-${module}-build ${l_check_dependencies}
       COMMAND ${Lcov_EXECUTABLE} -q -c -i -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
+      COMMAND bash -c "while [ -d ${CMAKE_CURRENT_BINARY_DIR}/testing ]; do sleep 1; done"
       COMMAND find . -name '*.gcda' | xargs rm -f
       COMMAND $(MAKE) check-${module}-forced-run  > /dev/null 2>&1
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -c -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 --no-recursion -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "'${CMAKE_CURRENT_SOURCE_DIR}/*'" -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "${CMAKE_CURRENT_SOURCE_DIR}/*" -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${CovRule_DEFAULT_EXCLUDE_PATTERNS} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      )
+      VERBATIM)
 
     add_custom_command(
       COMMENT "Generating ${module} coverage HTML and XML reports"
       OUTPUT ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ -p ${CMAKE_CURRENT_SOURCE_DIR} --function-coverage --branch-coverage -t ${module} --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ -p ${CMAKE_CURRENT_SOURCE_DIR}/ --function-coverage --branch-coverage -t "${module} unit test coverage" --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --legend -s
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${CMAKE_CURRENT_BINARY_DIR}/coverage.info -d -o ${CovRule_OUTPUT}/coverage.xml
       )
 

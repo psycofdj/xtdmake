@@ -3,6 +3,10 @@ add_custom_target(check)
 add_custom_target(check-verbose)
 add_custom_target(check-clean)
 
+
+set(CheckRule_FOUND 1)
+message(STATUS "Found module CheckRule : TRUE")
+
 define_property(TARGET
   PROPERTY MYDEPENDS
   BRIEF_DOCS "Internal property to communicate check dependencies to other rules"
@@ -77,7 +81,9 @@ function(add_check module)
     PROPERTIES MYDEPENDS "${l_test_depends}")
 
   add_custom_target(check-${module}-forced-run
-    COMMAND ${CheckRule_ENV} ctest  -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true)
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/testing
+    COMMAND ${CheckRule_ENV} ctest  -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true
+    COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/testing)
 
   add_custom_target(check-${module}-verbose
     COMMAND $(MAKE) check-${module}-build

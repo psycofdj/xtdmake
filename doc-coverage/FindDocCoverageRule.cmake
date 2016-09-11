@@ -60,7 +60,7 @@ else()
       OUTPUT ${DocCoverageRule_OUTPUT}/index.html
       DEPENDS ${DocCoverageRule_OUTPUT}/doc-coverage.info
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ > /dev/null 2>&1
+      COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ -t "${module} documentation coverage" > /dev/null 2>&1
       VERBATIM)
 
     add_custom_target(doc-coverage-${module}
