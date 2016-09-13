@@ -65,9 +65,8 @@ else()
       COMMENT "Generating ${module} coverage informations"
       OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       DEPENDS check-${module}-build ${l_check_dependencies}
-      COMMAND ${Lcov_EXECUTABLE} -q -c -i -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
       COMMAND bash -c "while [ -d ${CMAKE_CURRENT_BINARY_DIR}/testing ]; do sleep 1; done"
-      COMMAND find . -name '*.gcda' | xargs rm -f
+      COMMAND ${Lcov_EXECUTABLE} -z -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
       COMMAND $(MAKE) check-${module}-forced-run  > /dev/null 2>&1
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 -c -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
       COMMAND ${Lcov_EXECUTABLE} -q --rc lcov_branch_coverage=1 --no-recursion -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
