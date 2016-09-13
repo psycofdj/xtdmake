@@ -5,6 +5,12 @@ add_custom_target(check-clean)
 
 
 set(CheckRule_FOUND 1)
+set(CheckRule_DEFAULT_ARGS     "" CACHE STRING "CheckRule default unit-test binary parameter template")
+set(CheckRule_DEFAULT_ENV      "" CACHE STRING "CheckRule default unit-test binary environment template")
+set(CheckRule_DEFAULT_INCLUDES "" CACHE STRING "CheckRule default unit-test header includes")
+set(CheckRule_DEFAULT_LINKS    "" CACHE STRING "CheckRule default unit-test link libraries")
+
+
 message(STATUS "Found module CheckRule : TRUE")
 
 define_property(TARGET
@@ -15,7 +21,7 @@ define_property(TARGET
 function(add_check module)
   set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
   set(oneValueArgs    DIRECTORY PREFIX JOBS)
-  set(options         NO_DEFAULT_ENV)
+  set(options         NO_DEFAULT_ENV NO_DEFAULT_ARGS NO_DEFAULT_INCLUDES)
   cmake_parse_arguments(CheckRule
     "${options}"
     "${oneValueArgs}"
@@ -40,17 +46,36 @@ function(add_check module)
     set(CheckRule_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/unit/)
   endif()
 
-  if (NOT CheckRule_NO_DEFAULT_ENV)
-    list(APPEND CheckRule_ENV "CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
-    list(APPEND CheckRule_ENV "PROJECT_SOURCE_DIR=${PROJECT_SRCDIR}")
-    list(APPEND CheckRule_ENV "PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}")
-    list(APPEND CheckRule_ENV "TEST_SOURCE_DIR=${CheckRule_DIRECTORY}")
+  if (NOT CheckRule_NO_DEFAULT_ARGS)
+    eval(l_args "${CheckRule_DEFAULT_ARGS}")
+    foreach (c_arg ${l_args})
+      list(APPEND CheckRule_ARGS ${c_arg})
+    endforeach()
   endif()
 
-  string(REPLACE ";" " " ${CheckRule_ENV}      "${CheckRule_ENV}")
-  string(REPLACE ";" " " ${CheckRule_INCLUDES} "${CheckRule_INCLUDES}")
-  string(REPLACE ";" " " ${CheckRule_LINKS}    "${CheckRule_LINKS}")
-  string(REPLACE ";" " " ${CheckRule_ARGS}    "${CheckRule_ARGS}")
+  if (NOT CheckRule_NO_DEFAULT_ENV)
+    eval(l_args "${CheckRule_DEFAULT_ENV}")
+    foreach (c_arg ${l_args})
+      list(APPEND CheckRule_ENV ${c_arg})
+    endforeach()
+  endif()
+
+  if (NOT CheckRule_NO_DEFAULT_INCLUDES)
+    foreach (c_arg ${CheckRule_DEFAULT_INCLUDES})
+      list(APPEND CheckRule_INCLUDES ${c_arg})
+    endforeach()
+  endif()
+
+  if (NOT CheckRule_NO_DEFAULT_LINKS)
+    foreach (c_arg ${CheckRule_DEFAULT_LINKS})
+      list(APPEND CheckRule_LINKS ${c_arg})
+    endforeach()
+  endif()
+
+  string(REPLACE ";" " " "${CheckRule_INCLUDES}" "${CheckRule_INCLUDES}")
+  string(REPLACE ";" " " "${CheckRule_LINKS}"    "${CheckRule_LINKS}")
+  string(REPLACE ";" " " "${CheckRule_ENV}"      "${CheckRule_ENV}")
+  string(REPLACE ";" " " "${CheckRule_ARGS}"     "${CheckRule_ARGS}")
 
   set(${l_test_list} "")
   foreach(c_pattern ${CheckRule_PATTERNS})

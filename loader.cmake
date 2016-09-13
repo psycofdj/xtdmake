@@ -10,3 +10,4 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/xtdmake/check"
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/xtdmake/coverage")
 
 include(xtdmake_find_program)
+include(eval)
