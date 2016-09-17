@@ -60,13 +60,23 @@
 
        $('#tree').treeview({
          data: tree,
-         levels:2,
-         onNodeSelected: function(p_event, p_data) {
-           var l_src = p_data.src;
-           if (l_src) {
-             top.frames["droite"].location.href = l_src;
+         levels:2
+       });
+
+
+       $(".node-tree").click(function(p_event) {
+         var l_id   = $(this).data("nodeid");
+         var l_node = $('#tree').treeview("getNode", l_id);
+         if (l_node.src) {
+           if (p_event.which == 2) {
+             window.open(l_node.src, "_blank");
+           } else {
+             top.frames["droite"].location.href = l_node.src;
            }
          }
+           p_event.preventDefault();
+         p_event.stopPropagation();
+         return true;
        });
      });
     </script>

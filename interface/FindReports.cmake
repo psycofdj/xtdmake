@@ -2,6 +2,9 @@ set(CMAKE_REPORT_OUTPUT "${CMAKE_BINARY_DIR}/reports")
 
 add_custom_target(reports-update
   COMMENT "Updating reports data"
+  DEPENDS
+  ${CMAKE_REPORT_OUTPUT}/menu.html
+  ${CMAKE_REPORT_OUTPUT}/index.html
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
   VERBATIM)
@@ -105,8 +108,6 @@ endif()
 
 add_custom_target(reports
   DEPENDS doc  doc-coverage  cloc  cppcheck  check  cov
-  ${CMAKE_REPORT_OUTPUT}/menu.html
-  ${CMAKE_REPORT_OUTPUT}/index.html
 )
 
 add_custom_target(reports-clean
