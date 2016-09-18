@@ -66,11 +66,12 @@ else()
       OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       DEPENDS check-${module}-build ${l_check_dependencies}
       COMMAND bash -c "while [ -d ${CMAKE_CURRENT_BINARY_DIR}/testing ]; do sleep 1; done"
+      COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       COMMAND ${Lcov_EXECUTABLE} -q -z -d ${CMAKE_CURRENT_BINARY_DIR}
       COMMAND ${Lcov_EXECUTABLE} -q -c -i -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
       COMMAND $(MAKE) check-${module}-forced-run  > /dev/null 2>&1
       COMMAND ${Lcov_EXECUTABLE} -q -c -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
-      COMMAND ${Lcov_EXECUTABLE} -q -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      COMMAND ${Lcov_EXECUTABLE} -q -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       COMMAND ${Lcov_EXECUTABLE} -q -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "${CMAKE_CURRENT_SOURCE_DIR}/*"                         -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       COMMAND ${Lcov_EXECUTABLE} -q -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${CovRule_DEFAULT_EXCLUDE_PATTERNS}                     -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       VERBATIM)
