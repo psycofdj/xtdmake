@@ -44,7 +44,7 @@ if (NOT DocRule_FOUND)
   endfunction()
 else()
   function(add_doc module)
-    set(multiValueArgs  EXCLUDE FILE_PATTERNS CALL_GRAPHS)
+    set(multiValueArgs  EXCLUDE FILE_PATTERNS CALL_GRAPHS PREDEFINED EXPAND_AS_DEFINED)
     set(oneValueArgs    EXAMPLE PLANTUML)
     set(options         WERROR)
     cmake_parse_arguments(DocRule
@@ -85,6 +85,8 @@ else()
         set(DocRule_EXAMPLE ${CMAKE_CURRENT_SOURCE_DIR}/doc/example)
       endif()
     endif()
+
+
 
     if ("${DocRule_IMAGE}" STREQUAL "")
       if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc/image)
@@ -129,7 +131,11 @@ else()
         endif()
       endif()
     endforeach()
-    string(REPLACE ";" " " ${DocRule_DEPENDS} "${DocRule_DEPENDS}")
+
+    
+    string(REPLACE ";" " " ${DocRule_DEPENDS}        "${DocRule_DEPENDS}")
+    string(REPLACE ";" " " DocRule_PREDEFINED        "${DocRule_PREDEFINED}")
+    string(REPLACE ";" " " DocRule_EXPAND_AS_DEFINED "${DocRule_EXPAND_AS_DEFINED}")
 
     set(DocRule_CONFIGURE_TEMPLATE ${PROJECT_SOURCE_DIR}/xtdmake/doc/doxygen-1.8.11.in)
     if (Doxygen_VERSION VERSION_LESS "1.8.11")
