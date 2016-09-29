@@ -78,10 +78,12 @@ function(add_check module)
   string(REPLACE ";" " " "${CheckRule_ARGS}"     "${CheckRule_ARGS}")
 
   set(${l_test_list} "")
+  set(${l_dir_list}  "")
   foreach(c_pattern ${CheckRule_PATTERNS})
     file(GLOB_RECURSE l_tests ${CheckRule_DIRECTORY}/${CheckRule_PREFIX}*${c_pattern})
     foreach(c_file ${l_tests})
       get_filename_component(c_name ${c_file} NAME_WE)
+      get_filename_component(c_dir  ${c_file} DIRECTORY)
       string(REPLACE ${CheckRule_PREFIX} "" c_name_clean ${c_name})
       add_executable(${c_name_clean} ${c_file})
       target_include_directories(${c_name_clean}
@@ -90,10 +92,16 @@ function(add_check module)
       add_test(NAME ${c_name_clean}
         COMMAND ${c_name_clean} ${CheckRule_ARGS})
       list(APPEND l_test_list ${c_name_clean})
+      list(APPEND l_dir_list  ${c_dir})
       add_custom_target(${c_name_clean}-gdb
         COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} -n)
     endforeach()
   endforeach()
+
+  if (l_dir_list)
+    list(REMOVE_DUPLICATES l_dir_list)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
+  endif()
 
   string(REPLACE ";" "\\|" l_test_names   "${l_test_list}")
   string(REPLACE ";" ";"   l_test_depends "${l_test_list}")

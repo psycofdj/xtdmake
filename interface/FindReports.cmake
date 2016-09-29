@@ -5,6 +5,7 @@ add_custom_target(reports-update
   DEPENDS
   ${CMAKE_REPORT_OUTPUT}/menu.html
   ${CMAKE_REPORT_OUTPUT}/index.html
+  ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
   VERBATIM)
@@ -19,12 +20,12 @@ add_custom_command(
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/menu.html
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/index.html
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/bower_components/
-  ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/interface/menu.html            ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/interface/index.html           ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp -r ${PROJECT_SOURCE_DIR}/xtdmake/interface/bower_components/ ${CMAKE_REPORT_OUTPUT}/
   VERBATIM)
+
 
 if (DocRule_FOUND)
   add_custom_command(TARGET doc
@@ -39,6 +40,7 @@ if (DocRule_FOUND)
     VERBATIM)
 endif()
 
+
 if (DocCoverageRule_FOUND)
   add_custom_command(TARGET doc-coverage
     POST_BUILD
@@ -52,6 +54,7 @@ if (DocCoverageRule_FOUND)
     VERBATIM)
 endif()
 
+
 if (ClocRule_FOUND)
   add_custom_command(TARGET cloc
     POST_BUILD
@@ -64,6 +67,7 @@ if (ClocRule_FOUND)
     COMMAND $(MAKE) reports-update
     VERBATIM)
 endif()
+
 
 if (CppcheckRule_FOUND)
   add_custom_command(TARGET cppcheck
