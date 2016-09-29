@@ -3,17 +3,16 @@
 
 - [What is it ?](#what-is-it-)
 - [Install](#install)
-- [Features](#features)
-    - [Binary identity tracking](#binary-identity-tracking)
-    - [Building both shared and static library](#building-both-shared-and-static-library)
-    - [Code quality reports](#code-quality-reports)
-        - [Documentation](#documentation)
-        - [Documentation Coverage](#documentation-coverage)
-        - [Count lines of code](#count-lines-of-code)
-        - [Cppcheck static analysis](#cppcheck-static-analysis)
-        - [Unit tests](#unit-tests)
-        - [Unit tests code coverage](#unit-tests-code-coverage)
-        - [Report Interface](#report-interface)
+- [Binary identity tracking](#binary-identity-tracking)
+- [Building both shared and static library](#building-both-shared-and-static-library)
+- [Code quality reports](#code-quality-reports)
+    - [Documentation](#documentation)
+    - [Documentation Coverage](#documentation-coverage)
+    - [Count lines of code](#count-lines-of-code)
+    - [Cppcheck static analysis](#cppcheck-static-analysis)
+    - [Unit tests](#unit-tests)
+    - [Unit tests code coverage](#unit-tests-code-coverage)
+    - [Report Interface](#report-interface)
 
 <!-- markdown-toc end -->
 
@@ -34,7 +33,7 @@ Install
   # Dot (Generate pictures from graphs)
   sudo apt-get install graphviz
 
-  # xsltproc (Transform XML files from XSLT stylesheets)
+  # xsltproc (Transform XML files from XSLT style-sheets)
   sudo apt-get install xsltproc
 
   # lcov (Generate HTML results from code-coverage informations)
@@ -65,9 +64,8 @@ Install
   include(xtdmake/loader.cmake)
   ```
 
-# Features
 
-## Binary identity tracking
+# Binary identity tracking
 
 This feature configures your C/C++ build to add information about when and how your
 binaries were constructed. Behind the scene, cmake will wrap your linker to add a
@@ -122,7 +120,7 @@ CMakeLists.txt :
 find_package(Tracking REQUIRED)
 ```
 
-## Building both shared and static library
+# Building both shared and static library
 
 XTDMake provides a way to easily produce both static and shared library from a single
 call. In addition it will optimize your build to produce only one set of object files
@@ -149,12 +147,12 @@ module by adding the following directive too your project's root CMakeLists.txt 
 find_package(StaticShared REQUIRED)
 ```
 
-## Code quality reports
+# Code quality reports
 
 XTDMake provides a bunch of modules producing code quality measurements targets.
 
 
-Each target generates both a locally consultatble and machine processable reports.
+Each target generates both a locally readable and machine processable reports.
 Local report targets the developer while the machine-processable reports can be
 used in your Continuous Integration (CI) process.
 
@@ -178,7 +176,7 @@ C++ compilation being already slow enough, XTDMake's code-measurement targets ar
 designed to be fully incremental with a fine dependency tracking.
 
 
-### Documentation
+## Documentation
 
 This target generate documentation with doxygen.
 
@@ -191,10 +189,45 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
 
 2. In your module's CMakeLists.txt :
   ```cmake
-  add_doc(<module_name>)
-      [ EXCLUDE file1 file2 ... ]
-      [ WERROR ])
+  add_doc(<module_name>
+      [ INPUT             dir1     [dir2 ...]]
+      [ EXCLUDE           file1    [file2 ...] ]
+      [ FILE_PATTERNS     pattern1 [pattern2 ...] ]
+      [ PREDEFINED        macro1   [macro2 ...] ]
+      [ EXPAND_AS_DEFINED macro1   [macro2 ...] ]
+      [ EXAMPLE           dir]
+      [ IMAGE             dir]
+      [ PLANTUML          path]
+      [ WERROR        ]
+      [ NO_CALL_GRAHS ]
+      )
   ```
+
+- ```INPUT```  : list of input source directories containing file to document.
+  Default value is ```${CMAKE_CURRENT_SOURCE_DIR}/src```. When exists, directory
+  ```${CMAKE_CURRENT_SOURCE_DIR}/doc``` is added.
+
+- ```FILE_PATTERNS``` : list of wildcard patterns to search in input directories.
+  Default value is ```*.cc *.hh *.hpp```
+
+- ```EXCLUDE``` : list files to exclude from matched files
+
+- ```PREDEFINED``` : List of predefined macros for doxygen. See
+  [here](https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_predefined).
+
+- ```EXPAND_AS_DEFINED``` : List of macros to expand as defined. See
+  [here](https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_expand_as_defined).
+
+- ```EXAMPLE``` : Example directory path. Default is
+  ```${CMAKE_CURRENT_SOURCE_DIR}/doc/example``` when exists.
+
+- ```PLANTUML``` : Plantuml jar path (doxygen >=1.8.11). Default is
+  ```/usr/share/plantuml/plantuml.jar``` .
+  
+- ```NO_CALL_GRAPHS``` : If given, disable doxygen call graphs and caller graphs.
+
+- ```WERROR``` : Treat doxygen warning as errors.
+
 
 3. Generate the reports :
   ```bash
@@ -219,7 +252,7 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
   ```
 
 
-### Documentation Coverage
+## Documentation Coverage
 
 This target will generate a report showing how complete is documentation.
 
@@ -262,7 +295,7 @@ This target will generate a report showing how complete is documentation.
   ![Summary](./documentation/coverage-details.png)
 
 
-### Count lines of code
+## Count lines of code
 
 This target generates a report counting the number of code, blank and comments lines
 of your module.
@@ -304,7 +337,7 @@ of your module.
 
 
 
-### Cppcheck static analysis
+## Cppcheck static analysis
 
 
 Cppcheck is a static C++ code analyzer tool. This target will produce a report of
@@ -346,15 +379,15 @@ cppcheck output.
   ![Cppcheck](./documentation/cppcheck.png)
 
 
-### Unit tests
+## Unit tests
 
 TBD
 
-### Unit tests code coverage
+## Unit tests code coverage
 
 TBD
 
-### Report Interface
+## Report Interface
 
 In order to make all these reports as accessible as possible, XTDMake provides a
 little locally consultatble web interface that helps the developer to navigate
@@ -381,9 +414,13 @@ through all generated reports.
   Output :
   ![Reports](./documentation/reports.png)
 
-<!--  LocalWords:  ident libcommon tf pwd revno affab bfe ce xtdmake
+<!--  LocalWords:  ident libcommon tf pwd revno affab bfe ce xtdmake coverxygen
  -->
-<!--  LocalWords:  StaticShared WERROR DocCoverage Cloc cloc Cppcheck
+<!--  LocalWords:  StaticShared WERROR DocCoverage Cloc cloc Cppcheck lcov xsltproc
  -->
-<!--  LocalWords:  cppcheck
+<!--  LocalWords:  cppcheck graphviz sudo XTDMake CMake
  -->
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "american" -->
+<!-- End: -->

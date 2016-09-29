@@ -44,9 +44,9 @@ if (NOT DocRule_FOUND)
   endfunction()
 else()
   function(add_doc module)
-    set(multiValueArgs  EXCLUDE FILE_PATTERNS CALL_GRAPHS PREDEFINED EXPAND_AS_DEFINED)
-    set(oneValueArgs    EXAMPLE PLANTUML)
-    set(options         WERROR)
+    set(multiValueArgs  EXCLUDE FILE_PATTERNS PREDEFINED EXPAND_AS_DEFINED)
+    set(oneValueArgs    EXAMPLE PLANTUML INPUT IMAGE)
+    set(options         WERROR NO_CALL_GRAPHS)
     cmake_parse_arguments(DocRule
       "${options}"
       "${oneValueArgs}"
@@ -57,7 +57,7 @@ else()
     set(DocRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/doc")
 
     if ("${DocRule_FILE_PATTERNS}" STREQUAL "")
-      set(DocRule_FILE_PATTERNS "*.cc *.hh *.hpp")
+      set(DocRule_FILE_PATTERNS "*.cc;*.hh;*.hpp")
     endif()
 
     if ("${DocRule_PLANTUML}" STREQUAL "")
@@ -68,10 +68,13 @@ else()
       set(DocRule_PLANTUML "")
     endif()
 
-    if ("${DocRule_CALL_GRAPHS}" STREQUAL "")
-      if (Dot_FOUND)
-        set(DocRule_CALL_GRAPHS "YES")
-      endif()
+    set(DocRule_CALL_GRAPHS "NO")
+    if (Dot_FOUND)
+      set(DocRule_CALL_GRAPHS "YES")
+    endif()
+
+    if ("${DocRule_NO_CALL_GRAPHS}" STREQUAL "TRUE")
+      set(DocRule_CALL_GRAPHS "NO")
     endif()
 
     if ("${DocRule_WERROR}" STREQUAL "TRUE")
@@ -86,8 +89,6 @@ else()
       endif()
     endif()
 
-
-
     if ("${DocRule_IMAGE}" STREQUAL "")
       if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc/image)
         set(DocRule_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/doc/image)
@@ -97,7 +98,7 @@ else()
     if ("${DocRule_INPUT}" STREQUAL "")
       set(DocRule_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/src)
       if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc)
-        set(DocRule_INPUT "${DocRule_INPUT} ${CMAKE_CURRENT_SOURCE_DIR}/doc")
+        list(APPEND DocRule_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/doc)
       endif()
     endif()
 
@@ -132,7 +133,7 @@ else()
       endif()
     endforeach()
 
-    
+
     string(REPLACE ";" " " ${DocRule_DEPENDS}        "${DocRule_DEPENDS}")
     string(REPLACE ";" " " DocRule_PREDEFINED        "${DocRule_PREDEFINED}")
     string(REPLACE ";" " " DocRule_EXPAND_AS_DEFINED "${DocRule_EXPAND_AS_DEFINED}")
