@@ -191,10 +191,10 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
   ```cmake
   add_doc(<module_name>
       [ INPUT             dir1     [dir2 ...]]
-      [ EXCLUDE           file1    [file2 ...] ]
-      [ FILE_PATTERNS     pattern1 [pattern2 ...] ]
-      [ PREDEFINED        macro1   [macro2 ...] ]
-      [ EXPAND_AS_DEFINED macro1   [macro2 ...] ]
+      [ EXCLUDE           file1    [file2 ...]]
+      [ FILE_PATTERNS     pattern1 [pattern2 ...]]
+      [ PREDEFINED        macro1   [macro2 ...]]
+      [ EXPAND_AS_DEFINED macro1   [macro2 ...]]
       [ EXAMPLE           dir]
       [ IMAGE             dir]
       [ PLANTUML          path]
@@ -203,30 +203,30 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
       )
   ```
 
-- ```INPUT```  : list of input source directories containing file to document.
-  Default value is ```${CMAKE_CURRENT_SOURCE_DIR}/src```. When exists, directory
-  ```${CMAKE_CURRENT_SOURCE_DIR}/doc``` is added.
+  - ```INPUT```  : list of input source directories containing file to document.
+    Default value is ```${CMAKE_CURRENT_SOURCE_DIR}/src```. When exists, directory
+    ```${CMAKE_CURRENT_SOURCE_DIR}/doc``` is added.
 
-- ```FILE_PATTERNS``` : list of wildcard patterns to search in input directories.
-  Default value is ```*.cc *.hh *.hpp```
+  - ```FILE_PATTERNS``` : list of wildcard patterns to search in input directories.
+    Default value is ```*.cc *.hh *.hpp```
 
-- ```EXCLUDE``` : list files to exclude from matched files
+  - ```EXCLUDE``` : list files to exclude from matched files
 
-- ```PREDEFINED``` : List of predefined macros for doxygen. See
-  [here](https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_predefined).
+  - ```PREDEFINED``` : List of predefined macros for doxygen. See
+    [here](https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_predefined).
 
-- ```EXPAND_AS_DEFINED``` : List of macros to expand as defined. See
-  [here](https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_expand_as_defined).
+  - ```EXPAND_AS_DEFINED``` : List of macros to expand as defined. See
+    [here](https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_expand_as_defined).
 
-- ```EXAMPLE``` : Example directory path. Default is
-  ```${CMAKE_CURRENT_SOURCE_DIR}/doc/example``` when exists.
+  - ```EXAMPLE``` : Example directory path. Default is
+    ```${CMAKE_CURRENT_SOURCE_DIR}/doc/example``` when exists.
 
-- ```PLANTUML``` : Plantuml jar path (doxygen >=1.8.11). Default is
-  ```/usr/share/plantuml/plantuml.jar``` .
-  
-- ```NO_CALL_GRAPHS``` : If given, disable doxygen call graphs and caller graphs.
+  - ```PLANTUML``` : Plantuml jar path (doxygen >=1.8.11). Default is
+    ```/usr/share/plantuml/plantuml.jar``` .
 
-- ```WERROR``` : Treat doxygen warning as errors.
+  - ```NO_CALL_GRAPHS``` : If given, disable doxygen call graphs and caller graphs.
+
+  - ```WERROR``` : Treat doxygen warning as errors.
 
 
 3. Generate the reports :
@@ -265,8 +265,19 @@ This target will generate a report showing how complete is documentation.
 
 2. In your module's CMakeLists.txt :
   ```cmake
-  add_doc_coverage(<module_name>)
+  add_doc_coverage(<module_name>
+    [ KIND  kind1 [kind2 ...]]
+    [ SCOPE scope1 [scope2 ...]]
+  )
   ```
+
+  - ```KIND``` : List of kind of symbol to take into account for coverage measurement.
+    Available values are described in the ```--kind``` parameter of
+    [coverxygen](https://github.com/psycofdj/coverxygen) tool
+
+  - ```SCOPE``` : List of symbol's scope to take into account for coverage measurement.
+    Available values are described in the ```--scope``` parameter of
+    [coverxygen](https://github.com/psycofdj/coverxygen) tool
 
 3. Generate the reports :
   ```bash
@@ -381,7 +392,141 @@ cppcheck output.
 
 ## Unit tests
 
-TBD
+XTDMake detects automatically tests source files, create cmake binary targets
+accordingly and generates test reports.
+
+### Global design
+
+- find tests
+- build binary targets
+- create individual execution targets
+- create overall execution and report generating target
+
+### Finding the test sources
+
+XTDMake's CheckRule modules scans given ```DIRECTORY``` for file names prefixed
+by ```PREFIX``` and matching one of given wildcard ```PATTERNS```. Each matched file
+is considered as a standalone test.
+
+### Binary targets
+
+For matched files named ```<prefix><name>.*```, the rule declares a new
+singled source executable ```<name>```. Given ```INCLUDES``` and ```LINKS``` are
+respectively given as executable's ```include_directories``` and ```link_libraries```.
+
+User may modify generated target at will with cmake's ```target_include_directories```,
+```target_link_libraries``` etc.
+
+### Test targets
+
+Registered executable is then added as a standard cmake test using ```add_test``` 
+with given arguments ```ARGS```.
+
+
+
+Test source files in ```DIRECTORY``` that are prefixed by ```PREFIX``` and matches
+one of given ```PATTERNS``` are used to declare a test binary target. The name of
+the target is the source file name stripped of its prefix and extension.
+
+
+
+
+
+1. In your project's root CMakeLists.txt :
+  ```cmake
+  find_package(CheckRule REQUIRED)
+  ```
+
+2. In your module's CMakeLists.txt :
+  ```cmake
+  add_check(<module_name>
+    [PATTERNS pattern1  [pattern2 ...]]
+    [INCLUDES dir1      [dir2 ...]]
+    [LINKS    lib1      [lib2 ...]]
+    [ENV      name1=val [name2=val ...]]
+    [ARGS     arg1      [arg2 ...]]
+    [DIRECTORY dir]
+    [PREFIX    name]
+    [JOBS      number]
+    [NO_DEFAULT_ENV]
+    [NO_DEFAULT_ARGS]
+    [NO_DEFAULT_INCLUDES]
+  )
+  ```
+
+  - ```PATTERNS``` : List of wildcard to find source files in test directory.
+    Default is ```${CheckRule_DEFAULT_PATTERNS}``` .
+
+  - ```INCLUDES``` : List of include directories to add to test targets binaries.
+    Default is ```${CheckRule_DEFAULT_INCLUDES}```, unless ```NO_DEFAULT_INCLUDES```
+    is given.
+
+  - ```LINKS``` : List of libraries to link test targets. Values of
+   ```${CheckRule_DEFAULT_LINKS}``` are added unless ```NO_DEFAULT_LINKS``` is given.
+
+  - ```ENV``` : List of environment variable to set before running tests. Values of
+    ```${CheckRule_DEFAULT_ENV}``` as added unless ```NO_DEFAULT_ENV``` is given.
+
+  - ```ARGS``` : List of arguments to run the test binaries with. Values of
+    ```${CheckRule_DEFAULT_ARGS}``` are added unless ```NO_DEFAULT_ARGS``` is given.
+
+  - ```DIRECTORY``` : Test directory path. Default is
+    ```${CMAKE_CURRENT_SOURCE_DIR}/${CheckRule_DEFAULT_DIRECTORY}/``` .
+
+  - ```PREFIX``` : Prefix of test source files in directory. Default is
+    ```${CheckRule_DEFAULT_PREFIX}``` .
+
+  - ```JOBS``` : Number of parallel jobs to run tests suite. Default is
+    ```CheckRule_DEFAULT_JOBS``` .
+
+  - ```NO_DEFAULT_ENV``` : When given, ```${CheckRule_DEFAULT_ENV}``` are not
+    added to ```ENV``` .
+
+  - ```NO_DEFAULT_ARGS``` : When given, ```${CheckRule_DEFAULT_ARGS}``` are not
+    added to ```ARGS``` .
+
+  - ```NO_DEFAULT_INCLUDES``` : When given, ```${CheckRule_DEFAULT_INCLUDES}``` are not
+    added to ```INCLUDE``` .
+
+  - ```NO_DEFAULT_LINKS``` : When given, ```${CheckRule_DEFAULT_LINKS}``` are not
+    added to ```LINKS``` .
+
+  Global configuration values :
+  - ```CheckRule_DEFAULT_ARGS```      : Default is empty.
+  - ```CheckRule_DEFAULT_ENV```       : Default is empty.
+  - ```CheckRule_DEFAULT_INCLUDES```  : Default is empty.
+  - ```CheckRule_DEFAULT_LINKS```     : Default is empty.
+  - ```CheckRule_DEFAULT_DIRECTORY``` : Default is ```/unit```.
+  - ```CheckRule_DEFAULT_PATTERNS```  : Default is ```.c .cc .cpp```.
+  - ```CheckRule_DEFAULT_JOBS```      : Default is ```1```.
+  - ```CheckRule_DEFAULT_PREFIX```    : Default is ```Test```.
+
+
+
+3. Generate the reports :
+  ```bash
+  # generate cloc for a specific module
+  make -C <module_path> cppcheck-<module_name>
+
+  # generate cloc for all modules
+  make cppcheck
+
+  # remove generated report
+  make cppcheck-clean
+  ```
+
+4. Consult the report  :
+  ```
+  sensible-browser ./reports/<module_name>/cppcheck/index.html
+  ```
+
+  Note that it will also produce an xml version of the report in :
+  ```
+  ./reports/<module_name>/cppcheck/index.xml
+  ```
+
+  Output :
+  ![Cppcheck](./documentation/cppcheck.png)
 
 ## Unit tests code coverage
 

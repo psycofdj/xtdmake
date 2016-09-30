@@ -43,6 +43,26 @@ else()
       message(FATAL_ERROR "unable to find target doc-${module}, please call add_doc command for your module")
     endif()
 
+    set(multiValueArgs  SCOPE KIND)
+    set(oneValueArgs    )
+    set(options         )
+    cmake_parse_arguments(DocCoverageRule
+      "${options}"
+      "${oneValueArgs}"
+      "${multiValueArgs}"
+      ${ARGN})
+
+
+    if (NOT DocCoverageRule_KIND)
+      set(DocCoverageRule_KIND "enum;typedef;variable;function;class;struct;define")
+    endif()
+
+    if (NOT DocCoverageRule_SCOPE)
+      set(DocCoverageRule_SCOPE "public;protected")
+    endif()
+
+    string(REPLACE ";" "," DocCoverageRule_KIND  "${DocCoverageRule_KIND}")
+    string(REPLACE ";" "," DocCoverageRule_SCOPE "${DocCoverageRule_SCOPE}")
     get_target_property(DocCoverageRule_DOXYGEN_OUTPUT doc-${module} OUTPUT_DIR)
     set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
@@ -51,8 +71,8 @@ else()
       OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json
       DEPENDS doc-${module} ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope public,protected --kind enum,typedef,variable,function,class,struct,define
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope public,protected --kind enum,typedef,variable,function,class,struct,define
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
       VERBATIM)
 

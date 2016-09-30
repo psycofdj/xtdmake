@@ -5,10 +5,15 @@ add_custom_target(check-clean)
 
 
 set(CheckRule_FOUND 1)
-set(CheckRule_DEFAULT_ARGS     "" CACHE STRING "CheckRule default unit-test binary parameter template")
-set(CheckRule_DEFAULT_ENV      "" CACHE STRING "CheckRule default unit-test binary environment template")
-set(CheckRule_DEFAULT_INCLUDES "" CACHE STRING "CheckRule default unit-test header includes")
-set(CheckRule_DEFAULT_LINKS    "" CACHE STRING "CheckRule default unit-test link libraries")
+set(CheckRule_DEFAULT_ARGS      ""            CACHE STRING "CheckRule default unit-test binary parameter template")
+set(CheckRule_DEFAULT_ENV       ""            CACHE STRING "CheckRule default unit-test binary environment template")
+set(CheckRule_DEFAULT_INCLUDES  ""            CACHE STRING "CheckRule default unit-test header includes")
+set(CheckRule_DEFAULT_LINKS     ""            CACHE STRING "CheckRule default unit-test link libraries")
+set(CheckRule_DEFAULT_DIRECTORY "/unit"       CACHE STRING "CheckRule default unit-test source directory")
+set(CheckRule_DEFAULT_PATTERNS  ".c;.cc;.cpp" CACHE STRING "CheckRule default wildcard to find unit-test source files in directory")
+set(CheckRule_DEFAULT_JOBS      "1"           CACHE STRING "CheckRule default parallel jobs to run unit-test")
+set(CheckRule_DEFAULT_PREFIX    "Test"        CACHE STRING "CheckRule default unit-test source file prefix")
+
 
 
 message(STATUS "Found module CheckRule : TRUE")
@@ -21,7 +26,7 @@ define_property(TARGET
 function(add_check module)
   set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
   set(oneValueArgs    DIRECTORY PREFIX JOBS)
-  set(options         NO_DEFAULT_ENV NO_DEFAULT_ARGS NO_DEFAULT_INCLUDES)
+  set(options         NO_DEFAULT_ENV NO_DEFAULT_ARGS NO_DEFAULT_INCLUDES NO_DEFAULT_LINKS)
   cmake_parse_arguments(CheckRule
     "${options}"
     "${oneValueArgs}"
@@ -31,19 +36,19 @@ function(add_check module)
   set(CheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/check")
 
   if (NOT CheckRule_PREFIX)
-    set(CheckRule_PREFIX "Test")
+    set(CheckRule_PREFIX ${CheckRule_DEFAULT_PREFIX})
   endif()
 
   if (NOT CheckRule_JOBS)
-    set(CheckRule_JOBS "1")
+    set(CheckRule_JOBS ${CheckRule_DEFAULT_JOBS})
   endif()
 
   if (NOT CheckRule_PATTERNS)
-    set(CheckRule_PATTERNS ".c;.cc;.cpp")
+    set(CheckRule_PATTERNS ${CheckRule_DEFAULT_PATTERNS})
   endif()
 
   if (NOT CheckRule_DIRECTORY)
-    set(CheckRule_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/unit/)
+    set(CheckRule_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${CheckRule_DEFAULT_DIRECTORY})
   endif()
 
   if (NOT CheckRule_NO_DEFAULT_ARGS)
@@ -78,10 +83,12 @@ function(add_check module)
   string(REPLACE ";" " " "${CheckRule_ARGS}"     "${CheckRule_ARGS}")
 
   set(${l_test_list} "")
+  set(${l_dir_list}  "")
   foreach(c_pattern ${CheckRule_PATTERNS})
     file(GLOB_RECURSE l_tests ${CheckRule_DIRECTORY}/${CheckRule_PREFIX}*${c_pattern})
     foreach(c_file ${l_tests})
       get_filename_component(c_name ${c_file} NAME_WE)
+      get_filename_component(c_dir  ${c_file} DIRECTORY)
       string(REPLACE ${CheckRule_PREFIX} "" c_name_clean ${c_name})
       add_executable(${c_name_clean} ${c_file})
       target_include_directories(${c_name_clean}
@@ -90,10 +97,16 @@ function(add_check module)
       add_test(NAME ${c_name_clean}
         COMMAND ${c_name_clean} ${CheckRule_ARGS})
       list(APPEND l_test_list ${c_name_clean})
+      list(APPEND l_dir_list  ${c_dir})
       add_custom_target(${c_name_clean}-gdb
         COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} -n)
     endforeach()
   endforeach()
+
+  if (l_dir_list)
+    list(REMOVE_DUPLICATES l_dir_list)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
+  endif()
 
   string(REPLACE ";" "\\|" l_test_names   "${l_test_list}")
   string(REPLACE ";" ";"   l_test_depends "${l_test_list}")
