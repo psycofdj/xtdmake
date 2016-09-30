@@ -26,6 +26,9 @@ else()
 endif()
 
 
+set(CppcheckRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "CppcheckRule default list of source directories relative to CMAKE_CURRENT_SOURCE_DIR")
+set(CppcheckRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "CppcheckRule default list of wildcard patterns to search in INPUT directories")
+
 add_custom_target(cppcheck)
 add_custom_target(cppcheck-clean)
 if(NOT CppcheckRule_FOUND)
@@ -39,29 +42,55 @@ if(NOT CppcheckRule_FOUND)
   endfunction()
 else()
   function(add_cppcheck module)
-    set(CMAKE_CPPCHECK_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cppcheck")
-    file(GLOB_RECURSE files_cppcheck
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hxx"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
+    set(multiValueArgs  INPUT FILE_PATTERNS)
+    set(oneValueArgs    )
+    set(options         )
+    cmake_parse_arguments(Cppcheck
+      "${options}"
+      "${oneValueArgs}"
+      "${multiValueArgs}"
+      ${ARGN})
+
+    set_default(CppcheckRule FILE_PATTERNS)
+    set_default_if_exists(CppcheckRule INPUT)
+
+    set(CppcheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cppcheck")
+    set(CppcheckRule_DEPENDS "")
+    foreach(c_dir ${CppcheckRule_INPUT})
+      foreach(c_pattern ${CppcheckRule_FILE_PATTERNS})
+        file(GLOB_RECURSE l_files ${c_dir}/${c_pattern})
+        foreach(c_res ${l_files})
+          list(APPEND CppcheckRule_DEPENDS ${c_res})
+        endforeach()
+      endforeach()
+    endforeach()
+
+    # extract directory from all dependencies
+    set(l_dir_list "")
+    foreach(c_file ${CppcheckRule_DEPENDS})
+      get_filename_component(c_dir ${c_file} DIRECTORY)
+      list(APPEND l_dir_list ${c_dir})
+    endforeach()
+
+    # sets as configure dependencies
+    if (l_dir_list)
+      list(REMOVE_DUPLICATES l_dir_list)
+      set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
+    endif()
 
     add_custom_command(
       COMMENT "Generating ${module} cppcheck HTML and XML reports"
-      OUTPUT ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
-      DEPENDS ${files_cppcheck} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl
-      COMMAND mkdir -p ${CMAKE_CPPCHECK_OUTPUT}
-      COMMAND ${Cppcheck_EXECUTABLE} -q --xml ${CMAKE_CURRENT_SOURCE_DIR}/src 2> ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml
-      COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.xml > ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html
+      OUTPUT ${CppcheckRule_OUTPUT}/cppcheck.xml ${CppcheckRule_OUTPUT}/cppcheck.html
+      DEPENDS ${Cppcheck_DEPENDS} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl
+      COMMAND mkdir -p ${CppcheckRule_OUTPUT}
+      COMMAND ${Cppcheck_EXECUTABLE} -q --xml ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
+      COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/cppcheck.html
       VERBATIM)
 
     add_custom_target(cppcheck-${module}
-      DEPENDS ${CMAKE_CPPCHECK_OUTPUT}/cppcheck.html)
+      DEPENDS ${CppcheckRule_OUTPUT}/cppcheck.html)
     add_custom_target(cppcheck-${module}-clean
-      COMMAND rm -rf ${CMAKE_CPPCHECK_OUTPUT})
+      COMMAND rm -rf ${CppcheckRule_OUTPUT})
     add_dependencies(cppcheck       cppcheck-${module})
     add_dependencies(cppcheck-clean cppcheck-${module}-clean)
   endfunction()

@@ -11,7 +11,11 @@
     - [Count lines of code](#count-lines-of-code)
     - [Cppcheck static analysis](#cppcheck-static-analysis)
     - [Unit tests](#unit-tests)
-    - [Unit tests code coverage](#unit-tests-code-coverage)
+        - [Global design](#global-design)
+        - [Finding the test sources](#finding-the-test-sources)
+        - [Binary targets](#binary-targets)
+        - [Test targets](#test-targets)
+    - [Code coverage](#code-coverage)
     - [Report Interface](#report-interface)
 
 <!-- markdown-toc end -->
@@ -51,7 +55,12 @@ Install
 
 1. Download latest release xtdmake archive
   ```bash
-  wget "https://github.com/psycofdj/xtdmake/archive/<version>.tar.gz"
+  # get latest tag number
+  tag=$(curl -s https://api.github.com/repos/psycofdj/xtdmake/tags | \
+        jq -r '[ .[] | .["name"] ] | sort | last')
+
+  # download archive
+  wget https://github.com/psycofdj/xtdmake/archive/${tag}.tar.gz -O xtdmake-${tag}.tar.gz
   ```
 
 2. Uncompress archive in your project's root
@@ -528,7 +537,7 @@ the target is the source file name stripped of its prefix and extension.
   Output :
   ![Cppcheck](./documentation/cppcheck.png)
 
-## Unit tests code coverage
+## Code coverage
 
 TBD
 

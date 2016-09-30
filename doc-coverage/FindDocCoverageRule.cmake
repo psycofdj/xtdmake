@@ -25,6 +25,9 @@ else()
   message(STATUS "Found module DocCoverageRule : TRUE")
 endif()
 
+set(DocCoverageRule_DEFAULT_KIND  "enum;typedef;variable;function;class;struct;define"  CACHE STRING "DocCoverageRule default list of symbol kinds")
+set(DocCoverageRule_DEFAULT_SCOPE "public;protected"                                    CACHE STRING "DocCoverageRule default list of symbol scope")
+
 
 add_custom_target(doc-coverage)
 add_custom_target(doc-coverage-clean)
@@ -52,24 +55,19 @@ else()
       "${multiValueArgs}"
       ${ARGN})
 
-
-    if (NOT DocCoverageRule_KIND)
-      set(DocCoverageRule_KIND "enum;typedef;variable;function;class;struct;define")
-    endif()
-
-    if (NOT DocCoverageRule_SCOPE)
-      set(DocCoverageRule_SCOPE "public;protected")
-    endif()
+    set_default(DocCoverageRule KIND)
+    set_default(DocCoverageRule SCOPE)
 
     string(REPLACE ";" "," DocCoverageRule_KIND  "${DocCoverageRule_KIND}")
     string(REPLACE ";" "," DocCoverageRule_SCOPE "${DocCoverageRule_SCOPE}")
+
     get_target_property(DocCoverageRule_DOXYGEN_OUTPUT doc-${module} OUTPUT_DIR)
     set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
     add_custom_command(
       COMMENT "Generating ${module} documentation coverage informations"
       OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json
-      DEPENDS doc-${module} ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
+      DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
       COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
       COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}

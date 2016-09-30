@@ -17,6 +17,7 @@ xtdmake_find_program(Genhtml
   VERSION_OPT "--version"
   VERSION_POS 3)
 
+set(CovRule_DEFAULT_EXCLUDE_PATTERNS "Test*.*" CACHE STRING "CovRule default file exclude wildcards")
 
 set(CovRule_FOUND 0)
 if (NOT Lcov_FOUND OR NOT Genhtml_FOUND OR NOT CheckRule_FOUND)
@@ -40,7 +41,7 @@ if (NOT CovRule_FOUND)
   endfunction()
 else()
   function(add_cov module)
-    set(multiValueArgs  EXCLUDE_PATTERNS DEFAULT_EXCLUDE_PATTERNS)
+    set(multiValueArgs  EXCLUDE_PATTERNS)
     set(oneValueArgs    )
     set(options         )
     cmake_parse_arguments(CovRule
@@ -50,15 +51,8 @@ else()
       ${ARGN})
 
     set(CovRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/coverage")
+    set_default(CovRule EXCLUDE_PATTERNS)
     file(GLOB l_depends "${CMAKE_CURRENT_BINARY_DIR}/*.gcno")
-
-
-    if ("${CovRule_DEFAULT_EXCLUDE_PATTERNS}" STREQUAL "")
-      set(CovRule_DEFAULT_EXCLUDE_PATTERNS "*Test*.*")
-    endif()
-
-    string(REPLACE ";" " " "${CovRule_EXCLUDE_PATTERNS}"         "${CovRule_EXCLUDE_PATTERNS}")
-    string(REPLACE ";" " " "${CovRule_DEFAULT_EXCLUDE_PATTERNS}" "${CovRule_DEFAULT_EXCLUDE_PATTERNS}")
     get_target_property(l_check_dependencies check-${module}-build MYDEPENDS)
 
     add_custom_command(
@@ -72,8 +66,8 @@ else()
       COMMAND $(MAKE) check-${module}-forced-run  > /dev/null 2>&1
       COMMAND ${Lcov_EXECUTABLE} -q -c -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
       COMMAND ${Lcov_EXECUTABLE} -q -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      COMMAND ${Lcov_EXECUTABLE} -q -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "${CMAKE_CURRENT_SOURCE_DIR}/*"                         -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-      COMMAND ${Lcov_EXECUTABLE} -q -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${CovRule_DEFAULT_EXCLUDE_PATTERNS}                     -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      COMMAND ${Lcov_EXECUTABLE} -q -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "${CMAKE_CURRENT_SOURCE_DIR}/*"                          -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      COMMAND ${Lcov_EXECUTABLE} -q -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${CovRule_EXCLUDE_PATTERNS}                              -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
       VERBATIM)
 
     add_custom_command(
