@@ -50,6 +50,8 @@ def process_file(p_path, p_data):
   p_data["tests"].append(l_test)
 
 def write_xml(p_data):
+  sys.stdout.write(json.dumps(p_data))
+  return
   l_root = ET.Element("memcheck")
   l_tests = ET.SubElement(l_root, "tests")
   for c_test in p_data["tests"]:

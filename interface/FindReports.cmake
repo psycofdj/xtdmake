@@ -110,6 +110,21 @@ if (CovRule_FOUND)
     VERBATIM)
 endif()
 
+
+
+if (MemcheckRule_FOUND)
+  add_custom_command(TARGET memcheck
+    POST_BUILD
+    COMMENT "Updating reports data for target memcheck"
+    COMMAND $(MAKE) reports-update
+    VERBATIM)
+  add_custom_command(TARGET memcheck-clean
+    POST_BUILD
+    COMMENT "Updating reports data for target memcheck-clean"
+    COMMAND $(MAKE) reports-update
+    VERBATIM)
+endif()
+
 add_custom_target(reports
   DEPENDS doc  doc-coverage  cloc  cppcheck  check  cov
 )

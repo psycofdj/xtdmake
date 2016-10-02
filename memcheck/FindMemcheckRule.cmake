@@ -69,6 +69,7 @@ else()
         --leak-check=full
         --show-leak-kinds=all
         --num-callers=500
+        --show-reachable=no
         --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
         --
         ./${c_test} ${c_test_args}
@@ -80,24 +81,27 @@ else()
     add_custom_command(
       COMMENT "Generating ${module} memcheck XML and HTML reports"
       OUTPUT
-      ${MemcheckRule_OUTPUT}/memcheck.xml
-      ${MemcheckRule_OUTPUT}/memcheck.html
+      ${MemcheckRule_OUTPUT}/memcheck.js
+      ${MemcheckRule_OUTPUT}/memcheck.json
+      ${MemcheckRule_OUTPUT}/index.html
       DEPENDS
       ${l_depends}
       ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/readfiles.py
       ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/stylesheet.xsl
-      COMMAND
-      mkdir -p ${MemcheckRule_OUTPUT}
-      COMMAND
-      ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/readfiles.py ${l_depends} > ${MemcheckRule_OUTPUT}/memcheck.xml
-      COMMAND
-      ${Xsltproc_EXECUTABLE}
-      ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/stylesheet.xsl
-      ${MemcheckRule_OUTPUT}/memcheck.xml > ${MemcheckRule_OUTPUT}/memcheck.html
+      ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/index.html
+      COMMAND mkdir -p ${MemcheckRule_OUTPUT}
+      COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/readfiles.py ${l_depends} > ${MemcheckRule_OUTPUT}/memcheck.json
+      COMMAND echo -n "var g_data = " > ${MemcheckRule_OUTPUT}/memcheck.js
+      COMMAND cat ${MemcheckRule_OUTPUT}/memcheck.json >> ${MemcheckRule_OUTPUT}/memcheck.js
+      COMMAND echo -n ";" >> ${MemcheckRule_OUTPUT}/memcheck.js
+      COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/index.html ${MemcheckRule_OUTPUT}/index.html
       VERBATIM)
 
     add_custom_target(${module}-memcheck
-      DEPENDS ${MemcheckRule_OUTPUT}/memcheck.xml ${MemcheckRule_OUTPUT}/memcheck.html)
+      DEPENDS
+      ${MemcheckRule_OUTPUT}/memcheck.json
+      ${MemcheckRule_OUTPUT}/index.html
+      ${MemcheckRule_OUTPUT}/memcheck.js)
 
     stringify(l_depends)
     add_custom_target(${module}-memcheck-clean

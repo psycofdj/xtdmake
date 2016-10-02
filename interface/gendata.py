@@ -24,6 +24,7 @@ for c_dir in l_dirs:
     { "name" : "cppcheck",     "path" : "cppcheck.html" },
     { "name" : "check",        "path" : "index.html" },
     { "name" : "coverage",     "path" : "index.html" },
+    { "name" : "memcheck",     "path" : "index.html" },
   ]
 
   for c_item in l_items:

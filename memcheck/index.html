@@ -1,0 +1,334 @@
+<html>
+  <head>
+    <title>Cppcheck report</title>
+    <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../../bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet"/>
+    <link href="../../bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.css" rel="stylesheet"/>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../../bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="memcheck.js"></script>
+    <style>
+     .list-group-item {
+       padding:5px;
+     }
+     #data > div.row {
+       border-top: 1px #ccc solid;
+       padding:5px;
+     }
+     .pre {
+       line-height: 1.42857143;
+       color: #333;
+       word-break: break-all;
+       //white-space: nowrap;
+       word-wrap: normal;
+       border-radius: 4px;
+       font-size:10px;
+       font-family:monospace;
+       //overflow-x:scroll;
+     }
+     table.table-condensed {
+       margin-bottom:0px !important;
+     }
+
+     table.tblframe {
+       font-family: monospace;
+       font-size: 10px;
+     }
+
+     table.tblframes {
+       font-family: monospace;
+     }
+
+     .tbltests > tbody > tr > td:first-child,
+     .tbltest > tbody > tr > td:first-child,
+     .tblerror > tbody > tr > td:first-child,
+     .tblframes > tbody > tr > td:first-child,
+     .tblframe > tbody > tr > td:first-child {
+       width:20px;
+     }
+
+     td.parent {
+       padding-left: 35px !important;
+     }
+
+     table.tblframe th,
+     table.tblframe td {
+       padding:1px !important;
+     }
+    </style>
+    <script type="text/javascript">
+
+     (function(a){a.fn.extend({outerHTML:function(b){if(!this.length)return null;else if(b===undefined){var c=this.length?this[0]:this,d;if(c.outerHTML)d=c.outerHTML;else d=a(document.createElement("div")).append(a(c).clone()).html();if(typeof d==="string")d=a.trim(d);return d}else if(a.isFunction(b)){this.each(function(c){var d=a(this);d.outerHTML(b.call(this,c,d.outerHTML()))})}else{var e=a(this),f=[],g=a(b),h;for(var i=0;i<e.length;i++){h=g.clone(true);e.eq(i).replaceWith(h);for(var j=0;j<h.length;j++)f.push(h[j])}return f.length?a(f):null}}})})(jQuery);
+
+     jQuery.template = function(p_el, p_vars, p_callback) {
+       var l_content = $(p_el).html();
+       for (var c_key in p_vars) {
+         l_regexp  = new RegExp("\\[\\[" + c_key + "\\]\\]", "g");
+         l_content = l_content.replace(l_regexp, p_vars[c_key]);
+       }
+       if (undefined == p_callback)
+         return l_content;
+       else
+         {
+           var l_isTable = false;
+           var l_el      = undefined;
+           l_content = $.trim(l_content);
+           if (l_content.startsWith("<tr>")) {
+             l_isTable = true;
+             l_el = $("<table><tbody>" + l_content + "</tbody></table>");
+           } else {
+             l_el = $(l_content);
+           }
+           p_callback(l_el);
+           if (l_isTable) {
+             return $("tbody", l_el).html();
+           } else {
+             return l_el.html();
+           }
+         }
+     };
+
+     function get_descr(p_data)
+     {
+       if ((p_data["dir"] != "") &&
+           (p_data["file"] != "") &&
+           (p_data["line"] != ""))      {
+         return  p_data["dir"] + "/" + p_data["file"] + ":" + p_data["line"];
+       }
+
+       if (p_data["obj"] != "")
+         return p_data["obj"];
+
+       return p_data["fn"];
+     };
+
+     $(document).ready(function() {
+       l_table = $("#stats");
+       $.each(g_data["stats"], function(c_key, c_val) {
+         var l_row = $.template("#tpl-stat-row", {
+           "name" : c_key,
+           "value" : c_val
+         });
+         $("tbody", l_table).append($(l_row));
+       });
+
+       var l_testID = 0;
+
+       $.each(g_data["tests"], function(c_idx, c_val) {
+         l_testID += 1;
+
+         var l_nbErrors = c_val["errors"].length;
+         var l_name     = c_val["args"]["bin"];
+         var l_cmd      = c_val["args"]["bin"] + " " + c_val["args"]["args"].join(" ");
+         var l_errors   = "";
+
+         if (l_name.startsWith("./")) {
+           l_name = l_name.substr(2);
+         }
+
+
+         var l_errorID = 0;
+         $.each(c_val["errors"], function(c_idx, c_val) {
+           l_errorID += 1;
+           var l_frames = "";
+           var l_frameID = 0;
+           $.each(c_val["stack"], function(c_idx, c_val) {
+             l_frameID += 1;
+             var l_row = $.template("#tpl-details-stack", {
+               testid: l_testID,
+               errorid: l_errorID,
+               frameid: l_frameID,
+               ip : c_val.ip,
+               obj : c_val.obj,
+               dir : c_val.dir,
+               file : c_val.file,
+               line : c_val.line,
+               fn : c_val.fn,
+               descr : get_descr(c_val),
+             });
+             l_frames = l_frames + l_row;
+           });
+
+           var l_row = $.template("#tpl-details-error", {
+             testid: l_testID,
+             errorid: l_errorID,
+             kind  : c_val.kind,
+             descr : c_val.descr
+           }, function(p_el) {
+             $(".frames", p_el).append(l_frames);
+           });
+           l_errors = l_errors + l_row;
+         });
+
+         var l_row = $.template("#tpl-details-test", {
+           testid: l_testID,
+           name     : l_name,
+           nberrors : l_nbErrors,
+           cmd      : l_cmd
+         }, function(p_el) {
+           $(".errors", p_el).append(l_errors);
+         });
+
+         $("#data").append(l_row);
+       });
+
+
+       $("button.test").click(function() {
+         var l_testID = $(this).data("tid");
+         var l_target = $("tr.test-" + l_testID);
+         l_target.toggle();
+         $(this).toggleClass("glyphicon-plus");
+         $(this).toggleClass("glyphicon-minus");
+       });
+
+       $("button.errorlist").click(function() {
+         var l_testID = $(this).data("tid");
+         var l_target = $("tr.errorlist-" + l_testID);
+         l_target.toggle();
+         $(this).toggleClass("glyphicon-plus");
+         $(this).toggleClass("glyphicon-minus");
+       });
+
+       $("button.error").click(function() {
+         var l_testID  = $(this).data("tid");
+         var l_errorID = $(this).data("eid");
+         var l_target  = $("tr.test-" + l_testID + "-error-" + l_errorID);
+         l_target.toggle();
+         $(this).toggleClass("glyphicon-plus");
+         $(this).toggleClass("glyphicon-minus");
+       });
+
+       $("button.frame").click(function() {
+         var l_testID  = $(this).data("tid");
+         var l_errorID = $(this).data("eid");
+         var l_frameID = $(this).data("fid");
+         var l_target  = $("tr.test-" + l_testID + "-error-" + l_errorID + "-frame-" + l_frameID);
+         l_target.toggle();
+         $(this).toggleClass("glyphicon-plus");
+         $(this).toggleClass("glyphicon-minus");
+       });
+
+     });
+    </script>
+  </head>
+
+
+  <div class="hidden">
+    <table>
+      <tbody id="tpl-stat-row">
+        <tr>
+          <th>[[name]]</th>
+          <td>[[value]]</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="hidden">
+    <table>
+      <tbody id="tpl-details-test">
+        <tr>
+          <td> <button data-tid="[[testid]]" class="test btn btn-xs btn-primary glyphicon glyphicon-plus"></button> </td>
+          <td> [[name]] <span class="badge pull-right">[[nberrors]]</span> </td>
+        </tr>
+        <tr class="test-[[testid]]" style="display:none;">
+          <td class="parent" colspan="2">
+            <table class="table  table-bordered table-condensed tbltest" style="font-size:12px">
+              <tbody class="errors">
+                <tr>
+                  <td/></td>
+                  <td> Command line</td>
+                  <td> <span class="pre">[[cmd]]</span> </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="hidden">
+    <table>
+      <tbody id="tpl-details-error">
+        <tr>
+          <td> <button  data-tid="[[testid]]"  data-eid="[[errorid]]" class="error btn btn-xs btn-primary glyphicon glyphicon-plus"></button> </td>
+          <td> [[kind]] </td>
+          <td> [[descr]] </td>
+        </tr>
+        <tr class="test-[[testid]]-error-[[errorid]]" style="display:none;">
+          <td  class="parent" colspan="3">
+            <table class="table  table-bordered table-condensed tblframes" style="font-size:12px">
+              <tbody class="frames">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="hidden">
+    <table>
+      <tbody id="tpl-details-stack">
+        <tr>
+          <td> <button   data-tid="[[testid]]"  data-eid="[[errorid]]" data-fid="[[frameid]]" class="frame btn btn-xs btn-primary glyphicon glyphicon-plus"></button> </td>
+          <td> [[ip]]    </td>
+          <td> [[descr]] </td>
+        </tr>
+        <tr  class="test-[[testid]]-error-[[errorid]]-frame-[[frameid]]"  style="display:none;">
+          <td  class="parent" colspan="3">
+            <table class="table  table-bordered table-condensed tblframe" style="font-size:12px;">
+              <tbody>
+                <tr><th>ip  </th><td>[[ip]]  </td></tr>
+                <tr><th>obj </th><td>[[obj]] </td></tr>
+                <tr><th>dir </th><td>[[dir]] </td></tr>
+                <tr><th>file</th><td>[[file]]</td></tr>
+                <tr><th>line</th><td>[[line]]</td></tr>
+                <tr><th>fn  </th><td>[[fn]]  </td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <body bgcolor="#ffffff" style="padding-top:50px;">
+    <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-lg-4 col-lg-offset-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">Error summary</div>
+            <div class="panel-body">
+              <table id="stats" class="table table-striped table-bordered table-condensed small">
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+          <div class="panel panel-default">
+            <div class="panel-heading">Error details</div>
+            <div class="panel-body">
+              <table class="table  table-bordered table-condensed tbltests" style="font-size:12px">
+                <tbody id="data">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </body>
+</html>
