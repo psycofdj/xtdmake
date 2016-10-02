@@ -16,9 +16,20 @@ set(CheckRule_DEFAULT_PREFIX    "Test"                              CACHE STRING
 message(STATUS "Found module CheckRule : TRUE")
 
 define_property(TARGET
-  PROPERTY MYDEPENDS
-  BRIEF_DOCS "Internal property to communicate check dependencies to other rules"
-  FULL_DOCS "Internal property to communicate check dependencies to other rules")
+  PROPERTY TESTLIST
+  BRIEF_DOCS "Internal property to communicate test list to other rules"
+  FULL_DOCS "Internal property to communicate test list to other rules")
+
+define_property(TARGET
+  PROPERTY ARGS
+  BRIEF_DOCS "Internal property to communicate test arguments other rules"
+  FULL_DOCS "Internal property to communicate test arguments to other rules")
+
+define_property(TARGET
+  PROPERTY ENV
+  BRIEF_DOCS "Internal property to communicate test envs other rules"
+  FULL_DOCS "Internal property to communicate test envs to other rules")
+
 
 function(add_check module)
   set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
@@ -79,10 +90,18 @@ function(add_check module)
       target_link_libraries(${c_name_clean} ${CheckRule_LINKS} ${Cppunit_LIBRARY})
       add_test(NAME ${c_name_clean}
         COMMAND ${c_name_clean} ${CheckRule_ARGS})
+      set_target_properties(${c_name_clean} PROPERTIES ARGS "${CheckRule_ARGS}")
+      set_target_properties(${c_name_clean} PROPERTIES ENVS "${CheckRule_ENV}")
       list(APPEND l_test_list ${c_name_clean})
       list(APPEND l_dir_list  ${c_dir})
-      add_custom_target(${c_name_clean}-gdb
-        COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} -n)
+      add_custom_target(${module}-check-ut-${c_name_clean}
+        COMMAND ${CheckRule_ENV} ${c_name_clean} ${CheckRule_ARGS}
+        DEPENDS ${c_name_clean})
+      add_custom_target(${module}-check-ut-${c_name_clean}-gdb
+        COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS}
+        DEPENDS ${c_name_clean})
+      add_custom_target(${module}-check-ut-${c_name_clean}-cmd
+        COMMAND echo ${CheckRule_ENV} ${CMAKE_CURRENT_BINARY_DIR}/${c_name_clean} ${CheckRule_ARGS})
     endforeach()
   endforeach()
 
@@ -91,46 +110,49 @@ function(add_check module)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
   endif()
 
-  string(REPLACE ";" "\\|" l_test_names   "${l_test_list}")
-  string(REPLACE ";" ";"   l_test_depends "${l_test_list}")
+  string(REPLACE ";" "\\|" l_test_regex "${l_test_list}")
 
+  add_custom_target(${module}-check-build
+    DEPENDS ${l_test_list})
 
-  add_custom_target(check-${module}-build
-    DEPENDS ${l_test_depends})
-
-  set_target_properties(check-${module}-build
-    PROPERTIES MYDEPENDS "${l_test_depends}")
-
-  add_custom_target(check-${module}-forced-run
+  add_custom_target(${module}-check-run-forced
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/testing
-    COMMAND ${CheckRule_ENV} ctest  -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true
+    COMMAND ${CheckRule_ENV} ctest  -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" || true
     COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/testing)
 
-  add_custom_target(check-${module}-verbose
-    COMMAND $(MAKE) check-${module}-build
-    COMMAND ${CheckRule_ENV} ctest --output-on-failure -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_names}\\)" || true)
+  add_custom_target(${module}-check-run-verbose
+    COMMAND $(MAKE) ${module}-check-build
+    COMMAND ${CheckRule_ENV} ctest --output-on-failure -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" || true)
 
-  add_custom_target(check-${module}-run
-    DEPENDS check-${module}-build
-    COMMAND $(MAKE) check-${module}-forced-run)
+  add_custom_target(${module}-check-run
+    DEPENDS ${module}-check-build
+    COMMAND $(MAKE) ${module}-check-run-forced)
 
   add_custom_command(
     COMMENT "Generating ${module} tests HTML and XML reports"
     OUTPUT ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html
-    DEPENDS ${l_test_depends} check-${module}-build ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
+    DEPENDS ${module}-check-build ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
     COMMAND mkdir -p ${CheckRule_OUTPUT}
     COMMAND rm -rf Testing/
     COMMAND touch DartConfiguration.tcl
-    COMMAND $(MAKE) check-${module}-forced-run
+    COMMAND $(MAKE) ${module}-check-run-forced
     COMMAND cp Testing/*/*.xml ${CheckRule_OUTPUT}/tests.xml
     COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl ${CheckRule_OUTPUT}/tests.xml > ${CheckRule_OUTPUT}/index.html
     )
 
-  add_custom_target(check-${module}
+  add_custom_target(${module}-check
     DEPENDS ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html)
-  add_custom_target(check-${module}-clean
+
+
+  set_target_properties(${module}-check             PROPERTIES TESTLIST "${l_test_list}")
+  set_target_properties(${module}-check-run         PROPERTIES TESTLIST "${l_test_list}")
+  set_target_properties(${module}-check-run-forced  PROPERTIES TESTLIST "${l_test_list}")
+  set_target_properties(${module}-check-run-verbose PROPERTIES TESTLIST "${l_test_list}")
+
+
+  add_custom_target(${module}-check-clean
     COMMAND rm -rf ${CheckRule_OUTPUT} Testing DartConfiguration.tcl)
-  add_dependencies(check         check-${module})
-  add_dependencies(check-verbose check-${module}-verbose)
-  add_dependencies(check-clean    check-${module}-clean)
+  add_dependencies(check          ${module}-check)
+  add_dependencies(check-verbose  ${module}-check-run-verbose)
+  add_dependencies(check-clean    ${module}-check-clean)
 endfunction()
