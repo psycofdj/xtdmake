@@ -3,23 +3,29 @@
 
 - [What is it ?](#what-is-it-)
 - [Install](#install)
+- [Using XTDMake](#using-xtdmake)
+    - [Loading the packages](#loading-the-packages)
+    - [Packages vs targets](#packages-vs-targets)
+    - [Global package configuration](#global-package-configuration)
+        - [Default parameter values](#default-parameter-values)
+        - [Change parameter default value](#change-parameter-default-value)
+        - [CMake variables in parameter default value](#cmake-variables-in-parameter-default-value)
+    - [Calling the rule](#calling-the-rule)
 - [Binary identity tracking](#binary-identity-tracking)
 - [Building both shared and static library](#building-both-shared-and-static-library)
 - [Code quality reports](#code-quality-reports)
     - [Introduction](#introduction)
-    - [Using XTDMake](#using-xtdmake)
-    - [Detailed Reference](#detailed-reference)
-        - [Documentation](#documentation)
-        - [Documentation Coverage](#documentation-coverage)
-        - [Count lines of code](#count-lines-of-code)
-        - [Cppcheck static analysis](#cppcheck-static-analysis)
-        - [Unit tests](#unit-tests)
-            - [Global design](#global-design)
-            - [Finding the test sources](#finding-the-test-sources)
-            - [Binary targets](#binary-targets)
-            - [Test targets](#test-targets)
-        - [Code coverage](#code-coverage)
-        - [Report Interface](#report-interface)
+    - [Documentation](#documentation)
+    - [Documentation Coverage](#documentation-coverage)
+    - [Count lines of code](#count-lines-of-code)
+    - [Cppcheck static analysis](#cppcheck-static-analysis)
+    - [Unit tests](#unit-tests)
+        - [Global design](#global-design)
+        - [Finding the test sources](#finding-the-test-sources)
+        - [Binary targets](#binary-targets)
+        - [Test targets](#test-targets)
+    - [Code coverage](#code-coverage)
+    - [Report Interface](#report-interface)
 
 <!-- markdown-toc end -->
 
@@ -87,6 +93,93 @@ Install
   ```cmake
   include(xtdmake/loader.cmake)
   ```
+
+# Using XTDMake
+
+XTDMake defines multiple CMake packages. Each package provides a function to
+generate a specific kind of report for your module. Like every other packages, they
+must be loaded with the ```find_package``` function.
+
+Available packages :
+ - ```DocRule```         : generates code doxygen documentation
+ - ```DocCoverageRule``` : measure coverage of generated documentation
+ - ```CppcheckRule```    : generates report from cppcheck output
+ - ```ClocRule```        : generates report from cloc output
+ - ```CheckRule```       : generate unit tests binaries and test report
+ - ```CovRule```         : measure code coverage from unit tests
+ - ```MemcheckRule```    : measure leak from unit test
+
+
+## Loading the packages
+
+First thing you need to do is to load the packages you need in your root
+CMakeLists.txt
+
+```cmake
+find_package(DocRule [REQUIRED])
+find_package(DocCoverRule [REQUIRED])
+...
+find_package(MemcheckRule [REQUIRED])
+```
+
+If ```REQUIRED``` option is given, CMake will emit an error if loaded package is
+missing some underlying dependencies.
+
+Example : CppcheckRule need cppcheck to be installed on the system.
+
+
+## Packages vs targets
+
+Once loaded, each package defines a function. When called, this function generates
+one or more targets that generate the output report.
+
+For instance :
+- package : ```CppcheckRule```
+- declared function : ```add_cppcheck(<module_name>)```
+- when called, defined targets are :
+  - ```<module>-cppcheck```
+  - ```<module>-check-clean```
+
+## Global package configuration
+### Default parameter values
+
+Some of theses functions have optional parameters that customize how should the report
+be generated for the given module. All parameters have a default value that can be
+set globally.
+
+Example:
+ - function : ```add_cppcheck(<module> [INPUT] [FILE_PATTERNS])```,
+ - available parameters : ```INPUT``` and ```FILE_PATTERNS```
+ - global default value :
+   - ```CppcheckRule_DEFAULT_INPUT```
+   - ```CppcheckRule_DEFAULT_FILE_PATTERNS```
+
+### Change parameter default value
+
+To set a new default value, use CMake standard ```set```:
+```cmake
+set(CppcheckRule_DEFAULT_INPUT "my_default_value")
+set(CppcheckRule_DEFAULT_FILE_PATTERNS "my_default_value")
+```
+
+
+### CMake variables in parameter default value
+
+Values given in default parameters are evaluated for the module. 
+
+You can escape CMake variable as follow :
+```cmake
+set(CppcheckRule_DEFAULT_INPUT "\${CMAKE_CURRENT_SOURCE_DIR}/src")
+```
+
+
+## Calling the rule
+
+
+```cmake
+add_cppcheck(<module>
+  FILE_PATTERNS *.cc *.hh *.hxx)
+```
 
 
 # Binary identity tracking
@@ -199,73 +292,7 @@ generated per module, allowing a finer interpretation of the indicators.
 C++ compilation is already slow enough. XTDMake's targets are designed to be fully
 incremental with a fine dependency tracking.
 
-## Using XTDMake
-
-XTDMake defines multiple CMake packages. Each package provides a function to
-generate a specific kind of report for your module. Like every other packages, they
-must be loaded with the ```find_package``` function.
-
-Available packages :
- - ```DocRule```         : generates code doxygen documentation
- - ```DocCoverageRule``` : measure coverage of generated documentation
- - ```CppcheckRule```    : generates report from cppcheck output
- - ```ClocRule```        : generates report from cloc output
- - ```CheckRule```       : generate unit tests binaries and test report
- - ```CovRule```         : measure code coverage from unit tests
- - ```MemcheckRule```    : measure leak from unit test
-
-
-### Loading the packages
-
-First thing you need to do is to load the packages you need in your root
-CMakeLists.txt
-
-```cmake
-find_package(DocRule [REQUIRED])
-find_package(DocCoverRule [REQUIRED])
-...
-find_package(MemcheckRule [REQUIRED])
-```
-
-If ```REQUIRED``` option is given, CMake will emit an error if loaded package is
-missing some underlying dependencies.
-
-Example : CppcheckRule need cppcheck to be installed on the system.
-
-
-### Global rule configuration
-
-Once loaded, each package defines a function that generated the report for a given
-module. For instance, CppcheckRule defines ```add_cppcheck(<module_name>)```
-function.
-
-Some of theses functions have optional parameters that customize the report for the
-given module. All parameters have a default value that can be set globally.
-
-Example : for ```add_cppcheck(<module> [INPUT] [FILE_PATTERNS])```, ```INPUT``` and
-```FILE_PATTERNS``` parameters can be set globally by the following calls :
- - ```set(CppcheckRule_DEFAULT_INPUT         "my_default_value")``` 
- - ```set(CppcheckRule_DEFAULT_FILE_PATTERNS "my_default_value")``` 
-
-
-Values given in default paramaters are evaluated for the module. You can escape
-CMake variable as follow :
-- ```set(CppcheckRule_DEFAULT_INPUT "\${CMAKE_CURRENT_SOURCE_DIR}/src")```
-
-
-### Calling the rule
-
-
-```cmake
-add_cppcheck(<module>
-  FILE_PATTERNS *.cc *.hh *.hxx)
-```
-
-
-
-## Detailed Reference
-
-### Documentation
+## Documentation
 
 This target generate documentation with doxygen.
 
@@ -341,7 +368,7 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
   ```
 
 
-### Documentation Coverage
+## Documentation Coverage
 
 This target will generate a report showing how complete is documentation.
 
@@ -395,7 +422,7 @@ This target will generate a report showing how complete is documentation.
   ![Summary](./documentation/coverage-details.png)
 
 
-### Count lines of code
+## Count lines of code
 
 This target generates a report counting the number of code, blank and comments lines
 of your module.
@@ -437,7 +464,7 @@ of your module.
 
 
 
-### Cppcheck static analysis
+## Cppcheck static analysis
 
 
 Cppcheck is a static C++ code analyzer tool. This target will produce a report of
@@ -479,25 +506,25 @@ cppcheck output.
   ![Cppcheck](./documentation/cppcheck.png)
 
 
-### Unit tests
+## Unit tests
 
 XTDMake detects automatically tests source files, create cmake binary targets
 accordingly and generates test reports.
 
-#### Global design
+### Global design
 
 - find tests
 - build binary targets
 - create individual execution targets
 - create overall execution and report generating target
 
-#### Finding the test sources
+### Finding the test sources
 
 XTDMake's CheckRule modules scans given ```DIRECTORY``` for file names prefixed
 by ```PREFIX``` and matching one of given wildcard ```PATTERNS```. Each matched file
 is considered as a standalone test.
 
-#### Binary targets
+### Binary targets
 
 For matched files named ```<prefix><name>.*```, the rule declares a new
 singled source executable ```<name>```. Given ```INCLUDES``` and ```LINKS``` are
@@ -506,9 +533,9 @@ respectively given as executable's ```include_directories``` and ```link_librari
 User may modify generated target at will with cmake's ```target_include_directories```,
 ```target_link_libraries``` etc.
 
-#### Test targets
+### Test targets
 
-Registered executable is then added as a standard cmake test using ```add_test``` 
+Registered executable is then added as a standard cmake test using ```add_test```
 with given arguments ```ARGS```.
 
 
@@ -617,11 +644,11 @@ the target is the source file name stripped of its prefix and extension.
   Output :
   ![Cppcheck](./documentation/cppcheck.png)
 
-### Code coverage
+## Code coverage
 
 TBD
 
-### Report Interface
+## Report Interface
 
 In order to make all these reports as accessible as possible, XTDMake provides a
 little locally consultatble web interface that helps the developer to navigate
