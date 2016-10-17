@@ -1,38 +1,42 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
-- [What is it ?](#what-is-it-)
+- [Introduction](#introduction)
 - [Install](#install)
 - [Using XTDMake](#using-xtdmake)
     - [Loading the packages](#loading-the-packages)
     - [Packages vs targets](#packages-vs-targets)
-    - [Global package configuration](#global-package-configuration)
+    - [Configuration](#configuration)
         - [Default parameter values](#default-parameter-values)
-        - [Change parameter default value](#change-parameter-default-value)
-        - [CMake variables in parameter default value](#cmake-variables-in-parameter-default-value)
-    - [Calling the rule](#calling-the-rule)
-- [Binary identity tracking](#binary-identity-tracking)
-- [Building both shared and static library](#building-both-shared-and-static-library)
-- [Code quality reports](#code-quality-reports)
-    - [Introduction](#introduction)
-    - [Documentation](#documentation)
-    - [Documentation Coverage](#documentation-coverage)
-    - [Count lines of code](#count-lines-of-code)
-    - [Cppcheck static analysis](#cppcheck-static-analysis)
-    - [Unit tests](#unit-tests)
+        - [Change parameter's default value](#change-parameters-default-value)
+        - [Variables in parameter default value](#variables-in-parameter-default-value)
+    - [Calling the function](#calling-the-function)
+- [Package reference](#package-reference)
+    - [DocRule](#docrule)
+        - [Function reference](#function-reference)
+        - [Generated targets](#generated-targets)
+        - [Output reports](#output-reports)
+    - [DocCoverageRule](#doccoveragerule)
+        - [Function reference](#function-reference)
+        - [Generated targets](#generated-targets)
+        - [Output reports](#output-reports)
+    - [ClocRule](#clocrule)
+    - [CppcheckRule](#cppcheckrule)
+    - [CheckRule](#checkrule)
         - [Global design](#global-design)
         - [Finding the test sources](#finding-the-test-sources)
         - [Binary targets](#binary-targets)
         - [Test targets](#test-targets)
-    - [Code coverage](#code-coverage)
+    - [CovRule](#covrule)
     - [Report Interface](#report-interface)
+    - [Tracking](#tracking)
+    - [StaticShared](#staticshared)
 
 <!-- markdown-toc end -->
 
-What is it ?
-============
+# Introduction
 
-XTDMake is a set of CMake modules that provides easy-to-use targets that generate
+XTDMake is a set of CMake packages that provides easy-to-use targets that generate
 code quality measurements reports :
 - Doxygen-based documentation
 - Coverage of documentation
@@ -43,6 +47,29 @@ code quality measurements reports :
 - Memory leak of unit tests
 
 
+Each target generates both a locally readable and machine processable reports.
+Local report targets the developer while the machine-processable reports can be
+used in your Continuous Integration (CI) process.
+
+
+Note about CI :
+
+Key Points Indicators (KPIs) measurement tools are often built in the CI
+work flow and therefore cannot be run on the developer's local environment.
+This usually lead to discovering regressions (failed tests, a lower coverage
+or what-so-ever) only after pushing code to distant repository.
+Developer's being responsible for the KPIs, they should be able to
+run the measurement tools before pushing new code.
+
+Because code of industrial applications is usually segmented in different modules,
+each with a different purpose and levels of criticity, XTDMake's KPIs reports are
+generated per module, allowing a finer interpretation of the indicators.
+
+C++ compilation is already slow enough. XTDMake's targets are designed to be fully
+incremental with a fine dependency tracking.
+
+
+
 
 Install
 =======
@@ -51,25 +78,18 @@ Install
   ```bash
   # Doxygen (Generate documentation from source code)
   sudo apt-get install doxygen
-
   # Dot (Generate pictures from graphs)
   sudo apt-get install graphviz
-
   # xsltproc (Transform XML files from XSLT style-sheets)
   sudo apt-get install xsltproc
-
   # lcov (Generate HTML results from code-coverage informations)
   sudo apt-get install lcov
-
   # coverxygen (Generate documentation-coverage informations from doxygen documentation)
   sudo pip3 install coverxygen
-
   # cloc (Count line of codes)
   sudo apt-get install cloc
-
   # cppcheck (C++ static code analysis tool)
   sudo apt-get install cppcheck
-
   # valgrind instrumentation framework for dynamic analysis
   sudo apt-get install valgrind
 ```
@@ -101,13 +121,20 @@ generate a specific kind of report for your module. Like every other packages, t
 must be loaded with the ```find_package``` function.
 
 Available packages :
- - ```DocRule```         : generates code doxygen documentation
+ - ```DocRule```         : generates doxygen code documentation
  - ```DocCoverageRule``` : measure coverage of generated documentation
- - ```CppcheckRule```    : generates report from cppcheck output
- - ```ClocRule```        : generates report from cloc output
+ - ```CppcheckRule```    : generates report from cppcheck output (static analysis)
+ - ```ClocRule```        : generates report from cloc output (count lines of codes)
  - ```CheckRule```       : generate unit tests binaries and test report
- - ```CovRule```         : measure code coverage from unit tests
- - ```MemcheckRule```    : measure leak from unit test
+ - ```CovRule```         : measure code coverage from unit tests run
+ - ```MemcheckRule```    : measure leak from unit test run
+
+
+In addition, XTDMake provides two utility packages :
+ - ```Tracking``` : automatically adds fine tracking information in your binaries
+   and libraries
+ - ```StaticShared``` : generates both static and dynamic libraries from same set
+   of objects.
 
 
 ## Loading the packages
@@ -125,7 +152,7 @@ find_package(MemcheckRule [REQUIRED])
 If ```REQUIRED``` option is given, CMake will emit an error if loaded package is
 missing some underlying dependencies.
 
-Example : CppcheckRule need cppcheck to be installed on the system.
+Example : ```CppcheckRule``` need cppcheck to be installed on the system.
 
 
 ## Packages vs targets
@@ -140,7 +167,7 @@ For instance :
   - ```<module>-cppcheck```
   - ```<module>-check-clean```
 
-## Global package configuration
+## Configuration
 ### Default parameter values
 
 Some of theses functions have optional parameters that customize how should the report
@@ -149,12 +176,12 @@ set globally.
 
 Example:
  - function : ```add_cppcheck(<module> [INPUT] [FILE_PATTERNS])```,
- - available parameters : ```INPUT``` and ```FILE_PATTERNS```
+ - optional parameters : ```INPUT``` and ```FILE_PATTERNS```
  - global default value :
    - ```CppcheckRule_DEFAULT_INPUT```
    - ```CppcheckRule_DEFAULT_FILE_PATTERNS```
 
-### Change parameter default value
+### Change parameter's default value
 
 To set a new default value, use CMake standard ```set```:
 ```cmake
@@ -163,148 +190,41 @@ set(CppcheckRule_DEFAULT_FILE_PATTERNS "my_default_value")
 ```
 
 
-### CMake variables in parameter default value
+### Variables in parameter default value
 
-Values given in default parameters are evaluated for the module. 
-
+Values given in default parameters are evaluated for each module. This allow to
+use CMake variable that depends on the current CMakeLists.txt.
 You can escape CMake variable as follow :
 ```cmake
 set(CppcheckRule_DEFAULT_INPUT "\${CMAKE_CURRENT_SOURCE_DIR}/src")
 ```
 
 
-## Calling the rule
+## Calling the function
 
+To generate report targets, simply call the corresponding function in your module's
+CMakeLists.txt :
 
 ```cmake
 add_cppcheck(<module>
   FILE_PATTERNS *.cc *.hh *.hxx)
 ```
 
-
-# Binary identity tracking
-
-This feature configures your C/C++ build to add information about when and how your
-binaries were constructed. Behind the scene, cmake will wrap your linker to add a
-ident-compatible string to your binary. In addition, cmake will add this kind of
-informations when generating static archives (.a files) and use them when linking your
-binaries.
-
-Demo:
-
-```bash
-# compile our binary (which links to libcommon_s)
-make common_tf
-
-# extract informations from generated file
-ident common_tf
-
-# output result
-common_tf:
-$date: 16-08-2016 $
-$time: 10:43:15 $
-$name: common_tf $
-$user: psyco $
-$host: xmarcelet $
-$pwd: /home/psyco/dev/xtdcpp/.release/common $
-$revno: 98b7d3e224e9ad32affab425c52bfe19f2ce302d $
-$archive: [libcommon_s] (time) 10:43:12 $
-$archive: [libcommon_s] (date) 16-08-2016 $
-$archive: [libcommon_s] (revno) 98b7d3e224e9ad32affab425c52bfe19f2ce302d $
-```
-
-This also works on shared libraries :
-```bash
-# compile our shared library libcommon.so
-make common
-
-# extract informations from generated file
-ident libcommon.so
-
-# output result
-$date: 16-08-2016 $
-$time: 13:40:35 $
-$name: libcommon.so $
-$user: psyco $
-$host: xmarcelet $
-$pwd: /home/psyco/dev/xtdcpp/.release/common $
-$revno: 8fb0f8e916078257552470ce22761dcead79158c $
-```
-
-This feature can be enabled by adding the following directive to your project's root
-CMakeLists.txt :
-```cmake
-find_package(Tracking REQUIRED)
-```
-
-# Building both shared and static library
-
-XTDMake provides a way to easily produce both static and shared library from a single
-call. In addition it will optimize your build to produce only one set of object files
-that will be used for both targets.
-
-Note: This means that objects generated with -fPIC are used to create static archives.
-This may have a performance impact.
-
-```cmake
- # in CMakeLists.txt
-add_shared_static_library(<library_name> <file1> <file2> ....)
-```
-
-This will create two CMake targets :
- - `<library_name>`   : that will produce `lib<library_name>.so`
- - `<library_name>_s` : that will produce `lib<library_name>_s.a`
-
-You may customize theses target at will using standard CMake functions.
+Given parameters overloads default values.
 
 
-In order to use `add_shared_static_library` function, you must load the StaticShared
-module by adding the following directive too your project's root CMakeLists.txt :
-```cmake
-find_package(StaticShared REQUIRED)
-```
+# Package reference
 
-# Code quality reports
-
-## Introduction
-
-XTDMake provides a bunch of modules producing code quality measurements targets.
-
-
-Each target generates both a locally readable and machine processable reports.
-Local report targets the developer while the machine-processable reports can be
-used in your Continuous Integration (CI) process.
-
-
-Note about CI :
-
-Key Points Indicators (KPIs) measurement tools are often built in the CI
-work flow and therefore cannot be run on the developer's local environment.
-This usually lead to discovering regressions (failed tests, a lower coverage
-or what-so-ever) only after pushing code to distant repository.
-Developer's being responsible for the KPIs, they should be able to
-run the measurement tools before pushing new code.
-
-Because code of industrial applications is usually segmented in different modules,
-each with a different purpose and levels of criticity, XTDMake's KPIs reports are
-generated per module, allowing a finer interpretation of the indicators.
-
-C++ compilation is already slow enough. XTDMake's targets are designed to be fully
-incremental with a fine dependency tracking.
-
-## Documentation
+## DocRule
 
 This target generate documentation with doxygen.
 
-Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen.in).
+A default doxygen configuration template is shipped with XTDMake
+(xtdmake/doc/doxygen.in) but you may provide your own.
 
-1. In your project's root CMakeLists.txt :
-  ```cmake
-  find_package(DocRule REQUIRED)
-  ```
+### Function reference
 
-2. In your module's CMakeLists.txt :
-  ```cmake
+```cmake
   add_doc(<module_name>
       [ INPUT             dir1     [dir2 ...]]
       [ EXCLUDE           file1    [file2 ...]]
@@ -319,12 +239,12 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
       )
   ```
 
-  - ```INPUT```  : list of input source directories containing file to document.
+  - ```INPUT```  : list of input source directories containing files to document.
     Default value is ```${CMAKE_CURRENT_SOURCE_DIR}/src```. When exists, directory
     ```${CMAKE_CURRENT_SOURCE_DIR}/doc``` is added.
 
   - ```FILE_PATTERNS``` : list of wildcard patterns to search in input directories.
-    Default value is ```*.cc *.hh *.hpp```
+    Default value is ```*.cc;*.hh;*.hxx```
 
   - ```EXCLUDE``` : list files to exclude from matched files
 
@@ -345,41 +265,27 @@ Default configuration file template is shipped with XTDMake (xtdmake/doc/doxygen
   - ```WERROR``` : Treat doxygen warning as errors.
 
 
-3. Generate the reports :
-  ```bash
-  # generate documentation for a specific module
-  make -C <module_path> doc-<module_name>
+### Generated targets
 
-  # generate documentation for all modules
-  make doc
+- ```<module>-doc``` : generate documentation for module ```<module>```
+- ```<module>-doc-clean``` : removes documentation for module ```<module>```
+- ```doc``` : generate documentations for all modules
+- ```doc-clean``` : removes documentations for all modules
 
-  # remove generated documentation
-  make doc-clean
-  ```
+### Output reports
 
-4. Consult the report  :
-  ```
-  sensible-browser ./reports/<module_name>/doc/html/index.html
-  ```
+- Html :  ```sensible-browser ./reports/<module_name>/doc/html/index.html```
+- Xml :  ```./reports/<module_name>/doc/xml/index.xml```
 
-  Note that it will also produce an xml version of the documentation in :
-  ```
-  ./reports/<module_name>/doc/xml/index.xml
-  ```
+Example:
 
+![Doc](./documentation/doc.png)
+  
+## DocCoverageRule
 
-## Documentation Coverage
+This target will generate a report showing how complete is the documentation.
 
-This target will generate a report showing how complete is documentation.
-
-
-1. In your project's root CMakeLists.txt :
-  ```cmake
-  # note that this depends on Doc module
-  find_package(DocCoverageRule REQUIRED)
-  ```
-
-2. In your module's CMakeLists.txt :
+### Function reference
   ```cmake
   add_doc_coverage(<module_name>
     [ KIND  kind1 [kind2 ...]]
@@ -387,129 +293,137 @@ This target will generate a report showing how complete is documentation.
   )
   ```
 
-  - ```KIND``` : List of kind of symbol to take into account for coverage measurement.
-    Available values are described in the ```--kind``` parameter of
-    [coverxygen](https://github.com/psycofdj/coverxygen) tool
+  - ```KIND``` : List of kind of symbol to take into account for coverage
+    measurement. Available values are described in the ```--kind``` parameter of
+    [coverxygen](https://github.com/psycofdj/coverxygen) tool.
+    Default value is ```enum;typedef;variable;function;class;struct;define```
 
-  - ```SCOPE``` : List of symbol's scope to take into account for coverage measurement.
-    Available values are described in the ```--scope``` parameter of
-    [coverxygen](https://github.com/psycofdj/coverxygen) tool
+  - ```SCOPE``` : List of symbol's scope to take into account for coverage
+    measurement. Available values are described in the ```--scope``` parameter of
+    [coverxygen](https://github.com/psycofdj/coverxygen) tool.
+    Default value is ```public;protected```
 
-3. Generate the reports :
-  ```bash
-  # generate documentation-coverage for a specific module
-  make -C <module_path> doc-coverage-<module_name>
+### Generated targets
 
-  # generate documentation coverage for all modules
-  make doc-coverage
+- ```<module>-doc-coverage``` : generate documentation coverage report for module
+  ```<module>``` .
+- ```<module>-doc-coverage-clean``` : removes documentation coverage report for
+  module ```<module>``` .
+- ```doc-coverage``` : generate documentation coverage reports for all modules
+- ```doc-coverage-clean``` : removes documentation coverage reports for all modules
 
-  # remove generated report
-  make doc-coverage-clean
-  ```
+### Output reports
 
-4. Consult the report  :
-  ```
-  sensible-browser ./reports/<module_name>/doc-coverage/index.html
-  ```
+- HTML : ```sensible-browser ./reports/<module_name>/doc-coverage/index.html```
+- XML : ```sensible-browser ./reports/<module_name>/doc-coverage/doc-coverage.html```
 
-  Note that it will also produce an json version of the report in :
-  ```
-  ./reports/<module_name>/doc-coverage/data.json
-  ```
+Summary view :
 
-  Output :
-  ![Summary](./documentation/coverage-summary.png)
-  ![Summary](./documentation/coverage-details.png)
+![Summary](./documentation/coverage-summary.png)
 
 
-## Count lines of code
+Detailed view :
+
+![Detailed](./documentation/coverage-details.png)
+
+
+## ClocRule
 
 This target generates a report counting the number of code, blank and comments lines
 of your module.
 
-1. In your project's root CMakeLists.txt :
+### Function reference
+
   ```cmake
-  find_package(ClocRule REQUIRED)
+  add_cloc(<module>
+    [INPUT         dir1 [dir2 ...]]
+    [FILE_PATTERNS pattern1 [pattern2 ...]]
+  )
   ```
 
-2. In your module's CMakeLists.txt :
-  ```cmake
-  add_cloc(<module_name>)
-  ```
+- ```INPUT``` : list of input source directories containing files process.
+  Default value is ```${CMAKE_CURRENT_SOURCE_DIR}/src```.
 
-3. Generate the reports :
-  ```bash
-  # generate cloc for a specific module
-  make -C <module_path> cloc-<module_name>
+- ```FILE_PATTERNS``` : list of wildcard patterns to search in input directories.
+  Default value is ```*.cc;*.hh;*.hxx```
 
-  # generate cloc for all modules
-  make cloc
+### Generated targets
 
-  # remove generated report
-  make cloc-clean
-  ```
-
-4. Consult the report  :
-  ```
-  sensible-browser ./reports/<module_name>/cloc/index.html
-  ```
-
-  Note that it will also produce an xml version of the report in :
-  ```
-  ./reports/<module_name>/cloc/index.xml
-  ```
-
-  Output :
-  ![Cloc](./documentation/cloc.png)
+- ```<module>-cloc``` : generate cloc report for module ```<module>```
+- ```<module>-cloc-clean``` : removes cloc report for module ```<module>```
+- ```cloc``` : generate cloc reports for all modules
+- ```cloc-clean``` : removes cloc reports for all modules
 
 
+### Output reports
 
-## Cppcheck static analysis
+- HTML : ```sensible-browser ./reports/<module_name>/cloc/index.html```
+- XML : ```sensible-browser ./reports/<module_name>/cloc/cloc.xml```
+
+
+Exemple:
+
+![Cloc](./documentation/cloc.png)
+
+
+## CppcheckRule
 
 
 Cppcheck is a static C++ code analyzer tool. This target will produce a report of
 cppcheck output.
 
-1. In your project's root CMakeLists.txt :
+### Function reference
   ```cmake
-  find_package(CppcheckRule REQUIRED)
+  add_cppcheck(<module>
+    [INPUT         dir1 [dir2 ...]]
+    [FILE_PATTERNS pattern1 [pattern2 ...]]
+  )
   ```
 
-2. In your module's CMakeLists.txt :
-  ```cmake
-  add_cppcheck(<module_name>)
-  ```
+### Generated targets
 
-3. Generate the reports :
-  ```bash
-  # generate cloc for a specific module
-  make -C <module_path> cppcheck-<module_name>
+- ```<module>-cppcheck``` : generate cppcheck report for module ```<module>```
+- ```<module>-cppcheck-clean``` : removes cppcheck report for module ```<module>```
+- ```cppcheck``` : generate cppcheck reports for all modules
+- ```cppcheck-clean``` : removes cppcheck reports for all modules
 
-  # generate cloc for all modules
-  make cppcheck
+### Output reports
 
-  # remove generated report
-  make cppcheck-clean
-  ```
-
-4. Consult the report  :
-  ```
-  sensible-browser ./reports/<module_name>/cppcheck/index.html
-  ```
-
-  Note that it will also produce an xml version of the report in :
-  ```
-  ./reports/<module_name>/cppcheck/index.xml
-  ```
-
-  Output :
-  ![Cppcheck](./documentation/cppcheck.png)
+- HTML : ```sensible-browser ./reports/<module_name>/cppcheck/index.html```
+- XML : ```sensible-browser ./reports/<module_name>/cppcheck/cppcheck.xml```
 
 
-## Unit tests
+Example:
+
+![Cppcheck](./documentation/cppcheck.png)
+
+
+## CheckRule
 
 XTDMake detects automatically tests source files, create cmake binary targets
 accordingly and generates test reports.
+
+
+
+### Function reference
+  ```cmake
+  add_check(<module>
+    [PATTERNS  pattern1 [pattern2 ...]]
+    [INCLUDES  dir1 [dir2 ...]]
+    [LINKS     lib1 [lib2 ...]]
+    [ENV       key1=value [key2=value ...]]
+    [ARGS      arg1 [arg2 ...]]
+    [DIRECTORY dir]
+    [PREFIX    str]
+    [JOBS      int]
+    [NO_DEFAULT_ENV]
+    [NO_DEFAULT_ARGS]
+    [NO_DEFAULT_INCLUDES]
+    [NO_DEFAULT_LINKS]
+  )
+  ```
+
+- ```PATTERNS```:
 
 ### Global design
 
@@ -527,11 +441,12 @@ is considered as a standalone test.
 ### Binary targets
 
 For matched files named ```<prefix><name>.*```, the rule declares a new
-singled source executable ```<name>```. Given ```INCLUDES``` and ```LINKS``` are
-respectively given as executable's ```include_directories``` and ```link_libraries```.
+singled source executable ```<name>```. Given ```INCLUDES``` and ```LINKS``` 
+parameters are respectively given as executable ```include_directories``` and
+```link_libraries``` .
 
 User may modify generated target at will with cmake's ```target_include_directories```,
-```target_link_libraries``` etc.
+```target_link_libraries``` on generated target name.
 
 ### Test targets
 
@@ -644,7 +559,7 @@ the target is the source file name stripped of its prefix and extension.
   Output :
   ![Cppcheck](./documentation/cppcheck.png)
 
-## Code coverage
+## CovRule
 
 TBD
 
@@ -674,6 +589,88 @@ through all generated reports.
 
   Output :
   ![Reports](./documentation/reports.png)
+
+## Tracking
+
+This feature configures your C/C++ build to add information about when and how your
+binaries were constructed. Behind the scene, cmake will wrap your linker to add a
+ident-compatible string to your binary. In addition, cmake will add this kind of
+informations when generating static archives (.a files) and use them when linking your
+binaries.
+
+Demo:
+
+```bash
+# compile our binary (which links to libcommon_s)
+make common_tf
+
+# extract informations from generated file
+ident common_tf
+
+# output result
+common_tf:
+$date: 16-08-2016 $
+$time: 10:43:15 $
+$name: common_tf $
+$user: psyco $
+$host: xmarcelet $
+$pwd: /home/psyco/dev/xtdcpp/.release/common $
+$revno: 98b7d3e224e9ad32affab425c52bfe19f2ce302d $
+$archive: [libcommon_s] (time) 10:43:12 $
+$archive: [libcommon_s] (date) 16-08-2016 $
+$archive: [libcommon_s] (revno) 98b7d3e224e9ad32affab425c52bfe19f2ce302d $
+```
+
+This also works on shared libraries :
+```bash
+# compile our shared library libcommon.so
+make common
+
+# extract informations from generated file
+ident libcommon.so
+
+# output result
+$date: 16-08-2016 $
+$time: 13:40:35 $
+$name: libcommon.so $
+$user: psyco $
+$host: xmarcelet $
+$pwd: /home/psyco/dev/xtdcpp/.release/common $
+$revno: 8fb0f8e916078257552470ce22761dcead79158c $
+```
+
+This feature can be enabled by adding the following directive to your project's root
+CMakeLists.txt :
+```cmake
+find_package(Tracking REQUIRED)
+```
+
+## StaticShared
+
+XTDMake provides a way to easily produce both static and shared library from a single
+call. In addition it will optimize your build to produce only one set of object files
+that will be used for both targets.
+
+Note: This means that objects generated with -fPIC are used to create static archives.
+This may have a performance impact.
+
+```cmake
+ # in CMakeLists.txt
+add_shared_static_library(<library_name> <file1> <file2> ....)
+```
+
+This will create two CMake targets :
+ - `<library_name>`   : that will produce `lib<library_name>.so`
+ - `<library_name>_s` : that will produce `lib<library_name>_s.a`
+
+You may customize theses target at will using standard CMake functions.
+
+
+In order to use `add_shared_static_library` function, you must load the StaticShared
+module by adding the following directive too your project's root CMakeLists.txt :
+```cmake
+find_package(StaticShared REQUIRED)
+```
 
 <!--  LocalWords:  ident libcommon tf pwd revno affab bfe ce xtdmake coverxygen
  -->

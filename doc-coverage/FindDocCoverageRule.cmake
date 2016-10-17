@@ -33,12 +33,12 @@ add_custom_target(doc-coverage)
 add_custom_target(doc-coverage-clean)
 if (NOT DocCoverageRule_FOUND)
   function(add_doc_coverage module)
-    add_custom_target(doc-coverage-${module}
+    add_custom_target(${module}-doc-coverage
       COMMAND echo "warning: doc-coverage rule is disabled due to missing dependencies")
-    add_custom_target(doc-coverage-${module}-clean
+    add_custom_target(${module}-doc-coverage-clean
       COMMAND echo "warning: doc coverage is disabled due to missing dependencies")
-    add_dependencies(doc-coverage       doc-coverage-${module})
-    add_dependencies(doc-coverage-clean doc-coverage-${module}-clean)
+    add_dependencies(doc-coverage       ${module}-doc-coverage)
+    add_dependencies(doc-coverage-clean ${module}-doc-coverage-clean)
   endfunction()
 else()
   function(add_doc_coverage module)
@@ -82,14 +82,14 @@ else()
       COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ -t "${module} documentation coverage" > /dev/null 2>&1
       VERBATIM)
 
-    add_custom_target(doc-coverage-${module}
+    add_custom_target(${module}-doc-coverage
       DEPENDS ${DocCoverageRule_OUTPUT}/index.html ${DocCoverageRule_OUTPUT}/data.json)
-    set_target_properties(doc-coverage-${module}
+    set_target_properties(${module}-doc-coverage
       PROPERTIES OUTPUT_DIR "${DocCoverageRule_OUTPUT}")
-    add_custom_target(doc-coverage-${module}-clean
+    add_custom_target(${module}-doc-coverage-clean
       COMMAND rm -rf ${DocCoverageRule_OUTPUT})
 
-    add_dependencies(doc-coverage       doc-coverage-${module})
-    add_dependencies(doc-coverage-clean doc-coverage-${module}-clean)
+    add_dependencies(doc-coverage       ${module}-doc-coverage)
+    add_dependencies(doc-coverage-clean ${module}-doc-coverage-clean)
   endfunction()
 endif()

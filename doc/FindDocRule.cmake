@@ -48,12 +48,12 @@ add_custom_target(doc)
 add_custom_target(doc-clean)
 if (NOT DocRule_FOUND)
   function(add_doc module)
-    add_custom_target(doc-${module}
+    add_custom_target(${module}-doc
       COMMAND echo "warning: doc rule is disabled due to missing dependencies")
-    add_custom_target(doc-${module}-clean
+    add_custom_target(${module}-doc-clean
       COMMAND echo "warning: doc rule is disabled due to missing dependencies")
-    add_dependencies(doc       doc-${module})
-    add_dependencies(doc-clean doc-${module}-clean)
+    add_dependencies(doc       ${module}-doc)
+    add_dependencies(doc-clean ${module}-doc-clean)
   endfunction()
 else()
   function(add_doc module)
@@ -163,14 +163,13 @@ else()
         APPEND)
     endforeach()
 
-    add_custom_target(doc-${module}
+    add_custom_target(${module}-doc
       DEPENDS ${DocRule_OUTPUT}/html/index.html)
-    set_target_properties(doc-${module}
+    set_target_properties(${module}-doc
       PROPERTIES OUTPUT_DIR "${DocRule_OUTPUT}")
-    add_custom_target(doc-${module}-clean
+    add_custom_target(${module}-doc-clean
       COMMAND rm -rf ${DocRule_OUTPUT})
-
-    add_dependencies(doc       doc-${module})
-    add_dependencies(doc-clean doc-${module}-clean)
+    add_dependencies(doc       ${module}-doc)
+    add_dependencies(doc-clean ${module}-doc-clean)
   endfunction()
 endif()

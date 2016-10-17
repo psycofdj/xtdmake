@@ -33,12 +33,12 @@ add_custom_target(cppcheck)
 add_custom_target(cppcheck-clean)
 if(NOT CppcheckRule_FOUND)
   function(add_cppcheck module)
-    add_custom_target(cppcheck-${module}
+    add_custom_target(${module}-cppcheck
       COMMAND echo "warning: cppcheck rule is disabled due to missing dependencies")
-    add_custom_target(cppcheck-${module}-clean
+    add_custom_target(${module}-cppcheck-clean
       COMMAND echo "warning: cppcheck rule is disabled due to missing dependencies")
-    add_dependencies(cppcheck       cppcheck-${module})
-    add_dependencies(cppcheck-clean cppcheck-${module}-clean)
+    add_dependencies(cppcheck       ${module}-cppcheck)
+    add_dependencies(cppcheck-clean ${module}-cppcheck-clean)
   endfunction()
 else()
   function(add_cppcheck module)
@@ -87,11 +87,11 @@ else()
       COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/cppcheck.html
       VERBATIM)
 
-    add_custom_target(cppcheck-${module}
+    add_custom_target(${module}-cppcheck
       DEPENDS ${CppcheckRule_OUTPUT}/cppcheck.html)
-    add_custom_target(cppcheck-${module}-clean
+    add_custom_target(${module}-cppcheck-clean
       COMMAND rm -rf ${CppcheckRule_OUTPUT})
-    add_dependencies(cppcheck       cppcheck-${module})
-    add_dependencies(cppcheck-clean cppcheck-${module}-clean)
+    add_dependencies(cppcheck       ${module}-cppcheck)
+    add_dependencies(cppcheck-clean ${module}-cppcheck-clean)
   endfunction()
 endif()

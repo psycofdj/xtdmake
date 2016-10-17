@@ -32,12 +32,12 @@ add_custom_target(cloc)
 add_custom_target(cloc-clean)
 if (NOT ClocRule_FOUND)
   function(add_cloc module)
-    add_custom_target(cloc-${module}
+    add_custom_target(${module}-cloc
       COMMAND echo "warning: cloc rule disabled due to missing dependencies")
-    add_custom_target(cloc-${module}-clean
+    add_custom_target(${module}-cloc-clean
       COMMAND echo "warning: cloc rule disabled due to missing dependencies")
-    add_dependencies(cloc       cloc-${module})
-    add_dependencies(cloc-clean cloc-${module}-clean)
+    add_dependencies(cloc       ${module}-cloc)
+    add_dependencies(cloc-clean ${module}-cloc-clean)
   endfunction()
 else()
   function(add_cloc module)
@@ -86,11 +86,11 @@ else()
       COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${ClocRule_OUTPUT}/cloc.xml > ${ClocRule_OUTPUT}/cloc.html
       VERBATIM)
 
-    add_custom_target(cloc-${module}
+    add_custom_target(${module}-cloc
       DEPENDS ${ClocRule_OUTPUT}/cloc.html)
-    add_custom_target(cloc-${module}-clean
+    add_custom_target(${module}-cloc-clean
       COMMAND rm -rf ${ClocRule_OUTPUT})
-    add_dependencies(cloc       cloc-${module})
-    add_dependencies(cloc-clean cloc-${module}-clean)
+    add_dependencies(cloc       ${module}-cloc)
+    add_dependencies(cloc-clean ${module}-cloc-clean)
   endfunction()
 endif()
