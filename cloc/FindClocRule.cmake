@@ -30,6 +30,7 @@ set(ClocRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRI
 
 add_custom_target(cloc)
 add_custom_target(cloc-clean)
+
 if (NOT ClocRule_FOUND)
   function(add_cloc module)
     add_custom_target(${module}-cloc
@@ -67,7 +68,11 @@ else()
     # extract directory from all dependencies
     set(l_dir_list "")
     foreach(c_file ${ClocRule_DEPENDS})
-      get_filename_component(c_dir ${c_file} DIRECTORY)
+      if (${CMAKE_MAJOR_VERSION} STREQUAL "3")
+        get_filename_component(c_dir ${c_file} DIRECTORY)
+      else()
+        get_filename_component(c_dir ${c_file} PATH)
+      endif()
       list(APPEND l_dir_list ${c_dir})
     endforeach()
 

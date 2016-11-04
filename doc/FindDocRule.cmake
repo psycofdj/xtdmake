@@ -125,7 +125,7 @@ else()
     # extract directory from all dependencies
     set(l_dir_list "")
     foreach(c_file ${DocRule_DEPENDS})
-      get_filename_component(c_dir ${c_file} DIRECTORY)
+      get_directory(c_dir ${c_file})
       list(APPEND l_dir_list ${c_dir})
     endforeach()
 

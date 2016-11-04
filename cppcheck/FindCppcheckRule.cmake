@@ -68,7 +68,11 @@ else()
     # extract directory from all dependencies
     set(l_dir_list "")
     foreach(c_file ${CppcheckRule_DEPENDS})
-      get_filename_component(c_dir ${c_file} DIRECTORY)
+      if (${CMAKE_MAJOR_VERSION} STREQUAL "3")
+        get_filename_component(c_dir ${c_file} DIRECTORY)
+      else()
+        get_filename_component(c_dir ${c_file} PATH)
+      endif()
       list(APPEND l_dir_list ${c_dir})
     endforeach()
 

@@ -25,8 +25,9 @@ else()
   message(STATUS "Found module DocCoverageRule : TRUE")
 endif()
 
-set(DocCoverageRule_DEFAULT_KIND  "enum;typedef;variable;function;class;struct;define"  CACHE STRING "DocCoverageRule default list of symbol kinds")
-set(DocCoverageRule_DEFAULT_SCOPE "public;protected"                                    CACHE STRING "DocCoverageRule default list of symbol scope")
+set(DocCoverageRule_DEFAULT_KIND   "enum;typedef;variable;function;class;struct;define"  CACHE STRING "DocCoverageRule default list of symbol kinds")
+set(DocCoverageRule_DEFAULT_SCOPE  "public;protected"                                    CACHE STRING "DocCoverageRule default list of symbol scope")
+set(DocCoverageRule_DEFAULT_PREFIX "\${CMAKE_CURRENT_SOURCE_DIR}/src"                    CACHE STRING "DocCoverageRule default file prefix filter")
 
 
 add_custom_target(doc-coverage)
@@ -42,7 +43,7 @@ if (NOT DocCoverageRule_FOUND)
   endfunction()
 else()
   function(add_doc_coverage module)
-    if (NOT TARGET doc-${module})
+    if (NOT TARGET ${module}-doc)
       message(FATAL_ERROR "unable to find target doc-${module}, please call add_doc command for your module")
     endif()
 
@@ -57,11 +58,12 @@ else()
 
     set_default(DocCoverageRule KIND)
     set_default(DocCoverageRule SCOPE)
+    set_default(DocCoverageRule PREFIX)
 
     string(REPLACE ";" "," DocCoverageRule_KIND  "${DocCoverageRule_KIND}")
     string(REPLACE ";" "," DocCoverageRule_SCOPE "${DocCoverageRule_SCOPE}")
 
-    get_target_property(DocCoverageRule_DOXYGEN_OUTPUT doc-${module} OUTPUT_DIR)
+    get_target_property(DocCoverageRule_DOXYGEN_OUTPUT ${module}-doc OUTPUT_DIR)
     set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
     add_custom_command(
@@ -69,8 +71,8 @@ else()
       OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json
       DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
       VERBATIM)
 

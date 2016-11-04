@@ -1,3 +1,11 @@
+macro(get_directory out in)
+  if (${CMAKE_MAJOR_VERSION} STREQUAL "3")
+    get_filename_component(${out} ${in} DIRECTORY)
+  else()
+    get_filename_component(${out} ${in} PATH)
+  endif()
+endmacro()
+
 macro(temp_name fname)
   if(${ARGC} GREATER 1) # Have to escape ARGC to correctly compare
     set(_base ${ARGV1})
