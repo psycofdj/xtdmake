@@ -32,12 +32,12 @@ endif()
 
 if (NOT CovRule_FOUND)
   function(add_cov module)
-    add_custom_target(cov-${module}
+    add_custom_target(${module}-cov
       COMMAND echo "warning: cov rule is disabled due to missing dependencies")
-    add_custom_target(cov-${module}-clean
+    add_custom_target(${module}-cov-clean
       COMMAND echo "warning: cov rule is disabled due to missing dependencies")
-    add_dependencies(cov       cov-${module})
-    add_dependencies(cov-clean cov-${module}-clean)
+    add_dependencies(cov       ${module}-cov)
+    add_dependencies(cov-clean ${module}-cov-clean)
   endfunction()
 else()
   function(add_cov module)
@@ -77,11 +77,11 @@ else()
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${CMAKE_CURRENT_BINARY_DIR}/coverage.info -d -o ${CovRule_OUTPUT}/coverage.xml
       )
 
-    add_custom_target(cov-${module}
+    add_custom_target(${module}-cov
       DEPENDS ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml)
-    add_custom_target(cov-${module}-clean
+    add_custom_target(${module}-cov-clean
       COMMAND rm -rf ${CovRule_OUTPUT} ${CMAKE_CURRENT_BINARY_DIR}/coverage.info)
-    add_dependencies(cov       cov-${module})
-    add_dependencies(cov-clean cov-${module}-clean)
+    add_dependencies(cov       ${module}-cov)
+    add_dependencies(cov-clean ${module}-cov-clean)
   endfunction()
 endif()

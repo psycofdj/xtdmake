@@ -41,6 +41,8 @@ function(add_check module)
     "${multiValueArgs}"
     ${ARGN})
 
+  configure_file(${CMAKE_SOURCE_DIR}/xtdmake/check/cmakevars.h.in ${CMAKE_CURRENT_BINARY_DIR}/cmakevars.h)
+
   set_default(CheckRule PATTERNS)
   set_default(CheckRule DIRECTORY)
   set_default(CheckRule PREFIX)
@@ -82,11 +84,15 @@ function(add_check module)
     file(GLOB_RECURSE l_tests ${CheckRule_DIRECTORY}/${CheckRule_PREFIX}*${c_pattern})
     foreach(c_file ${l_tests})
       get_filename_component(c_name ${c_file} NAME_WE)
-      get_filename_component(c_dir  ${c_file} DIRECTORY)
-      string(REPLACE ${CheckRule_PREFIX} "" c_name_clean ${c_name})
+      get_directory(c_dir ${c_file})
+      string(REPLACE ${CheckRule_PREFIX} "t" c_name_clean ${c_name})
       add_executable(${c_name_clean} ${c_file})
-      target_include_directories(${c_name_clean}
-        PUBLIC ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
+      if (CMAKE_VERSION VERSION_LESS 2.8.12)
+        include_directories(${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
+      else()
+        target_include_directories(${c_name_clean}
+          PUBLIC ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
+      endif()
       target_link_libraries(${c_name_clean} ${CheckRule_LINKS} ${Cppunit_LIBRARY})
       add_test(NAME ${c_name_clean}
         COMMAND ${c_name_clean} ${CheckRule_ARGS})
@@ -131,7 +137,7 @@ function(add_check module)
   add_custom_command(
     COMMENT "Generating ${module} tests HTML and XML reports"
     OUTPUT ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html
-    DEPENDS ${module}-check-build ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
+    DEPENDS ${l_test_list} ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
     COMMAND mkdir -p ${CheckRule_OUTPUT}
     COMMAND rm -rf Testing/
     COMMAND touch DartConfiguration.tcl

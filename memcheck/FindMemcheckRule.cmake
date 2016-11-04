@@ -60,23 +60,40 @@ else()
     set(l_depends "")
     foreach(c_test ${l_test_list})
       get_target_property(c_test_args ${c_test} ARGS)
-      add_custom_command(
-        COMMENT "Performing memory analisys for ${module} : ${c_test}"
-        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
-        DEPENDS ${c_test}
-        COMMAND valgrind
-        --tool=memcheck
-        --leak-check=full
-        --show-leak-kinds=all
-        --num-callers=500
-        --show-reachable=no
-        --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
-        --
-        ./${c_test} ${c_test_args}
-        VERBATIM)
+
+      if (Valgrind_VERSION VERSION_LESS 3.9.0)
+        add_custom_command(
+          COMMENT "Performing memory analisys for ${module} : ${c_test}"
+          OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
+          DEPENDS ${c_test}
+          COMMAND valgrind
+          --tool=memcheck
+          --leak-check=full
+          --num-callers=50
+          --show-reachable=no
+          --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
+          --
+          ./${c_test} ${c_test_args}
+          VERBATIM)
+      else()
+        add_custom_command(
+          COMMENT "Performing memory analisys for ${module} : ${c_test}"
+          OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
+          DEPENDS ${c_test}
+          COMMAND valgrind
+          --tool=memcheck
+          --leak-check=full
+          --show-leak-kinds=all
+          --num-callers=500
+          --show-reachable=no
+          --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
+          --
+          ./${c_test} ${c_test_args}
+          VERBATIM)
+      endif()
+
       list(APPEND l_depends ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml)
     endforeach()
-
 
     add_custom_command(
       COMMENT "Generating ${module} memcheck XML and HTML reports"
@@ -103,9 +120,8 @@ else()
       ${MemcheckRule_OUTPUT}/index.html
       ${MemcheckRule_OUTPUT}/memcheck.js)
 
-    stringify(l_depends)
     add_custom_target(${module}-memcheck-clean
-      COMMAND rm -rf "${l_depends}")
+      COMMAND rm -rf  ${MemcheckRule_OUTPUT} ${l_depends})
     add_dependencies(memcheck       ${module}-memcheck)
     add_dependencies(memcheck-clean ${module}-memcheck-clean)
   endfunction()
