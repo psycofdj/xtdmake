@@ -27,6 +27,7 @@ endif()
 
 set(ClocRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "ClocRule default list of source directories")
 set(ClocRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "ClocRule default list of wildcard patterns to search in INPUT directories")
+set(ClocRule_DEFAULT_MIN_PERCENT   "30"                               CACHE STRING "ClocRule default mimunim comment percentage to consider task successful")
 
 add_custom_target(cloc)
 add_custom_target(cloc-clean)
@@ -52,6 +53,7 @@ else()
       ${ARGN})
 
     set_default(ClocRule FILE_PATTERNS)
+    set_default(ClocRule MIN_PERCENT)
     set_default_if_exists(ClocRule INPUT)
 
     set(ClocRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cloc")
@@ -84,15 +86,16 @@ else()
 
     add_custom_command(
       COMMENT "Generating ${module} cloc HTML and XML reports"
-      OUTPUT ${ClocRule_OUTPUT}/cloc.xml ${ClocRule_OUTPUT}/cloc.html
-      DEPENDS ${ClocRule_DEPENDS} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl
+      OUTPUT ${ClocRule_OUTPUT}/cloc.xml ${ClocRule_OUTPUT}/cloc.html ${ClocRule_OUTPUT}/status.json
+      DEPENDS ${ClocRule_DEPENDS} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${PROJECT_SOURCE_DIR}/xtdmake/cloc/status.py
       COMMAND mkdir -p ${ClocRule_OUTPUT}
       COMMAND ${Cloc_EXECUTABLE} ${ClocRule_DEPENDS} --xml --out ${ClocRule_OUTPUT}/cloc.xml --by-file-by-lang
       COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${ClocRule_OUTPUT}/cloc.xml > ${ClocRule_OUTPUT}/cloc.html
+      COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/cloc/status.py --input-file=${ClocRule_OUTPUT}/cloc.xml --output-file=${ClocRule_OUTPUT}/status.json --min-percent=${ClocRule_MIN_PERCENT}
       VERBATIM)
 
     add_custom_target(${module}-cloc
-      DEPENDS ${ClocRule_OUTPUT}/cloc.html)
+      DEPENDS ${ClocRule_OUTPUT}/cloc.html ${ClocRule_OUTPUT}/status.json ${ClocRule_OUTPUT}/cloc.xml)
     add_custom_target(${module}-cloc-clean
       COMMAND rm -rf ${ClocRule_OUTPUT})
     add_dependencies(cloc       ${module}-cloc)

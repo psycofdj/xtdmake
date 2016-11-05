@@ -18,6 +18,7 @@ xtdmake_find_program(Genhtml
   VERSION_POS 3)
 
 set(CovRule_DEFAULT_EXCLUDE_PATTERNS "Test*.*" CACHE STRING "CovRule default file exclude wildcards")
+set(CovRule_DEFAULT_MIN_PERCENT      "30"      CACHE STRING "CovRule default mimunim coverage percentage to consider task successful")
 
 set(CovRule_FOUND 0)
 if (NOT Lcov_FOUND OR NOT Genhtml_FOUND OR NOT CheckRule_FOUND)
@@ -52,6 +53,7 @@ else()
 
     set(CovRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/coverage")
     set_default(CovRule EXCLUDE_PATTERNS)
+    set_default(CovRule MIN_PERCENT)
     file(GLOB l_depends "${CMAKE_CURRENT_BINARY_DIR}/*.gcno")
 
     add_custom_command(
@@ -71,14 +73,15 @@ else()
 
     add_custom_command(
       COMMENT "Generating ${module} coverage HTML and XML reports"
-      OUTPUT ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+      OUTPUT ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml ${CovRule_OUTPUT}/status.json
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${PROJECT_SOURCE_DIR}/xtdmake/coverage/status.py
       COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ --function-coverage -t "${module} unit test coverage" --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --legend -s
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${CMAKE_CURRENT_BINARY_DIR}/coverage.info -d -o ${CovRule_OUTPUT}/coverage.xml
+      COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/status.py --input-file=${CovRule_OUTPUT}/coverage.xml --output-file=${CovRule_OUTPUT}/status.json --min-percent=${CovRule_MIN_PERCENT}
       )
 
     add_custom_target(${module}-cov
-      DEPENDS ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml)
+      DEPENDS ${CovRule_OUTPUT}/index.html ${CovRule_OUTPUT}/coverage.xml ${CovRule_OUTPUT}/status.json)
     add_custom_target(${module}-cov-clean
       COMMAND rm -rf ${CovRule_OUTPUT} ${CMAKE_CURRENT_BINARY_DIR}/coverage.info)
     add_dependencies(cov       ${module}-cov)

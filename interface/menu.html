@@ -44,15 +44,38 @@
          var l_parentID = l_nodeID;
          var l_childs = [];
          $.each(c_item.childs, function(c_idx, c_child) {
-           l_childs.push({
-             text : c_child.name,
+           var l_text = c_child.name;
+           if (c_child.label) {
+             l_text += " (" + c_child.label + ")";
+           }
+
+           var l_child = {
+             text : l_text,
              href : "#",
              src : c_child.file
-           });
+           }
+
+           l_child.icon = "";
+           if (c_child.status) {
+             if (c_child.status == "success") {
+               l_child.backColor = "#dff0d8";
+               l_child.icon = "glyphicon glyphicon-thumbs-up";
+             } else if (c_child.status == "failure") {
+               l_child.backColor = "#f2dede";
+               l_child.icon = "glyphicon glyphicon-thumbs-down";
+             } else {
+               l_child.backColor = "#fcf8e3";
+               l_child.icon = "glyphicon glyphicon-warning-sign";
+             }
+           } else {
+             l_child.backColor = "#f1f1f1";
+           }
+           l_childs.push(l_child);
            l_nodeID += 1;
          });
          tree.push({
            text :  c_item.name,
+           backColor: "#d9edf7",
            nodes : l_childs
          });
          l_nodeID += 1;

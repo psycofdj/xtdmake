@@ -101,24 +101,28 @@ else()
       ${MemcheckRule_OUTPUT}/memcheck.js
       ${MemcheckRule_OUTPUT}/memcheck.json
       ${MemcheckRule_OUTPUT}/index.html
+      ${MemcheckRule_OUTPUT}/status.json
       DEPENDS
       ${l_depends}
       ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/readfiles.py
       ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/stylesheet.xsl
       ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/index.html
+      ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/status.py
       COMMAND mkdir -p ${MemcheckRule_OUTPUT}
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/readfiles.py ${l_depends} > ${MemcheckRule_OUTPUT}/memcheck.json
       COMMAND echo -n "var g_data = " > ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND cat ${MemcheckRule_OUTPUT}/memcheck.json >> ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND echo -n ";" >> ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/index.html ${MemcheckRule_OUTPUT}/index.html
+      COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/memcheck/status.py --input-file=${MemcheckRule_OUTPUT}/memcheck.json --output-file=${MemcheckRule_OUTPUT}/status.json
       VERBATIM)
 
     add_custom_target(${module}-memcheck
       DEPENDS
       ${MemcheckRule_OUTPUT}/memcheck.json
       ${MemcheckRule_OUTPUT}/index.html
-      ${MemcheckRule_OUTPUT}/memcheck.js)
+      ${MemcheckRule_OUTPUT}/memcheck.js
+      ${MemcheckRule_OUTPUT}/status.json)
 
     add_custom_target(${module}-memcheck-clean
       COMMAND rm -rf  ${MemcheckRule_OUTPUT} ${l_depends})

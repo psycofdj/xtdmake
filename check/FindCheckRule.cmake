@@ -136,18 +136,19 @@ function(add_check module)
 
   add_custom_command(
     COMMENT "Generating ${module} tests HTML and XML reports"
-    OUTPUT ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html
-    DEPENDS ${l_test_list} ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl
+    OUTPUT ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html ${CheckRule_OUTPUT}/status.json
+    DEPENDS ${l_test_list} ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl ${PROJECT_SOURCE_DIR}/xtdmake/check/status.py
     COMMAND mkdir -p ${CheckRule_OUTPUT}
     COMMAND rm -rf Testing/
     COMMAND touch DartConfiguration.tcl
     COMMAND $(MAKE) ${module}-check-run-forced
     COMMAND cp Testing/*/*.xml ${CheckRule_OUTPUT}/tests.xml
     COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/check/stylesheet.xsl ${CheckRule_OUTPUT}/tests.xml > ${CheckRule_OUTPUT}/index.html
+    COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/check/status.py --input-file ${CheckRule_OUTPUT}/tests.xml --output-file ${CheckRule_OUTPUT}/status.json
     )
 
   add_custom_target(${module}-check
-    DEPENDS ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html)
+    DEPENDS ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html ${CheckRule_OUTPUT}/status.json)
 
 
   set_target_properties(${module}-check             PROPERTIES TESTLIST "${l_test_list}")
