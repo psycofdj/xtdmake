@@ -30,7 +30,13 @@ if l_result.min_percent != 0:
   if int(l_percent) <  int(l_result.min_percent):
     l_status = "failure"
   
-l_out.write(json.dumps({ "status" : l_status, "label"  : l_label }, indent=2))
+l_out.write(json.dumps({
+  "status" : l_status,
+  "label"  : l_label,
+  "axes"   : {
+    "percent" : l_percent
+  }
+}, indent=2))
 
 # Local Variables:
 # ispell-local-dictionary: "american"

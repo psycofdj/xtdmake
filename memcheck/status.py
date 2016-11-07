@@ -31,7 +31,13 @@ l_label   = "%d" % l_total
 if l_total == 0:
   l_status = "success"
   
-l_out.write(json.dumps({ "status" : l_status, "label"  : l_label }, indent=2))
+l_out.write(json.dumps({
+  "status" : l_status,
+  "label"  : l_label,
+  "axes"   : {
+    "nb_errors" : l_total
+  }
+}, indent=2))
 
 # Local Variables:
 # ispell-local-dictionary: "american"

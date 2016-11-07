@@ -24,4 +24,10 @@ l_label   = "%d" % len(l_tests)
 if len(l_tests) == 0:
   l_status = "success"
   
-l_out.write(json.dumps({ "status" : l_status, "label"  : l_label }, indent=2))
+l_out.write(json.dumps({
+  "status" : l_status,
+  "label"  : l_label,
+  "axes"   : {
+    "nb_errors" : len(l_tests)
+  }
+}, indent=2))
