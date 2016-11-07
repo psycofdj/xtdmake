@@ -12,10 +12,17 @@ function(add_shared_static_library name)
     "${multiValueArgs}"
     ${ARGN})
 
-  add_library(${name}-objs OBJECT ${ARGN})
-  add_library(${name}_s STATIC $<TARGET_OBJECTS:${name}-objs>)
-  add_library(${name}   SHARED $<TARGET_OBJECTS:${name}-objs>)
-  set_property(TARGET ${name}-objs PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+  if (${CMAKE_VERSION}} VERSION_LESS 2.8.8)
+    message(WARNING "add_shared_static_library requires cmake >= 2.8.8, building seperate objects")
+    add_library(${name}_s STATIC ${ARGN})
+    add_library(${name}   SHARED ${ARGN})
+  else()
+    add_library(${name}-objs OBJECT ${ARGN})
+    add_library(${name}_s STATIC $<TARGET_OBJECTS:${name}-objs>)
+    add_library(${name}   SHARED $<TARGET_OBJECTS:${name}-objs>)
+    set_property(TARGET ${name}-objs PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
 
 
   if (NOT ${StaticShared_NOINSTALL})
