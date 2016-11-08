@@ -73,7 +73,7 @@ else()
           --show-reachable=no
           --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
           --
-          ./${c_test} ${c_test_args}
+          ./${c_test} ${c_test_args} || true
           VERBATIM)
       else()
         add_custom_command(
