@@ -45,7 +45,7 @@ l_out.write(json.dumps({
       "name" : "cloc - details",
       "series" : [ "comment", "code" ]
     }
-  ]
+  ],
   "data" : {
     "code"    : int(l_code),
     "comment" : int(l_comment),
