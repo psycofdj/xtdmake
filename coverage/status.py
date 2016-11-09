@@ -14,7 +14,9 @@ l_result = l_parser.parse_args()
 
 l_tree = ET.parse(l_result.input_file)
 l_data = l_tree.findall(".")[0]
-    
+
+l_total    = int(l_data.get("lines-valid"))
+l_covered  = int(l_data.get("lines-covered"))
 l_percent  = float(l_data.get("line-rate"))
 l_percent  = int(l_percent * 100)
 
@@ -33,8 +35,20 @@ if l_result.min_percent != 0:
 l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
-  "axes"   : {
-    "percent" : l_percent
+  "graphs" : [
+    {
+      "name" : "coverage - overall",
+      "series" : [ "percent"  ]
+    },
+    {
+      "name" : "coverage - details",
+      "series" : [ "covered", "total" ]
+    }
+  ]
+  "data" : {
+    "covered" : l_covered,
+    "total"   : l_total,
+    "percent" : "int((float(%(covered)d) / float(%(total)d)) * 100)"
   }
 }, indent=2))
 

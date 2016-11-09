@@ -30,8 +30,14 @@ if len(l_tests) == 0:
 l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
-  "axes"   : {
-    "nb_failures" : len(l_tests) - len(l_ok),
-    "nb_success"  : len(l_ok)
+  "graphs" : [
+    {
+      "name" : "unittests",
+      "series" : [ "failures", "success"  ]
+    }
+  ]
+  "data" : {
+    "failures" : len(l_tests) - len(l_ok),
+    "success"  : len(l_ok),
   }
 }, indent=2))

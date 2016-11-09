@@ -36,10 +36,20 @@ if l_result.min_percent != 0:
 l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
-  "axes"   : {
+  "graphs" : [
+    {
+      "name" : "cloc - overall",
+      "series" : [ "percent"  ]
+    },
+    {
+      "name" : "cloc - details",
+      "series" : [ "comment", "code" ]
+    }
+  ]
+  "data" : {
     "code"    : int(l_code),
     "comment" : int(l_comment),
-    "percent" : l_percent
+    "percent" : "int((float(%(comment)d) / (float(%(comment)d)) + float(%(code)d)) * 100)"
   }
 }, indent=2))
 

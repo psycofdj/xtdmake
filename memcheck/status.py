@@ -34,8 +34,14 @@ if l_total == 0:
 l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
-  "axes"   : {
-    "nb_errors" : l_total
+  "graphs" : [
+    {
+      "name" : "memcheck - errors",
+      "series" : [ "total"  ]
+    }
+  ]
+  "data" : {
+    "total" : l_total
   }
 }, indent=2))
 

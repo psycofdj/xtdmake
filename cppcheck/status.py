@@ -27,7 +27,13 @@ if len(l_tests) == 0:
 l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
-  "axes"   : {
-    "nb_errors" : len(l_tests)
+  "graphs" : [
+    {
+      "name" : "cppcheck - errors",
+      "series" : [ "total"  ]
+    }
+  ]
+  "data" : {
+    "total"      : len(l_tests)
   }
 }, indent=2))

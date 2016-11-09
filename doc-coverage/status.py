@@ -42,10 +42,20 @@ if l_result.min_percent != 0:
 l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
-  "axes"   : {
-    "documented"   : l_documented,
-    "undocumented" : l_total - l_documented,
-    "percent"      : l_percent
+  "graphs" : [
+    {
+      "name" : "doc-coverage - overall",
+      "series" : [ "percent"  ]
+    },
+    {
+      "name" : "doc-coverage",
+      "series" : [ "documented", "undocumented"  ]
+    },
+  ]
+  "data" : {
+    "documented" : l_documented,
+    "total"      : l_total,
+    "percent" : "int((float(%(documented)d) / float(%(total)d)) * 100)"
   }
 }, indent=2))
 
