@@ -49,7 +49,7 @@ l_out.write(json.dumps({
   "data" : {
     "code"    : int(l_code),
     "comment" : int(l_comment),
-    "percent" : "int((float(%(comment)d) / (float(%(comment)d)) + float(%(code)d)) * 100)"
+    "percent" : "int(float(%(comment)d) / (float(%(comment)d) + float(%(code)d)) * 100)"
   }
 }, indent=2))
 
