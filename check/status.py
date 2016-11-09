@@ -35,7 +35,7 @@ l_out.write(json.dumps({
       "name" : "unittests",
       "series" : [ "failures", "success"  ]
     }
-  ]
+  ],
   "data" : {
     "failures" : len(l_tests) - len(l_ok),
     "success"  : len(l_ok),

@@ -51,7 +51,7 @@ l_out.write(json.dumps({
       "name" : "doc-coverage",
       "series" : [ "documented", "undocumented"  ]
     },
-  ]
+  ],
   "data" : {
     "documented" : l_documented,
     "total"      : l_total,

@@ -32,7 +32,7 @@ l_out.write(json.dumps({
       "name" : "cppcheck - errors",
       "series" : [ "total"  ]
     }
-  ]
+  ],
   "data" : {
     "total"      : len(l_tests)
   }

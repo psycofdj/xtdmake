@@ -44,7 +44,7 @@ l_out.write(json.dumps({
       "name" : "coverage - details",
       "series" : [ "covered", "total" ]
     }
-  ]
+  ],
   "data" : {
     "covered" : l_covered,
     "total"   : l_total,

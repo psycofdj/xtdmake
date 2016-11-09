@@ -39,7 +39,7 @@ l_out.write(json.dumps({
       "name" : "memcheck - errors",
       "series" : [ "total"  ]
     }
-  ]
+  ],
   "data" : {
     "total" : l_total
   }
