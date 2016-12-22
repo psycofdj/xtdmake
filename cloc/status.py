@@ -37,19 +37,75 @@ l_out.write(json.dumps({
   "status" : l_status,
   "label"  : l_label,
   "graphs" : [
-    {
-      "name" : "cloc - overall",
-      "series" : [ "percent"  ]
-    },
-    {
-      "name" : "cloc - details",
-      "series" : [ "comment", "code" ]
+        {
+      "type"   : "line",
+      "data"   : {
+        "labels"   : [],
+        "datasets" : [
+          {
+            "yAxisID" : "absolute",
+            "label"   : "comment lines",
+            "data"    : "%(comment)d",
+            "borderColor" : "rgba(51, 204, 51, 1)",
+            "backgroundColor" : "rgba(51, 204, 51, 0)",
+            "pointBorderColor" : "rgba(31, 122, 31, 1)",
+            "pointBackgroundColor" : "rgba(31, 122, 31, 1)"
+          },
+          {
+            "yAxisID" : "absolute",
+            "label"   : "code lines",
+            "data"    : "%(code)d",
+            "borderColor" : "rgba(179, 0, 0, 1)",
+            "backgroundColor" : "rgba(179, 0, 0, 0)",
+            "pointBorderColor" : "rgba(102, 0, 0, 1)",
+            "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
+          },
+          {
+            "yAxisID" : "percent",
+            "label"   : "% comment lines",
+            "data"    : "int(float(%(comment)d) / (float(%(comment)d) + float(%(code)d)) * 100)",
+            "borderColor" : "rgba(102, 153, 255, 1)",
+            "backgroundColor" : "rgba(102, 153, 255, 0)",
+            "pointBorderColor" : "rgba(0, 60, 179, 1)",
+            "pointBackgroundColor" : "rgba(0, 60, 179, 1)"
+          }
+        ]
+      },
+      "options" : {
+        "title" : {
+          "text" : "%(module)s : cloc",
+          "display" : True
+        },
+        "scales" : {
+          "yAxes" : [
+            {
+              "id"     : "absolute",
+              "type"     : "linear",
+              "position" : "left",
+              "display": True,
+              "ticks": {
+                "beginAtZero": True,
+                "fontSize" : 24
+              }
+            },
+            {
+              "id"     : "percent",
+              "type"     : "linear",
+              "position" : "right",
+              "ticks": {
+                "beginAtZero" : True,
+                "fontSize"    : 24,
+                "max"         : 100
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "data" : {
     "code"    : int(l_code),
-    "comment" : int(l_comment),
-    "percent" : "int(float(%(comment)d) / (float(%(comment)d) + float(%(code)d)) * 100)"
+    "comment" : int(l_comment)
   }
 }, indent=2))
 

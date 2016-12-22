@@ -36,8 +36,41 @@ l_out.write(json.dumps({
   "label"  : l_label,
   "graphs" : [
     {
-      "name" : "memcheck - errors",
-      "series" : [ "total"  ]
+      "type"   : "line",
+      "data"   : {
+        "labels"   : [],
+        "datasets" : [
+          {
+            "yAxisID" : "absolute",
+            "label"   : "memcheck error count",
+            "data"    : "%(total)d",
+            "borderColor" : "rgba(179, 0, 0, 1)",
+            "backgroundColor" : "rgba(179, 0, 0, 0.5)",
+            "pointBorderColor" : "rgba(102, 0, 0, 1)",
+            "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
+          }
+        ]
+      },
+      "options" : {
+        "title" : {
+          "text" : "%(module)s : memcheck",
+          "display" : True
+        },
+        "scales" : {
+          "yAxes" : [
+            {
+              "id"     : "absolute",
+              "type"     : "linear",
+              "position" : "left",
+              "display": True,
+              "ticks": {
+                "beginAtZero": True,
+                "fontSize" : 24
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "data" : {

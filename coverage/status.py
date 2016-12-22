@@ -37,12 +37,69 @@ l_out.write(json.dumps({
   "label"  : l_label,
   "graphs" : [
     {
-      "name" : "coverage - overall",
-      "series" : [ "percent"  ]
-    },
-    {
-      "name" : "coverage - details",
-      "series" : [ "covered", "total" ]
+      "type"   : "line",
+      "data"   : {
+        "labels"   : [],
+        "datasets" : [
+          {
+            "yAxisID" : "absolute",
+            "label"   : "covered lines",
+            "data"    : "%(covered)d",
+            "borderColor" : "rgba(51, 204, 51, 1)",
+            "backgroundColor" : "rgba(51, 204, 51, 0)",
+            "pointBorderColor" : "rgba(31, 122, 31, 1)",
+            "pointBackgroundColor" : "rgba(31, 122, 31, 1)"
+          },
+          {
+            "yAxisID" : "absolute",
+            "label"   : "total lines",
+            "data"    : "%(total)d",
+            "borderColor" : "rgba(179, 0, 0, 1)",
+            "backgroundColor" : "rgba(179, 0, 0, 0)",
+            "pointBorderColor" : "rgba(102, 0, 0, 1)",
+            "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
+          },
+          {
+            "yAxisID" : "percent",
+            "label"   : "% covered lines",
+            "data"    : "int((float(%(covered)d) / float(%(total)d)) * 100)",
+            "borderColor" : "rgba(102, 153, 255, 1)",
+            "backgroundColor" : "rgba(102, 153, 255, 0)",
+            "pointBorderColor" : "rgba(0, 60, 179, 1)",
+            "pointBackgroundColor" : "rgba(0, 60, 179, 1)"
+          }
+        ]
+      },
+      "options" : {
+        "title" : {
+          "text" : "%(module)s : coverage",
+          "display" : True
+        },
+        "scales" : {
+          "yAxes" : [
+            {
+              "id"     : "absolute",
+              "type"     : "linear",
+              "position" : "left",
+              "display": True,
+              "ticks": {
+                "beginAtZero": True,
+                "fontSize" : 24
+              }
+            },
+            {
+              "id"     : "percent",
+              "type"     : "linear",
+              "position" : "right",
+              "ticks": {
+                "beginAtZero" : True,
+                "fontSize"    : 24,
+                "max"         : 100
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "data" : {

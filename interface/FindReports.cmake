@@ -5,6 +5,7 @@ add_custom_target(reports-update
   DEPENDS
   ${CMAKE_REPORT_OUTPUT}/menu.html
   ${CMAKE_REPORT_OUTPUT}/index.html
+  ${CMAKE_REPORT_OUTPUT}/view.html
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
@@ -15,14 +16,17 @@ add_custom_command(
   OUTPUT
   ${CMAKE_REPORT_OUTPUT}/menu.html
   ${CMAKE_REPORT_OUTPUT}/index.html
+  ${CMAKE_REPORT_OUTPUT}/view.html
   ${CMAKE_REPORT_OUTPUT}/bower_components/
   DEPENDS
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/menu.html
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/index.html
+  ${PROJECT_SOURCE_DIR}/xtdmake/interface/view.html
   ${PROJECT_SOURCE_DIR}/xtdmake/interface/bower_components/
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/interface/menu.html            ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/interface/index.html           ${CMAKE_REPORT_OUTPUT}/
+  COMMAND cp ${PROJECT_SOURCE_DIR}/xtdmake/interface/view.html            ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp -r ${PROJECT_SOURCE_DIR}/xtdmake/interface/bower_components/ ${CMAKE_REPORT_OUTPUT}/
   VERBATIM)
 

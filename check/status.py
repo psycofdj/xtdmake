@@ -32,8 +32,50 @@ l_out.write(json.dumps({
   "label"  : l_label,
   "graphs" : [
     {
-      "name" : "unittests",
-      "series" : [ "failures", "success"  ]
+      "type"   : "line",
+      "data"   : {
+        "labels"   : [],
+        "datasets" : [
+          {
+            "yAxisID" : "absolute",
+            "label"   : "success tests",
+            "data"    : "%(success)d",
+            "borderColor" : "rgba(51, 204, 51, 1)",
+            "backgroundColor" : "rgba(51, 204, 51, 0)",
+            "pointBorderColor" : "rgba(31, 122, 31, 1)",
+            "pointBackgroundColor" : "rgba(31, 122, 31, 1)"
+          },
+          {
+            "yAxisID" : "absolute",
+            "label"   : "failure tests",
+            "data"    : "%(failures)d",
+            "borderColor" : "rgba(179, 0, 0, 1)",
+            "backgroundColor" : "rgba(179, 0, 0, 0)",
+            "pointBorderColor" : "rgba(102, 0, 0, 1)",
+            "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
+          }
+        ]
+      },
+      "options" : {
+        "title" : {
+          "text" : "%(module)s : unittests",
+          "display" : True
+        },
+        "scales" : {
+          "yAxes" : [
+            {
+              "id"     : "absolute",
+              "type"     : "linear",
+              "position" : "left",
+              "display": True,
+              "ticks": {
+                "beginAtZero": True,
+                "fontSize" : 24
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "data" : {

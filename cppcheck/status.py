@@ -29,11 +29,44 @@ l_out.write(json.dumps({
   "label"  : l_label,
   "graphs" : [
     {
-      "name" : "cppcheck - errors",
-      "series" : [ "total"  ]
+      "type"   : "line",
+      "data"   : {
+        "labels"   : [],
+        "datasets" : [
+          {
+            "yAxisID" : "absolute",
+            "label"   : "cppcheck error count",
+            "data"    : "%(total)d",
+            "borderColor" : "rgba(179, 0, 0, 1)",
+            "backgroundColor" : "rgba(179, 0, 0, 0.5)",
+            "pointBorderColor" : "rgba(102, 0, 0, 1)",
+            "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
+          }
+        ]
+      },
+      "options" : {
+        "title" : {
+          "text" : "%(module)s : cppcheck",
+          "display" : True
+        },
+        "scales" : {
+          "yAxes" : [
+            {
+              "id"     : "absolute",
+              "type"     : "linear",
+              "position" : "left",
+              "display": True,
+              "ticks": {
+                "beginAtZero": True,
+                "fontSize" : 24
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "data" : {
-    "total"      : len(l_tests)
+    "total" : len(l_tests)
   }
 }, indent=2))

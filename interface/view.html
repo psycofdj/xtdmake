@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <title>KPI Graph viewer</title>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="bower_components/chart.js/dist/Chart.js"></script>
+    <link   href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link   href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link   href="bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.css" rel="stylesheet">
+    <script src="graph.js"></script>
+    <script>
+
+     function gencolor() {
+       var l_r = Math.floor((Math.random() * 255) + 1);
+       var l_g = Math.floor((Math.random() * 255) + 1);
+       var l_b = Math.floor((Math.random() * 255) + 1);
+       return "rgba(" + l_r + "," + l_g + "," + l_b + ",0.5)";
+     };
+
+
+
+     function Handler(p_graphs) {
+       var self = this;
+
+       self.ui = {
+         kpi     : $("select[name=kpi]"),
+         module  : $("select[name=module]"),
+         content : $("#content")
+       }
+
+       self.createOption = function(p_child, p_attrs) {
+         var l_res = $("<option/>", p_attrs)
+         l_res.append(p_child)
+         return l_res;
+       }
+
+       self.onChangeKpi = function() {
+         var l_selected = $("option:selected", self.ui.kpi).val();
+         self.ui.module.find("option").remove();
+         $.each(p_graphs[l_selected], function(p_moduleName, p_data) {
+           self.ui.module.append(self.createOption(p_moduleName,  { value : p_moduleName }));
+         });
+         self.ui.module.change();
+       }
+
+       self.onChangeModule = function() {
+         var l_kpi      = $("option:selected", self.ui.kpi).val();
+         var l_module   = $("option:selected", self.ui.module).val();
+         var l_context  = $("<canvas/>");
+         var l_graphs   = p_graphs[l_kpi][l_module];
+         $.each(l_graphs, function(c_idx, c_graph) {
+           self.ui.content.find("canvas").remove();;
+           self.ui.content.append(l_context);
+           var myChart = new Chart(l_context[0], c_graph);
+         });
+       }
+
+       self.init = function() {
+         $.each(p_graphs, function(p_kpiName, p_kpi) {
+           self.ui.kpi.append(self.createOption(p_kpiName, { value : p_kpiName }));
+         });
+
+         self.ui.kpi.change(self.onChangeKpi);
+         self.ui.module.change(self.onChangeModule);
+         self.ui.kpi.change();
+       }
+
+       self.init();
+     };
+
+     $(document).ready(function() {
+       var l_handler = new Handler(graphs);
+     });
+    </script>
+  </head>
+  <body style="padding-top:15px;">
+    <div class="container-fluid">
+
+      <div class="row">
+        <label class="col-md-offset-2 col-md-4 text-center">Select KPI :</label>
+        <div class="col-md-4">
+          <select name="kpi" class="form-control">
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-md-offset-2 col-md-4 text-center">Select Module :</label>
+        <div class="col-md-4">
+          <select name="module" class="form-control">
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+    </div>
+  </body>
+</html>
