@@ -44,7 +44,7 @@ l_out.write(json.dumps({
             "yAxisID" : "absolute",
             "label"   : "memcheck error count",
             "data"    : "%(total)d",
-            "borderColor" : "rgba(179, 0, 0, 1)",
+            "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0.5)",
             "pointBorderColor" : "rgba(102, 0, 0, 1)",
             "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
@@ -57,6 +57,12 @@ l_out.write(json.dumps({
           "display" : True
         },
         "scales" : {
+          "xAxes" : [{
+            "ticks" : {
+              "minRotation" : 80,
+              "fontSize": 12
+            }
+          }],
           "yAxes" : [
             {
               "id"     : "absolute",

@@ -45,7 +45,7 @@ l_out.write(json.dumps({
             "yAxisID" : "absolute",
             "label"   : "covered lines",
             "data"    : "%(covered)d",
-            "borderColor" : "rgba(51, 204, 51, 1)",
+            "borderColor" : "rgba(51, 204, 51, 0.5)",
             "backgroundColor" : "rgba(51, 204, 51, 0)",
             "pointBorderColor" : "rgba(31, 122, 31, 1)",
             "pointBackgroundColor" : "rgba(31, 122, 31, 1)"
@@ -54,7 +54,7 @@ l_out.write(json.dumps({
             "yAxisID" : "absolute",
             "label"   : "total lines",
             "data"    : "%(total)d",
-            "borderColor" : "rgba(179, 0, 0, 1)",
+            "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0)",
             "pointBorderColor" : "rgba(102, 0, 0, 1)",
             "pointBackgroundColor" : "rgba(102, 0, 0, 1)"
@@ -63,7 +63,7 @@ l_out.write(json.dumps({
             "yAxisID" : "percent",
             "label"   : "% covered lines",
             "data"    : "int((float(%(covered)d) / float(%(total)d)) * 100)",
-            "borderColor" : "rgba(102, 153, 255, 1)",
+            "borderColor" : "rgba(102, 153, 255, 0.5)",
             "backgroundColor" : "rgba(102, 153, 255, 0)",
             "pointBorderColor" : "rgba(0, 60, 179, 1)",
             "pointBackgroundColor" : "rgba(0, 60, 179, 1)"
@@ -76,6 +76,12 @@ l_out.write(json.dumps({
           "display" : True
         },
         "scales" : {
+          "xAxes" : [{
+            "ticks" : {
+              "minRotation" : 80,
+              "fontSize": 12
+            }
+          }],
           "yAxes" : [
             {
               "id"     : "absolute",
