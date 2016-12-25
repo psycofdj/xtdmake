@@ -31,22 +31,35 @@ else()
   message(STATUS "Found module DocRule : TRUE")
 endif()
 
+
+set(DocRule_DEFAULT_EXCLUDE           ""                                                                  CACHE STRING "DocRule default list of excluded files")
+set(DocRule_DEFAULT_FILE_PATTERNS     "*.cc;*.hh;*.hpp"                                                   CACHE STRING "DocRule default list of wildcard patterns")
+set(DocRule_DEFAULT_PREDEFINED        ""                                                                  CACHE STRING "DocRule default list predefined macros")
+set(DocRule_DEFAULT_EXPAND_AS_DEFINED ""                                                                  CACHE STRING "DocRule default list of macro to expand as defined")
+set(DocRule_DEFAULT_EXAMPLE           "\${CMAKE_CURRENT_SOURCE_DIR}/doc/example"                          CACHE STRING "DocRule default example directory")
+set(DocRule_DEFAULT_IMAGE             "\${CMAKE_CURRENT_SOURCE_DIR}/doc/image"                            CACHE STRING "DocRule default example directory")
+set(DocRule_DEFAULT_PLANTUML          "/usr/share/plantuml/plantuml.jar"                                  CACHE STRING "DocRule default platuml jar path")
+set(DocRule_DEFAULT_INPUT             "\${CMAKE_CURRENT_SOURCE_DIR}/src;\${CMAKE_CURRENT_SOURCE_DIR}/doc" CACHE STRING "DocRule default list of input directory to find file")
+set(DocRule_DEFAULT_WERROR            "YES"                                                               CACHE STRING "DocRule default value of WERROR option")
+set(DocRule_DEFAULT_CALL_GRAPHS       "YES"                                                               CACHE STRING "DocRule default value of CALL_GRAPHS option")
+
+
 add_custom_target(doc)
 add_custom_target(doc-clean)
 if (NOT DocRule_FOUND)
   function(add_doc module)
-    add_custom_target(doc-${module}
+    add_custom_target(${module}-doc
       COMMAND echo "warning: doc rule is disabled due to missing dependencies")
-    add_custom_target(doc-${module}-clean
+    add_custom_target(${module}-doc-clean
       COMMAND echo "warning: doc rule is disabled due to missing dependencies")
-    add_dependencies(doc       doc-${module})
-    add_dependencies(doc-clean doc-${module}-clean)
+    add_dependencies(doc       ${module}-doc)
+    add_dependencies(doc-clean ${module}-doc-clean)
   endfunction()
 else()
   function(add_doc module)
-    set(multiValueArgs  EXCLUDE FILE_PATTERNS CALL_GRAPHS PREDEFINED EXPAND_AS_DEFINED)
-    set(oneValueArgs    EXAMPLE PLANTUML)
-    set(options         WERROR)
+    set(multiValueArgs  INPUT EXCLUDE FILE_PATTERNS PREDEFINED EXPAND_AS_DEFINED)
+    set(oneValueArgs    EXAMPLE PLANTUML IMAGE WERROR CALL_GRAPHS)
+    set(options         )
     cmake_parse_arguments(DocRule
       "${options}"
       "${oneValueArgs}"
@@ -56,51 +69,28 @@ else()
     set(DocRule_MODULE   "${module}")
     set(DocRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/doc")
 
-    if ("${DocRule_FILE_PATTERNS}" STREQUAL "")
-      set(DocRule_FILE_PATTERNS "*.cc *.hh *.hpp")
+    # use default value argument if needed
+    set_default(DocRule FILE_PATTERNS)
+    set_default(DocRule CALL_GRAPHS)
+    set_default(DocRule WERROR)
+    set_default(DocRule PREDEFINED)
+    set_default_if_exists(DocRule PLANTUML)
+    set_default_if_exists(DocRule EXAMPLE)
+    set_default_if_exists(DocRule IMAGE)
+    set_default_if_exists(DocRule INPUT)
+    set_default_if_exists(DocRule EXCLUDE)
+
+    # disable graphs if dot not available
+    if (NOT Dot_FOUND)
+      set(DocRule_CALL_GRAPHS "NO")
     endif()
 
-    if ("${DocRule_PLANTUML}" STREQUAL "")
-      if (Dot_FOUND AND Plantuml_FOUND)
-        set(DocRule_PLANTUML "/usr/share/plantuml/plantuml.jar")
-      endif()
-    elseif("${DocRule_PLANTUML}" STREQUAL "NO")
+    # disable plantuml if dor or plantuml not found
+    if (NOT Dot_FOUND OR NOT Plantuml_FOUND)
       set(DocRule_PLANTUML "")
     endif()
 
-    if ("${DocRule_CALL_GRAPHS}" STREQUAL "")
-      if (Dot_FOUND)
-        set(DocRule_CALL_GRAPHS "YES")
-      endif()
-    endif()
-
-    if ("${DocRule_WERROR}" STREQUAL "TRUE")
-      set(DocRule_WERROR "YES")
-    else()
-      set(DocRule_WERROR "NO")
-    endif()
-
-    if ("${DocRule_EXAMPLE}" STREQUAL "")
-      if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc/example)
-        set(DocRule_EXAMPLE ${CMAKE_CURRENT_SOURCE_DIR}/doc/example)
-      endif()
-    endif()
-
-
-
-    if ("${DocRule_IMAGE}" STREQUAL "")
-      if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc/image)
-        set(DocRule_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/doc/image)
-      endif()
-    endif()
-
-    if ("${DocRule_INPUT}" STREQUAL "")
-      set(DocRule_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/src)
-      if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc)
-        set(DocRule_INPUT "${DocRule_INPUT} ${CMAKE_CURRENT_SOURCE_DIR}/doc")
-      endif()
-    endif()
-
+    # make exclude absolute paths
     set(l_excludes "${DocRule_EXCLUDE}")
     set(DocRule_EXCLUDE "")
     foreach(c_file ${l_excludes})
@@ -112,15 +102,12 @@ else()
 
     # compute target dependencies, we apply patterns to each input
     set(DocRule_DEPENDS "")
-    set(l_dir_list "")
-    string(REPLACE " " ";" l_inputs   "${DocRule_INPUT}")
-    string(REPLACE " " ";" l_patterns "${DocRule_FILE_PATTERNS}")
-    foreach(c_file ${l_inputs})
-      if (NOT IS_ABSOLUTE ${c_file})
+    foreach(c_file ${DocRule_INPUT})
+      if (NOT IS_ABSOLUTE "${c_file}")
         set(c_file ${CMAKE_CURRENT_SOURCE_DIR}/${c_file})
       endif()
-      if (IS_DIRECTORY ${c_file})
-        foreach(c_pattern ${l_patterns})
+      if (IS_DIRECTORY "${c_file}")
+        foreach(c_pattern ${DocRule_FILE_PATTERNS})
           file(GLOB_RECURSE l_deps ${c_file}/${c_pattern})
           if (l_deps)
             foreach(c_dep ${l_deps})
@@ -136,8 +123,9 @@ else()
     endforeach()
 
     # extract directory from all dependencies
+    set(l_dir_list "")
     foreach(c_file ${DocRule_DEPENDS})
-      get_filename_component(c_dir ${c_file} DIRECTORY)
+      get_directory(c_dir ${c_file})
       list(APPEND l_dir_list ${c_dir})
     endforeach()
 
@@ -147,10 +135,11 @@ else()
       set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
     endif()
 
-
-    string(REPLACE ";" " " ${DocRule_DEPENDS}           "${DocRule_DEPENDS}")
-    string(REPLACE ";" " " DocRule_PREDEFINED        "${DocRule_PREDEFINED}")
-    string(REPLACE ";" " " DocRule_EXPAND_AS_DEFINED "${DocRule_EXPAND_AS_DEFINED}")
+    stringify(DocRule_PREDEFINED)
+    stringify(DocRule_EXPAND_AS_DEFINED)
+    stringify(DocRule_FILE_PATTERNS)
+    stringify(DocRule_INPUT)
+    stringify(DocRule_EXCLUDE)
 
     set(DocRule_CONFIGURE_TEMPLATE ${PROJECT_SOURCE_DIR}/xtdmake/doc/doxygen-1.8.11.in)
     if (Doxygen_VERSION VERSION_LESS "1.8.11")
@@ -162,19 +151,25 @@ else()
     add_custom_command(
       COMMENT "Generating ${module} API documentation"
       OUTPUT ${DocRule_OUTPUT}/html/index.html ${DocRule_OUTPUT}/xml/index.xml
-      DEPENDS ${DocRule_DEPENDS} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
       COMMAND mkdir -p ${DocRule_OUTPUT}
       COMMAND ${Doxygen_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
-      VERBATIM)
+      )
 
-    add_custom_target(doc-${module}
+    foreach (c_dep ${DocRule_DEPENDS})
+      add_custom_command(
+        OUTPUT ${DocRule_OUTPUT}/html/index.html ${DocRule_OUTPUT}/xml/index.xml
+        DEPENDS ${c_dep}
+        APPEND)
+    endforeach()
+
+    add_custom_target(${module}-doc
       DEPENDS ${DocRule_OUTPUT}/html/index.html)
-    set_target_properties(doc-${module}
+    set_target_properties(${module}-doc
       PROPERTIES OUTPUT_DIR "${DocRule_OUTPUT}")
-    add_custom_target(doc-${module}-clean
+    add_custom_target(${module}-doc-clean
       COMMAND rm -rf ${DocRule_OUTPUT})
-
-    add_dependencies(doc       doc-${module})
-    add_dependencies(doc-clean doc-${module}-clean)
+    add_dependencies(doc       ${module}-doc)
+    add_dependencies(doc-clean ${module}-doc-clean)
   endfunction()
 endif()

@@ -25,43 +25,80 @@ else()
   message(STATUS "Found module ClocRule : TRUE")
 endif()
 
+set(ClocRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "ClocRule default list of source directories")
+set(ClocRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "ClocRule default list of wildcard patterns to search in INPUT directories")
+set(ClocRule_DEFAULT_MIN_PERCENT   "30"                               CACHE STRING "ClocRule default mimunim comment percentage to consider task successful")
+
 add_custom_target(cloc)
 add_custom_target(cloc-clean)
+
 if (NOT ClocRule_FOUND)
   function(add_cloc module)
-    add_custom_target(cloc-${module}
+    add_custom_target(${module}-cloc
       COMMAND echo "warning: cloc rule disabled due to missing dependencies")
-    add_custom_target(cloc-${module}-clean
+    add_custom_target(${module}-cloc-clean
       COMMAND echo "warning: cloc rule disabled due to missing dependencies")
-    add_dependencies(cloc       cloc-${module})
-    add_dependencies(cloc-clean cloc-${module}-clean)
+    add_dependencies(cloc       ${module}-cloc)
+    add_dependencies(cloc-clean ${module}-cloc-clean)
   endfunction()
 else()
   function(add_cloc module)
-    set(CMAKE_CLOC_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cloc")
-    file(GLOB_RECURSE files_cloc
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hxx"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
+    set(multiValueArgs  INPUT FILE_PATTERNS)
+    set(oneValueArgs    )
+    set(options         )
+    cmake_parse_arguments(ClocRule
+      "${options}"
+      "${oneValueArgs}"
+      "${multiValueArgs}"
+      ${ARGN})
+
+    set_default(ClocRule FILE_PATTERNS)
+    set_default(ClocRule MIN_PERCENT)
+    set_default_if_exists(ClocRule INPUT)
+
+    set(ClocRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cloc")
+    set(ClocRule_DEPENDS "")
+    foreach(c_dir ${ClocRule_INPUT})
+      foreach(c_pattern ${ClocRule_FILE_PATTERNS})
+        file(GLOB_RECURSE l_files ${c_dir}/${c_pattern})
+        foreach(c_res ${l_files})
+          list(APPEND ClocRule_DEPENDS ${c_res})
+        endforeach()
+      endforeach()
+    endforeach()
+
+    # extract directory from all dependencies
+    set(l_dir_list "")
+    foreach(c_file ${ClocRule_DEPENDS})
+      if (${CMAKE_MAJOR_VERSION} STREQUAL "3")
+        get_filename_component(c_dir ${c_file} DIRECTORY)
+      else()
+        get_filename_component(c_dir ${c_file} PATH)
+      endif()
+      list(APPEND l_dir_list ${c_dir})
+    endforeach()
+
+    # sets as configure dependencies
+    if (l_dir_list)
+      list(REMOVE_DUPLICATES l_dir_list)
+      set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
+    endif()
 
     add_custom_command(
       COMMENT "Generating ${module} cloc HTML and XML reports"
-      OUTPUT ${CMAKE_CLOC_OUTPUT}/cloc.xml ${CMAKE_CLOC_OUTPUT}/cloc.html
-      DEPENDS ${files_cloc} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl
-      COMMAND mkdir -p ${CMAKE_CLOC_OUTPUT}
-      COMMAND ${Cloc_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src --xml --out ${CMAKE_CLOC_OUTPUT}/cloc.xml --by-file-by-lang
-      COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${CMAKE_CLOC_OUTPUT}/cloc.xml > ${CMAKE_CLOC_OUTPUT}/cloc.html
+      OUTPUT ${ClocRule_OUTPUT}/cloc.xml ${ClocRule_OUTPUT}/cloc.html ${ClocRule_OUTPUT}/status.json
+      DEPENDS ${ClocRule_DEPENDS} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${PROJECT_SOURCE_DIR}/xtdmake/cloc/status.py
+      COMMAND mkdir -p ${ClocRule_OUTPUT}
+      COMMAND ${Cloc_EXECUTABLE} ${ClocRule_DEPENDS} --xml --out ${ClocRule_OUTPUT}/cloc.xml --by-file-by-lang
+      COMMAND ${Xsltproc_EXECUTABLE} ${PROJECT_SOURCE_DIR}/xtdmake/cloc/stylesheet.xsl ${ClocRule_OUTPUT}/cloc.xml > ${ClocRule_OUTPUT}/cloc.html
+      COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/cloc/status.py --input-file=${ClocRule_OUTPUT}/cloc.xml --output-file=${ClocRule_OUTPUT}/status.json --min-percent=${ClocRule_MIN_PERCENT}
       VERBATIM)
 
-    add_custom_target(cloc-${module}
-      DEPENDS ${CMAKE_CLOC_OUTPUT}/cloc.html)
-    add_custom_target(cloc-${module}-clean
-      COMMAND rm -rf ${CMAKE_CLOC_OUTPUT})
-    add_dependencies(cloc       cloc-${module})
-    add_dependencies(cloc-clean cloc-${module}-clean)
+    add_custom_target(${module}-cloc
+      DEPENDS ${ClocRule_OUTPUT}/cloc.html ${ClocRule_OUTPUT}/status.json ${ClocRule_OUTPUT}/cloc.xml)
+    add_custom_target(${module}-cloc-clean
+      COMMAND rm -rf ${ClocRule_OUTPUT})
+    add_dependencies(cloc       ${module}-cloc)
+    add_dependencies(cloc-clean ${module}-cloc-clean)
   endfunction()
 endif()

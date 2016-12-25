@@ -25,21 +25,26 @@ else()
   message(STATUS "Found module DocCoverageRule : TRUE")
 endif()
 
+set(DocCoverageRule_DEFAULT_KIND          "enum;typedef;variable;function;class;struct;define"  CACHE STRING "DocCoverageRule default list of symbol kinds")
+set(DocCoverageRule_DEFAULT_SCOPE         "public;protected"                                    CACHE STRING "DocCoverageRule default list of symbol scope")
+set(DocCoverageRule_DEFAULT_PREFIX        "\${CMAKE_CURRENT_SOURCE_DIR}/src"                    CACHE STRING "DocCoverageRule default file prefix filter")
+set(DocCoverageRule_DEFAULT_MIN_PERCENT   "30"                                                  CACHE STRING "DocCoverageRule default mimunim coverage percentage to consider task successful")
+
 
 add_custom_target(doc-coverage)
 add_custom_target(doc-coverage-clean)
 if (NOT DocCoverageRule_FOUND)
   function(add_doc_coverage module)
-    add_custom_target(doc-coverage-${module}
+    add_custom_target(${module}-doc-coverage
       COMMAND echo "warning: doc-coverage rule is disabled due to missing dependencies")
-    add_custom_target(doc-coverage-${module}-clean
+    add_custom_target(${module}-doc-coverage-clean
       COMMAND echo "warning: doc coverage is disabled due to missing dependencies")
-    add_dependencies(doc-coverage       doc-coverage-${module})
-    add_dependencies(doc-coverage-clean doc-coverage-${module}-clean)
+    add_dependencies(doc-coverage       ${module}-doc-coverage)
+    add_dependencies(doc-coverage-clean ${module}-doc-coverage-clean)
   endfunction()
 else()
   function(add_doc_coverage module)
-    if (NOT TARGET doc-${module})
+    if (NOT TARGET ${module}-doc)
       message(FATAL_ERROR "unable to find target doc-${module}, please call add_doc command for your module")
     endif()
 
@@ -52,28 +57,26 @@ else()
       "${multiValueArgs}"
       ${ARGN})
 
-
-    if (NOT DocCoverageRule_KIND)
-      set(DocCoverageRule_KIND "enum;typedef;variable;function;class;struct;define")
-    endif()
-
-    if (NOT DocCoverageRule_SCOPE)
-      set(DocCoverageRule_SCOPE "public;protected")
-    endif()
+    set_default(DocCoverageRule KIND)
+    set_default(DocCoverageRule SCOPE)
+    set_default(DocCoverageRule PREFIX)
+    set_default(DocCoverageRule MIN_PERCENT)
 
     string(REPLACE ";" "," DocCoverageRule_KIND  "${DocCoverageRule_KIND}")
     string(REPLACE ";" "," DocCoverageRule_SCOPE "${DocCoverageRule_SCOPE}")
-    get_target_property(DocCoverageRule_DOXYGEN_OUTPUT doc-${module} OUTPUT_DIR)
+
+    get_target_property(DocCoverageRule_DOXYGEN_OUTPUT ${module}-doc OUTPUT_DIR)
     set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
 
     add_custom_command(
       COMMENT "Generating ${module} documentation coverage informations"
-      OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json
-      DEPENDS doc-${module} ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
+      OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json ${DocCoverageRule_OUTPUT}/status.json
+      DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml ${PROJECT_SOURCE_DIR}/xtdmake/doc-coverage/status.py
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${CMAKE_CURRENT_SOURCE_DIR}/src --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
+      COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/doc-coverage/status.py --input-file=${DocCoverageRule_OUTPUT}/data.json --output-file=${DocCoverageRule_OUTPUT}/status.json --min-percent=${DocCoverageRule_MIN_PERCENT}
       VERBATIM)
 
     add_custom_command(
@@ -84,14 +87,14 @@ else()
       COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ -t "${module} documentation coverage" > /dev/null 2>&1
       VERBATIM)
 
-    add_custom_target(doc-coverage-${module}
-      DEPENDS ${DocCoverageRule_OUTPUT}/index.html ${DocCoverageRule_OUTPUT}/data.json)
-    set_target_properties(doc-coverage-${module}
+    add_custom_target(${module}-doc-coverage
+      DEPENDS ${DocCoverageRule_OUTPUT}/index.html ${DocCoverageRule_OUTPUT}/data.json ${DocCoverageRule_OUTPUT}/status.json)
+    set_target_properties(${module}-doc-coverage
       PROPERTIES OUTPUT_DIR "${DocCoverageRule_OUTPUT}")
-    add_custom_target(doc-coverage-${module}-clean
+    add_custom_target(${module}-doc-coverage-clean
       COMMAND rm -rf ${DocCoverageRule_OUTPUT})
 
-    add_dependencies(doc-coverage       doc-coverage-${module})
-    add_dependencies(doc-coverage-clean doc-coverage-${module}-clean)
+    add_dependencies(doc-coverage       ${module}-doc-coverage)
+    add_dependencies(doc-coverage-clean ${module}-doc-coverage-clean)
   endfunction()
 endif()
