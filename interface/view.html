@@ -69,8 +69,11 @@
            self.ui.content.append(l_context);
            var myChart = new Chart(l_context[0], c_graph);
            l_context.click(function(p_event) {
-             var l_el       = myChart.getElementAtEvent(p_event)[0];
-             self.showModal(c_graph, l_el);
+             try {
+               var l_el       = myChart.getElementAtEvent(p_event)[0];
+               self.showModal(c_graph, l_el);
+             } catch (e) {
+             }
            });
          });
        }
