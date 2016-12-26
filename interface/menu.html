@@ -1,32 +1,42 @@
 <html>
   <head>
-    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
-    <link href="bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.css" rel="stylesheet">
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
-    <script src="data.js"></script>
+    <link href="./bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="./bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.css" rel="stylesheet">
+    <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="./data.js"></script>
     <style>
-     .list-group-item {
-       padding:5px 10px;
+     body::-webkit-scrollbar {
+       display:none;
      }
-     body {
-       border-right:1px #ddd solid;
+     .navbar {
+       min-height:100%;
+       margin:0px;
+       border:0px;
+       border-radius:0px;
+     }
+     ul.nav > li > a {
+       color: #9d9d9d;
+     }
+     .content {
+       padding: 5px 15px !important;
+       padding-left:35px !important;
+       cursor: pointer;
      }
     </style>
-
     <script lang="javascript">
      $.extend({
        getUrlVars: function(){
          var vars = [], hash;
          var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
          for(var i = 0; i < hashes.length; i++)
-           {
-             hash = hashes[i].split('=');
-             vars.push(hash[0]);
-             vars[hash[0]] = hash[1];
-           }
+         {
+           hash = hashes[i].split('=');
+           vars.push(hash[0]);
+           vars[hash[0]] = hash[1];
+         }
          return vars;
        },
        getUrlVar: function(name){
@@ -34,85 +44,146 @@
        }
      });
 
-     $(document).ready(function() {
-       var tree = []
-       var l_nodeID = 0;
-       if (!g_data) {
-         g_data = []
-       }
-       $.each(g_data, function(c_idx, c_item) {
-         var l_parentID = l_nodeID;
-         var l_childs = [];
-         $.each(c_item.childs, function(c_idx, c_child) {
-           var l_text = c_child.name;
-           if (c_child.label) {
-             l_text += " (" + c_child.label + ")";
-           }
 
-           var l_child = {
-             text : l_text,
-             href : "#",
-             src : c_child.file
-           }
+     function Menu()
+     {
+       var self = this;
 
-           l_child.icon = "";
-           if (c_child.status) {
-             if (c_child.status == "success") {
-               l_child.backColor = "#dff0d8";
-               l_child.icon = "glyphicon glyphicon-thumbs-up";
-             } else if (c_child.status == "failure") {
-               l_child.backColor = "#f2dede";
-               l_child.icon = "glyphicon glyphicon-thumbs-down";
-             } else {
-               l_child.backColor = "#fcf8e3";
-               l_child.icon = "glyphicon glyphicon-warning-sign";
-             }
-           } else {
-             l_child.backColor = "#f1f1f1";
-           }
-           l_childs.push(l_child);
-           l_nodeID += 1;
-         });
-         tree.push({
-           text :  c_item.name,
-           backColor: "#d9edf7",
-           nodes : l_childs
-         });
-         l_nodeID += 1;
-       });
+       self.id = 0;
+       self.ui = {
+         bar : $("#sidenav01"),
+         toggle : $(".navbar-toggle")
+       };
 
-       tree.push({
-         text :  "Graphs",
-         backColor: "#d9edf7",
-         href : "#",
-         src : "./view.html",
-         nodes : []
-       });
+       self.uniqueID = function() {
+         self.id += 1;
+         return "id" + self.id;
+       };
 
-       $('#tree').treeview({
-         data: tree,
-         levels:2
-       });
+       self.onClickToggle   = function() {
 
+       };
 
-       $(".node-tree").click(function(p_event) {
-         var l_id   = $(this).data("nodeid");
-         var l_node = $('#tree').treeview("getNode", l_id);
-         if (l_node.src) {
-           if (p_event.which == 2) {
-             window.open(l_node.src, "_blank");
-           } else {
-             top.frames["droite"].location.href = l_node.src;
-           }
+       self.onSSecClick  = function(p_event) {
+         var l_url = $(this).data("ref");
+         if (p_event.which == 2) {
+           window.open(l_url, "_blank");
+         } else {
+           top.frames["content"].location.href = l_url;
          }
-           p_event.preventDefault();
+         p_event.preventDefault();
          p_event.stopPropagation();
-         return true;
-       });
+         return false;
+       };
+
+       self.makeSSection = function(p_data) {
+         var l_res  = $("<li/>", { "class" : "active"});
+         var l_link = $("<a/>", {
+           "data-ref"  : p_data["file"],
+           "class"     : "content"
+         }).append(p_data["name"]);
+
+         l_res.append(l_link);
+         if ("label" in p_data) {
+           var l_class = "label-default";
+           if ("status" in p_data) {
+             if (p_data["status"] == "failure")
+               l_class = "label-danger";
+             else if (p_data["status"] == "success")
+               l_class = "label-success";
+             else if (p_data["status"] == "warning")
+               l_class = "label-warning";
+           }
+
+           l_link.append("&nbsp;");
+           l_link.append($("<span/>", { "class" : "pull-right label " + l_class })
+             .append(p_data["label"]));
+         }
+
+
+         $(".content", l_res).mousedown(self.onSSecClick);
+         return l_res;
+       };
+
+       self.makeSep = function(p_text, p_link) {
+         return $("<li/>", { "role" : "separator", "class" : "divider" });
+       };
+
+       self.addToSection = function(p_sec, p_ssec) {
+         $("ul", p_sec).append(p_ssec);
+         return self;
+       };
+
+       self.makeSection = function(p_name, p_url) {
+         var l_id    = self.uniqueID();
+         var l_caret = $("<span/>", { "class" : "glyphicon glyphicon-menu-down", "style" : "margin-right:5px" });
+         var l_badge = $("<span/>", { "class" : "danger badge pull-right" }).append(0);
+         var l_link  = $("<a/>",    {
+           "href" : "#",
+           "data-toggle" : "collapse",
+           "data-target" : "#" + l_id,
+           "data-parent" : "#sidenav01",
+           "class"       : "collapsed"
+         }).append(l_caret)
+           .append(p_name)
+           .append(l_badge);
+         var l_smenu = $("<div/>", {
+           "class" : "collapse",
+           "id"    : l_id,
+         }).append($("<ul/>", {
+           "class" : "nav"
+         }));
+         var l_li = $("<li/>", {
+         }).append(l_link)
+           .append(l_smenu);
+         self.ui.bar.append(l_li);
+         return l_li;
+       };
+
+
+       self.init = function() {
+         self.ui.toggle.click(self.onClickToggle);
+         $.each(g_data, function(c_idx, c_sec) {
+           var l_sec = self.makeSection(c_sec["name"]);
+           $.each(c_sec["childs"], function(c_iidx, c_ssec) {
+             var l_ssec = self.makeSSection(c_ssec);
+             self.addToSection(l_sec, l_ssec);
+           });
+           $(".badge", l_sec).html($(".label-danger", l_sec).length);
+         });
+
+
+         var l_link  = $("<a/>",{
+           "data-ref"    : "./view.html",
+           "class"       : "collapsed content",
+           "style"       : "padding-left:35px"
+         }).append("Graphs");
+
+         var l_li = $("<li/>", {
+         }).append(l_link);
+
+         self.ui.bar.append(l_li);
+         l_link.mousedown(self.onSSecClick);
+
+       };
+
+       self.init();
+     };
+
+     $(document).ready(function() {
+       var l_page = new Menu();
      });
     </script>
   </head>
   <body>
-    <div id="tree"></div>
+    <div class="navbar navbar-inverse " role="navigation">
+      <div class="navbar-header">
+        <span class="visible-xs navbar-brand">XTDMake</span>
+      </div>
+      <div class="navbar-collapse">
+        <ul class="nav navbar-nav" id="sidenav01">
+        </ul>
+      </div>
+    </div>
   </body>
 </html>
