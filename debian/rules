@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+# -*- mode: makefile-mode; -*-
+
+# export DH_VERBOSE = 1
+
+%:
+	dh $@ --buildsystem=cmake

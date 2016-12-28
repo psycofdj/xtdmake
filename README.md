@@ -3,6 +3,9 @@
 
 - [Introduction](#introduction)
 - [Install](#install)
+    - [Get XTDMake](#get-xtdmake)
+        - [From source](#from-source)
+        - [From Ubuntu package](#from-ubuntu-package)
 - [Using XTDMake](#using-xtdmake)
     - [Loading the packages](#loading-the-packages)
     - [Packages vs targets](#packages-vs-targets)
@@ -21,8 +24,15 @@
         - [Generated targets](#generated-targets)
         - [Output reports](#output-reports)
     - [ClocRule](#clocrule)
+        - [Function reference](#function-reference)
+        - [Generated targets](#generated-targets)
+        - [Output reports](#output-reports)
     - [CppcheckRule](#cppcheckrule)
+        - [Function reference](#function-reference)
+        - [Generated targets](#generated-targets)
+        - [Output reports](#output-reports)
     - [CheckRule](#checkrule)
+        - [Function reference](#function-reference)
         - [Global design](#global-design)
         - [Finding the test sources](#finding-the-test-sources)
         - [Binary targets](#binary-targets)
@@ -30,9 +40,16 @@
     - [CovRule](#covrule)
     - [Report Interface](#report-interface)
     - [Tracking](#tracking)
+- [compile our binary (which links to libcommon_s)](#compile-our-binary-which-links-to-libcommons)
+- [extract informations from generated file](#extract-informations-from-generated-file)
+- [output result](#output-result)
+- [compile our shared library libcommon.so](#compile-our-shared-library-libcommonso)
+- [extract informations from generated file](#extract-informations-from-generated-file)
+- [output result](#output-result)
     - [StaticShared](#staticshared)
 
 <!-- markdown-toc end -->
+
 
 # Introduction
 
@@ -74,7 +91,14 @@ incremental with a fine dependency tracking.
 Install
 =======
 
+
+Get XTDMake
+-----------
+
+### From source
+
 0. Prerequisites
+
   ```bash
   # Doxygen (Generate documentation from source code)
   sudo apt-get install doxygen
@@ -85,7 +109,7 @@ Install
   # lcov (Generate HTML results from code-coverage informations)
   sudo apt-get install lcov
   # coverxygen (Generate documentation-coverage informations from doxygen documentation)
-  sudo pip3 install coverxygen
+  sudo pip install coverxygen
   # cloc (Count line of codes)
   sudo apt-get install cloc
   # cppcheck (C++ static code analysis tool)
@@ -95,6 +119,7 @@ Install
 ```
 
 1. Download latest release xtdmake archive
+
   ```bash
   # get latest tag number
   tag=$(curl -s https://api.github.com/repos/psycofdj/xtdmake/tags | \
@@ -111,7 +136,25 @@ Install
 
 3. Load XTDMake in your project's root CMakeLists.txt
   ```cmake
-  include(xtdmake/loader.cmake)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/xtdmake/src")
+  find_package(XTDMake REQUIRED)
+  ```
+
+### From Ubuntu package
+
+1. Add repository to apt
+
+   ```bash
+   sudo add-apt-repository ppa:psycofdj/xtdmake
+   sudo apt-get update
+   sudo apt-get install --install-suggests xtdmake
+   sudo pip install coverxygen
+   ```
+
+2. Load XTDMake in your project's root CMakeLists.txt
+
+  ```cmake
+  find_package(XTDMake REQUIRED)
   ```
 
 # Using XTDMake
@@ -143,10 +186,18 @@ First thing you need to do is to load the packages you need in your root
 CMakeLists.txt
 
 ```cmake
-find_package(DocRule [REQUIRED])
-find_package(DocCoverRule [REQUIRED])
-...
-find_package(MemcheckRule [REQUIRED])
+  xtdmake_init(
+    [StaticShared    REQUIRED]
+    [DocRule         REQUIRED]
+    [DocCoverageRule REQUIRED]
+    [CppcheckRule    REQUIRED]
+    [CheckRule       REQUIRED]
+    [ClocRule        REQUIRED]
+    [Tracking        REQUIRED]
+    [Cppunit         REQUIRED]
+    [CovRule         REQUIRED]
+    [MemcheckRule    REQUIRED]
+    [Reports         REQUIRED])
 ```
 
 If ```REQUIRED``` option is given, CMake will emit an error if loaded package is
@@ -280,7 +331,7 @@ A default doxygen configuration template is shipped with XTDMake
 Example:
 
 ![Doc](./documentation/doc.png)
-  
+
 ## DocCoverageRule
 
 This target will generate a report showing how complete is the documentation.
@@ -441,7 +492,7 @@ is considered as a standalone test.
 ### Binary targets
 
 For matched files named ```<prefix><name>.*```, the rule declares a new
-singled source executable ```<name>```. Given ```INCLUDES``` and ```LINKS``` 
+singled source executable ```<name>```. Given ```INCLUDES``` and ```LINKS```
 parameters are respectively given as executable ```include_directories``` and
 ```link_libraries``` .
 

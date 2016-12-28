@@ -1,0 +1,6 @@
+tar-ignore = ".git*"
+tar-ignore = ".build*"
+tar-ignore = ".pybuild*"
+tar-ignore = "*egg-info"
+tar-ignore = "*__pycache__*"
+tar-ignore = "*obj-x86_64-linux-gnu*"

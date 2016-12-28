@@ -1,0 +1,10 @@
+dist: trusty
+cache:
+  - apt
+
+install:
+  - sudo apt-get install debhelper cmake python-all
+
+script:
+  - export PATH=/usr/bin:${PATH}
+  - dpkg-buildpackage -uc -us
