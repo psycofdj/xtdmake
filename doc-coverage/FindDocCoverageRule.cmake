@@ -6,12 +6,13 @@ xtdmake_find_program(Genhtml
   VERSION_OPT "--version"
   VERSION_POS 3)
 
-xtdmake_find_program(Coverxygen
-  NAMES coverxygen.py
+xtdmake_find_python_module(Coverxygen
+  NAME coverxygen
+  INTERPRETERS python3 python
   DOC "Tool to generate coverage report from Doxygen documentation"
   URL "https://github.com/psycofdj/coverxygen"
   REQUIRED DocCoverageRule_FIND_REQUIRED
-  VERSION_OPT "--version"
+  VERSION_MEMBER "__version__"
   VERSION_POS 0)
 
 set(DocCoverageRule_FOUND 0)
@@ -73,8 +74,8 @@ else()
       OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json ${DocCoverageRule_OUTPUT}/status.json
       DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml ${PROJECT_SOURCE_DIR}/xtdmake/doc-coverage/status.py
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
-      COMMAND ${Coverxygen_EXECUTABLE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_INTERPRETER} -m ${Coverxygen_MODULE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_INTERPRETER} -m ${Coverxygen_MODULE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
       COMMAND ${PROJECT_SOURCE_DIR}/xtdmake/doc-coverage/status.py --input-file=${DocCoverageRule_OUTPUT}/data.json --output-file=${DocCoverageRule_OUTPUT}/status.json --min-percent=${DocCoverageRule_MIN_PERCENT}
       VERBATIM)
