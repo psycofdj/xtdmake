@@ -12,7 +12,7 @@ l_parser.add_argument("--output-file",  action="store", help ="destination outpu
 l_result = l_parser.parse_args()
 
 l_dirs      = glob.glob(l_result.report_dir + "/*/")
-l_dirs      = [x for x in l_dirs if not "_static" in x]
+l_dirs      = [x for x in l_dirs if not "contribs" in x]
 l_targets   = []
 for c_dir in l_dirs:
   l_childs = []

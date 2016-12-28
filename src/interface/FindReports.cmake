@@ -17,17 +17,17 @@ add_custom_command(
   ${CMAKE_REPORT_OUTPUT}/menu.html
   ${CMAKE_REPORT_OUTPUT}/index.html
   ${CMAKE_REPORT_OUTPUT}/view.html
-  ${CMAKE_REPORT_OUTPUT}/_static/
+  ${CMAKE_REPORT_OUTPUT}/contribs/
   DEPENDS
   ${XTDMake_HOME}/interface/menu.html
   ${XTDMake_HOME}/interface/index.html
   ${XTDMake_HOME}/interface/view.html
-  ${XTDMake_HOME}/interface/_static/
+  ${XTDMake_HOME}/interface/contribs/
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
   COMMAND cp ${XTDMake_HOME}/interface/menu.html   ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp ${XTDMake_HOME}/interface/index.html  ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp ${XTDMake_HOME}/interface/view.html   ${CMAKE_REPORT_OUTPUT}/
-  COMMAND cp -r ${XTDMake_HOME}/interface/_static/ ${CMAKE_REPORT_OUTPUT}/
+  COMMAND cp -r ${XTDMake_HOME}/interface/contribs/ ${CMAKE_REPORT_OUTPUT}/
   VERBATIM)
 
 

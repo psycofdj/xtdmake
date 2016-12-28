@@ -4,10 +4,10 @@
     <html>
       <head>
         <title>Clock report</title>
-        <link href="../../_static/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-        <link href="../../_static/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
-        <script src="../../_static/jquery/jquery.min.js"></script>
-        <script src="../../_static/bootstrap/js/bootstrap.min.js"></script>
+        <link href="../../contribs/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../../contribs/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
+        <script src="../../contribs/jquery/jquery.min.js"></script>
+        <script src="../../contribs/bootstrap/js/bootstrap.min.js"></script>
       </head>
       <body bgcolor="#ffffff" style="padding-top:50px;">
         <div class="container-fluid">
