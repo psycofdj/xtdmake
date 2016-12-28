@@ -1,0 +1,171 @@
+#!/bin/bash
+set -e
+
+l_progName=$(basename $0)
+l_topSrcDir=""
+l_bin=""
+l_target=""
+l_flags=""
+l_objects=""
+l_xtdmakeDir=$(dirname $(dirname $(readlink -f $0)))
+
+function usage
+{
+  cat - <<EOF
+usage : ${l_progName} \\
+  --top-srcdir=DIR \\
+  --bin=BIN \\
+  --libs=LIBS \\
+  --target=<archive> \\
+  --flags=<link flags> \\
+  --objects=<archive objects>
+
+[details]
+  --top-srcdir  : version control root directory
+  --bin         : linker executable path
+  --libs        : link libraries
+  --target      : target executable
+  --flags       : linker flags
+  --objects     : linker objects
+EOF
+  exit 1
+}
+
+
+function read_options
+{
+  while true; do
+    case "$1" in
+      --top-srcdir)
+        l_topSrcDir=$2;
+        shift 2;;
+      --bin)
+        l_bin=$2;
+        shift 2;;
+      --target)
+        l_target=$2;
+        shift 2;;
+      --libs)
+        l_libs=$2;
+        shift 2;;
+      --flags)
+        l_flags=$2;
+        shift 2;;
+      --objects)
+        l_objects=$2;
+        shift 2;;
+      --help)
+				usage;;
+      --)
+        shift;
+        break;;
+      *)
+        echo "error: internal problem while parsing options"
+        usage;;
+    esac
+  done
+}
+
+function error
+{
+  echo "error : $@"
+  usage
+}
+
+function check_options
+{
+  test ! -d "${l_topSrcDir}" && error "invalid input --top-srcdir='${l_top_srcdir}'" || true
+  which ${l_bin} >/dev/null 2>&1 || error "invalid input --bin='${l_bin}'"
+  test -z  "${l_target}"     && error "invalid input --taget='${l_target}'"          || true
+  test -z  "${l_objects}"    && error "invalid input --objects='${l_objects}'"       || true
+}
+
+
+function add_info
+{
+  l_output=$1;  shift
+  l_name=$1;    shift
+  l_section=$1; shift
+  l_value=$1;   shift
+
+  l_header=$(printf "$%s: (${l_section})" "${l_name}")
+  printf "%-20s %s $  " "${l_header}" "${l_value}" >> ${l_output}
+}
+
+function get_revision
+{
+  if [ -d "${l_topSrcDir}/.git" ]; then
+      l_revno=$(cd "${l_topSrcDir}" && git rev-parse HEAD)
+  elif [ -d "${l_topSrcDir}/.bzr" ]; then
+      l_revno=$(cat "${l_topSrcDir}/.bzr/branch/last-revision")
+  else
+    l_revno="unhandled vcs system"
+  fi
+  echo ${l_revno}
+}
+
+
+function extract_archive_info
+{
+  l_archive=$1; shift
+  l_libname=$(basename -- "${l_archive%.*}")
+  l_keyname=${l_libname}
+
+  if [ -f "${l_archive}" ]; then
+      l_mime=$(file -Ni "${l_archive}" | cut -d: -f2 | cut -d';' -f1 | awk '{ print $1 }')
+      if [ "${l_mime}" == "application/x-archive" ]; then
+          l_file=$(readlink -m "${l_archive}")
+          l_pwd=$(pwd)
+          l_tmpDir=$(mktemp -d)
+          cd "${l_tmpDir}"
+          l_version=".version"
+          ar x "${l_file}" "${l_version}"  2> /dev/null > /dev/null
+          if [ -f "${l_version}" ]; then
+              cat "${l_version}"
+          else
+            l_header=$(printf '$archive: [%s]' "${l_libname}")
+            printf "%s %s $  " "${l_header}" "unable to extract version from archive"
+          fi
+          cd "${l_pwd}"
+          rm -rf ${l_tmpDir}
+      else
+          printf "$%s: no version data $" "${l_keyname}"
+      fi
+  fi
+}
+
+
+function generate_ident
+{
+  printf '$date: %s $' "$(date +'%d-%m-%Y')"
+  printf '$time: %s $' "$(date +'%H:%M:%S')"
+  printf '$name: %s $' "${l_target}"
+  printf '$user: %s $' "$(id -un)"
+  printf '$host: %s $' "$(hostname)"
+  printf '$pwd: %s $' "$(pwd)"
+  printf '$revno: %s $' "$(get_revision)"
+  for c_dep in $(echo ${l_libs}); do
+    extract_archive_info "${c_dep}"
+  done
+}
+
+function generate_executable
+{
+  ${l_bin} ${l_flags} ${l_objects} -o ${l_target}  ${l_libs} -D __RCSID__="\"$(generate_ident | tr '\n' ' ')\"" ${l_xtdmakeDir}/tracking/ident.cc
+}
+
+
+
+l_parseResult=`/usr/bin/getopt -o h\
+		--long top-srcdir:,bin:,libs:,target:,flags:,objects:,help \
+	-n "${l_progName}" -- "$@"`
+
+if [ $? != 0 ]; then
+    usage
+fi
+
+eval set -- "${l_parseResult}"
+
+read_options "$@"
+check_options
+generate_executable

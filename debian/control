@@ -1,0 +1,15 @@
+Source: xtdmake
+Section: utils
+Priority: optional
+Maintainer: Xavier MARCELET <xavier@marcelet.com>
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9), cmake (>= 2.8.7), python-all (>= 2.7)
+X-Python2-Version: >= 2.7
+
+Package: xtdmake
+Architecture: all
+Depends: python (>= 2.7), python (<< 2.8), cmake (>= 2.6), ${misc:Depends}
+Suggests: doxygen, graphviz, xsltproc, lcov, cloc, cppcheck, valgrind
+Description: CMake modules to generate C and CXX code quality measurements targets
+ http://github.com/psycofdj/xtdmake
+ .
