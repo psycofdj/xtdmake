@@ -45,8 +45,8 @@ for c_dir in l_dirs:
       l_childData["file"] = l_relpath
       l_childs.append(l_childData)
 
-  l_targets.append({"name" : l_module, "childs" : l_childs })
-
+  if len(l_childs) != 0:
+    l_targets.append({"name" : l_module, "childs" : l_childs })
 
 with open(l_result.output_file, "w") as l_file:
   l_data = json.dumps(l_targets)

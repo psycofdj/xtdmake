@@ -16,7 +16,8 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-treeview": "^1.2.0",
-    "chart.js": "^2.4.0"
+    "chart.js": "^2.4.0",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1"
   }
 }
