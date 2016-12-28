@@ -1,3 +1,21 @@
+xtdmake (1.0.1ppa1~xenial) xenial; urgency=medium
+
+  * Initial package
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Wed, 28 Dec 2016 13:49:17 +0100
+
+xtdmake (1.0.1ppa1~trusty) trusty; urgency=medium
+
+  * Initial package
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Wed, 28 Dec 2016 13:49:16 +0100
+
+xtdmake (1.0.1ppa1~precise) precise; urgency=medium
+
+  * Initial package
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Wed, 28 Dec 2016 13:49:15 +0100
+
 xtdmake (1.0.0ppa2~xenial) xenial; urgency=medium
 
   * Initial package
