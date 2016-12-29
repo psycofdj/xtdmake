@@ -1,7 +1,7 @@
 Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
-Name: coverxygen
+Name: xtdmake
 Maintainer: Xavier MARCELET <xavier@marcelet.com>
-Source: http://github.com/psycofdj/coverxygen
+Source: http://github.com/psycofdj/xtdmake
 
 Copyright: 2015-2016 Xavier MARCELET <xavier@marcelet.com>
 License: GPL-2+

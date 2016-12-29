@@ -3,8 +3,9 @@ cache:
   - apt
 
 install:
-  - sudo apt-get install debhelper cmake python-all
+  - sudo apt-get install debhelper cmake python-all lintian
 
 script:
   - export PATH=/usr/bin:${PATH}
   - dpkg-buildpackage -uc -us
+  - lintian ../xtdmake_*.deb
