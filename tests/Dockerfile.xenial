@@ -1,0 +1,24 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y && \
+    apt-get install -y \
+            cmake \
+            doxygen \
+            cppcheck \
+            cloc \
+            graphviz \
+            lcov \
+            python \
+            python-pip \
+            valgrind \
+            xsltproc \
+            g++ \
+            libboost-dev \
+            libboost-thread-dev \
+            libcppunit-dev
+
+RUN pip install coverxygen
+RUN  mkdir -p /env
+COPY ./src /env/src
+COPY ./tests /env/tests
+COPY ./CMakeLists.txt /env/CMakeLists.txt

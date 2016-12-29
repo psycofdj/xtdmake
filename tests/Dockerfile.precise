@@ -1,0 +1,27 @@
+FROM ubuntu:12.04
+
+RUN apt-get update -y && \
+    apt-get install -y \
+            cmake \
+            doxygen \
+            cppcheck \
+            graphviz \
+            lcov \
+            python \
+            python-pip \
+            valgrind \
+            xsltproc \
+            g++ \
+            libboost-dev \
+            libboost-thread-dev \
+            libcppunit-dev \
+            wget
+RUN apt-get install -y make
+
+RUN wget -O /usr/bin/cloc 'https://github.com/AlDanial/cloc/releases/download/v1.70/cloc-1.70.pl'
+RUN chmod +x /usr/bin/cloc
+RUN pip install coverxygen
+RUN  mkdir -p /env
+COPY ./src /env/src
+COPY ./tests /env/tests
+COPY ./CMakeLists.txt /env/CMakeLists.txt

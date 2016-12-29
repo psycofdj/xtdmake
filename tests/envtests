@@ -1,0 +1,22 @@
+#!/bin/bash
+
+l_dir=$(dirname $(readlink -m $0))
+
+function run_test
+{
+  l_dist=$1
+  l_log=$(mktemp)
+
+  echo -n "test on ${l_dist} : "
+  ${l_dir}/distro ${l_dist} > ${l_log} 2>&1
+  if [ $? -eq 0 ]; then
+      echo "Success"
+      rm -f ${l_log}
+  else
+    echo "Failed. log at ${l_log}"
+  fi
+}
+
+run_test xenial
+run_test trusty
+run_test precise

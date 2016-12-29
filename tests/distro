@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+l_distro=$1
+l_testDir=$(dirname $(readlink -m $0))
+
+
+cd $(dirname ${l_testDir})
+docker build -t xtdmake-test-${l_distro} -f tests/Dockerfile.${l_distro} .
+docker run -ti --rm=true xtdmake-test-${l_distro} /env/tests/build /env/tests/default Debug
+docker run -ti --rm=true xtdmake-test-${l_distro} /env/tests/build /env/tests/default Release
+
