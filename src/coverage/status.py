@@ -23,7 +23,7 @@ l_percent  = int(l_percent * 100)
 if l_result.output_file == "-":
   l_out = sys.stdout
 else:
-  l_out = open(l_result.output_file, "w")
+  l_out = open(l_result.output_file + ".tmp", "w")
   
 l_status  = "success"
 l_label   = "%d %%" % l_percent
@@ -114,6 +114,8 @@ l_out.write(json.dumps({
     "percent" : "int((float(%(covered)d) / float(%(total)d)) * 100)"
   }
 }, indent=2))
+l_out.close()
+os.rename(l_result.output_file + ".tmp", l_result.output_file)
 
 # Local Variables:
 # ispell-local-dictionary: "american"

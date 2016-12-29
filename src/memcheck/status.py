@@ -23,7 +23,7 @@ for c_item in l_data["tests"]:
 if l_result.output_file == "-":
   l_out = sys.stdout
 else:
-  l_out = open(l_result.output_file, "w")
+  l_out = open(l_result.output_file + ".tmp", "w")
                  
 l_status  = "failure"
 l_label   = "%d" % l_total
@@ -83,6 +83,8 @@ l_out.write(json.dumps({
     "total" : l_total
   }
 }, indent=2))
+l_out.close()
+os.rename(l_result.output_file + ".tmp", l_result.output_file)
 
 # Local Variables:
 # ispell-local-dictionary: "american"

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
-
+enable_testing()
 project(xtdmake NONE)
 
 list(APPEND l_dirs check)
@@ -25,3 +25,5 @@ foreach (c_dir ${l_dirs})
     DESTINATION share/xtdmake
     )
 endforeach()
+
+subdirs(tests)

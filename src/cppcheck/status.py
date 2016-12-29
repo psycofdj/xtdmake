@@ -17,7 +17,7 @@ l_tests   = l_tree.findall("./error")
 if l_result.output_file == "-":
   l_out = sys.stdout
 else:
-  l_out = open(l_result.output_file, "w")
+  l_out = open(l_result.output_file + ".tmp", "w")
 
 l_status  = "failure"
 l_label   = "%d" % len(l_tests)
@@ -76,3 +76,5 @@ l_out.write(json.dumps({
     "total" : len(l_tests)
   }
 }, indent=2))
+l_out.close()
+os.rename(l_result.output_file + ".tmp", l_result.output_file)

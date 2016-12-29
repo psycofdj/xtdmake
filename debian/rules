@@ -5,3 +5,7 @@
 
 %:
 	dh $@ --buildsystem=cmake
+
+
+# deisabling test that relies on too many dependencies
+override_dh_auto_test:

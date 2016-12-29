@@ -32,32 +32,50 @@ function(add_shared_static_library name)
 
   if (${CMAKE_VERSION}} VERSION_LESS 2.8.8)
     message(WARNING "add_shared_static_library requires cmake >= 2.8.8, building seperate objects")
-    add_library(${PROJECT_NAME}${name}_s STATIC ${ARGN})
-    add_library(${PROJECT_NAME}${name}   SHARED ${ARGN})
+    add_library(${name}_s STATIC ${ARGN})
+    add_library(${name}   SHARED ${ARGN})
+    set_target_properties(${name} PROPERTIES
+      LIBRARY_OUTPUT_NAME ${PROJECT_NAME}${name}
+      VERSION     ${StaticShared_VERSION}
+      SOVERSION   ${StaticShared_SOVERSION})
+    set_target_properties(${name}_s PROPERTIES
+      ARCHIVE_OUTPUT_NAME ${PROJECT_NAME}${name})
+    if (NOT ${StaticShared_NOINSTALL})
+      install(
+        TARGETS     ${name}_s ${name}
+        DESTINATION ${StaticShared_INSTALL_LIBS_DESTINATION})
+      foreach (c_pattern in ${StaticShared_INSTALL_HEADERS_PATTERNS})
+        install(
+          DIRECTORY   ${StaticShared_INSTALL_HEADERS_DIRECTORY}
+          DESTINATION ${StaticShared_INSTALL_HEADERS_DESTINATION}
+          FILES_MATCHING
+          PATTERN     ${c_pattern})
+      endforeach()
+  endif()
   else()
     add_library(${PROJECT_NAME}${name}-objs OBJECT ${ARGN})
     add_library(${PROJECT_NAME}${name}_s STATIC $<TARGET_OBJECTS:${PROJECT_NAME}${name}-objs>)
     add_library(${PROJECT_NAME}${name}   SHARED $<TARGET_OBJECTS:${PROJECT_NAME}${name}-objs>)
     set_property(TARGET ${PROJECT_NAME}${name}-objs PROPERTY POSITION_INDEPENDENT_CODE 1)
-  endif()
+    set_target_properties(${PROJECT_NAME}${name} PROPERTIES
+      VERSION     ${StaticShared_VERSION}
+      SOVERSION   ${StaticShared_SOVERSION})
+    add_library(${name}_s ALIAS ${PROJECT_NAME}${name}_s)
+    add_library(${name}   ALIAS ${PROJECT_NAME}${name})
 
-  set_target_properties(${PROJECT_NAME}${name} PROPERTIES
-    VERSION     ${StaticShared_VERSION}
-    SOVERSION   ${StaticShared_SOVERSION})
 
-  add_library(${name}_s ALIAS ${PROJECT_NAME}${name}_s)
-  add_library(${name}   ALIAS ${PROJECT_NAME}${name})
-
-  if (NOT ${StaticShared_NOINSTALL})
-    install(
-      TARGETS     ${PROJECT_NAME}${name}_s ${PROJECT_NAME}${name}
-      DESTINATION ${StaticShared_INSTALL_LIBS_DESTINATION})
-    foreach (c_pattern in ${StaticShared_INSTALL_HEADERS_PATTERNS})
+    if (NOT ${StaticShared_NOINSTALL})
       install(
-        DIRECTORY   ${StaticShared_INSTALL_HEADERS_DIRECTORY}
-        DESTINATION ${StaticShared_INSTALL_HEADERS_DESTINATION}
-        FILES_MATCHING
-        PATTERN     ${c_pattern})
-    endforeach()
+        TARGETS     ${PROJECT_NAME}${name}_s ${PROJECT_NAME}${name}
+        DESTINATION ${StaticShared_INSTALL_LIBS_DESTINATION})
+      foreach (c_pattern in ${StaticShared_INSTALL_HEADERS_PATTERNS})
+        install(
+          DIRECTORY   ${StaticShared_INSTALL_HEADERS_DIRECTORY}
+          DESTINATION ${StaticShared_INSTALL_HEADERS_DESTINATION}
+          FILES_MATCHING
+          PATTERN     ${c_pattern})
+      endforeach()
+    endif()
   endif()
+
 endfunction(add_shared_static_library)

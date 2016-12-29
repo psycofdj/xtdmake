@@ -152,7 +152,7 @@ else()
       COMMENT "Generating ${module} API documentation"
       OUTPUT ${DocRule_OUTPUT}/html/index.html ${DocRule_OUTPUT}/xml/index.xml
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
-      COMMAND mkdir -p ${DocRule_OUTPUT}
+      COMMAND mkdir -p ${DocRule_OUTPUT}/html ${DocRule_OUTPUT}/xml
       COMMAND ${Doxygen_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
       )
 
