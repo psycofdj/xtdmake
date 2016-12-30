@@ -1,0 +1,7 @@
+---------------
+DocCoverageRule
+---------------
+
+.. contents::
+   :local:
+

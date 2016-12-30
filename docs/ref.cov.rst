@@ -1,0 +1,6 @@
+-------
+CovRule
+-------
+
+.. contents::
+   :local:

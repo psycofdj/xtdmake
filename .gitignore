@@ -12,3 +12,4 @@ debian/xtdmake.debhelper.log
 debian/xtdmake.substvars
 debian/xtdmake/
 obj-x86_64-linux-gnu/
+docs/build

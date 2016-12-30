@@ -1,0 +1,6 @@
+------------
+StaticShared
+------------
+
+.. contents::
+   :local:

@@ -1,0 +1,6 @@
+---------
+CheckRule
+---------
+
+.. contents::
+   :local:
