@@ -17,17 +17,17 @@ message(STATUS "Found module CheckRule : TRUE")
 define_property(TARGET
   PROPERTY TESTLIST
   BRIEF_DOCS "Internal property to communicate test list to other rules"
-  FULL_DOCS "Internal property to communicate test list to other rules")
+  FULL_DOCS  "Internal property to communicate test list to other rules")
 
 define_property(TARGET
   PROPERTY ARGS
   BRIEF_DOCS "Internal property to communicate test arguments other rules"
-  FULL_DOCS "Internal property to communicate test arguments to other rules")
+  FULL_DOCS  "Internal property to communicate test arguments to other rules")
 
 define_property(TARGET
   PROPERTY ENV
   BRIEF_DOCS "Internal property to communicate test envs other rules"
-  FULL_DOCS "Internal property to communicate test envs to other rules")
+  FULL_DOCS  "Internal property to communicate test envs to other rules")
 
 
 function(add_check module)

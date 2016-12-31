@@ -254,53 +254,6 @@ Given parameters overloads default values.
 
 # Package reference
 
-## DocCoverageRule
-
-This target will generate a report showing how complete is the documentation.
-
-### Function reference
-  ```cmake
-  add_doc_coverage(<module_name>
-    [ KIND  kind1 [kind2 ...]]
-    [ SCOPE scope1 [scope2 ...]]
-  )
-  ```
-
-  - ```KIND``` : List of kind of symbol to take into account for coverage
-    measurement. Available values are described in the ```--kind``` parameter of
-    [coverxygen](https://github.com/psycofdj/coverxygen) tool.
-    Default value is ```enum;typedef;variable;function;class;struct;define```
-
-  - ```SCOPE``` : List of symbol's scope to take into account for coverage
-    measurement. Available values are described in the ```--scope``` parameter of
-    [coverxygen](https://github.com/psycofdj/coverxygen) tool.
-    Default value is ```public;protected```
-
-### Generated targets
-
-- ```<module>-doc-coverage``` : generate documentation coverage report for module
-  ```<module>``` .
-- ```<module>-doc-coverage-clean``` : removes documentation coverage report for
-  module ```<module>``` .
-- ```doc-coverage``` : generate documentation coverage reports for all modules
-- ```doc-coverage-clean``` : removes documentation coverage reports for all modules
-
-### Output reports
-
-- HTML : ```sensible-browser ./reports/<module_name>/doc-coverage/index.html```
-- XML : ```sensible-browser ./reports/<module_name>/doc-coverage/doc-coverage.html```
-
-Summary view :
-
-![Summary](./documentation/coverage-summary.png)
-
-
-Detailed view :
-
-![Detailed](./documentation/coverage-details.png)
-
-
-
 ## CheckRule
 
 XTDMake detects automatically tests source files, create cmake binary targets

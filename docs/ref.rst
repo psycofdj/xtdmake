@@ -13,3 +13,4 @@ Module Reference
    ref.cov
    ref.memcheck
    ref.staticshared
+   ref.tracking

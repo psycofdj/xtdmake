@@ -14,10 +14,12 @@ of your module.
 
 **Prerequisites**
 
-:cloc: Count line of code tool. Available from ubuntu packages (>= trusty) or from
-   source at http://cloc.sourceforge.net/
+cloc
+  Count line of code tool. Available from ubuntu packages (>= trusty) or from
+  source at http://cloc.sourceforge.net/
 
-:xsltproc: XSL Template rendering tool. Available from ubuntu packages or from
+xsltproc
+  XSL Template rendering tool. Available from ubuntu packages or from
   source at http://xmlsoft.org/
 
 Functions
@@ -38,40 +40,40 @@ targets.
 
 **Parameters**
 
-.. _ClocRule_module_name:
-
-:module_name: Name of the module. It determines the name of the generated cmake
+module_name
+  Name of the module. It determines the name of the generated cmake
   targets and the directory where targets generate the report.
 
-.. _ClocRule_INPUT:
+INPUT
+  List of directories where target should search source files process.
+  Default value is given by :py:obj:`ClocRule_DEFAULT_INPUT`
 
-:INPUT: List of directories where target should search source files process.
-  Default value is given by :ref:`ClocRule_DEFAULT_INPUT <ClocRule_DEFAULT_INPUT>`
-
-.. _ClocRule_FILE_PATTERNS:
-
-:FILE_PATTERNS: List of wildcards search files in given input directories.
-  Default value is given by :ref:`ClocRule_DEFAULT_FILE_PATTERNS <ClocRule_DEFAULT_FILE_PATTERNS>`
+FILE_PATTERNS
+  List of wildcards search files in given input directories.
+  Default value is given by :py:obj:`ClocRule_DEFAULT_FILE_PATTERNS`
 
 **Global variables**
 
-.. _ClocRule_DEFAULT_INPUT:
-
-:ClocRule_DEFAULT_INPUT: ``${CMAKE_CURRENT_SOURCE_DIR}/src``
-
-.. _ClocRule_DEFAULT_FILE_PATTERNS:
-
-:ClocRule_FILE_PATTERNS: ``*.cc;*.hh;*.hxx``
+.. py:attribute:: ClocRule_DEFAULT_INPUT
+                  "${CMAKE_CURRENT_SOURCE_DIR}/src"
+.. py:attribute:: ClocRule_FILE_PATTERNS
+                  "*.cc;*.hh;*.hxx"
 
 
 Generated rules
 ---------------
 
-:<module_name>-cloc: generate cloc report for module ``<module_name>``
-:<module_name>-cloc-clean: removes cloc report for module ``<module_name>``
-:cloc: generate cloc reports for all modules
-:cloc-clean: removes cloc reports for all modules
+<module_name>-cloc
+   generate cloc report for module ``<module_name>``
 
+<module_name>-cloc-clean
+   removes cloc report for module ``<module_name>``
+
+cloc generate
+   cloc reports for all modules
+
+cloc-clean
+   removes cloc reports for all modules
 
 **Dependencies**
 
@@ -91,7 +93,7 @@ Generated rules
 .. warning::
 
   The dependency of cmake build system to the modification time of
-  :ref:`INPUT <ClocRule_INPUT>` directories doesn't work with cmake versions
+  :py:obj:`INPUT` directories doesn't work with cmake versions
   prior to 3.0. This mean you must re-run cmake after adding new sources files in
   order to properly update the rule files dependencies
 
@@ -140,88 +142,88 @@ Bellow an example of generated html report :
 .. code-block:: json
 
   {
-    "status": "success", 
+    "status": "success",
     "graphs": [
       {
         "data": {
-          "labels": [], 
+          "labels": [],
           "datasets": [
             {
-              "borderColor": "rgba(51, 204, 51, 0.5)", 
-              "pointBorderColor": "rgba(31, 122, 31, 1)", 
-              "yAxisID": "absolute", 
-              "label": "comment lines", 
-              "backgroundColor": "rgba(51, 204, 51, 0)", 
-              "pointBackgroundColor": "rgba(31, 122, 31, 1)", 
+              "borderColor": "rgba(51, 204, 51, 0.5)",
+              "pointBorderColor": "rgba(31, 122, 31, 1)",
+              "yAxisID": "absolute",
+              "label": "comment lines",
+              "backgroundColor": "rgba(51, 204, 51, 0)",
+              "pointBackgroundColor": "rgba(31, 122, 31, 1)",
               "data": "%(comment)d"
-            }, 
+            },
             {
-              "borderColor": "rgba(179, 0, 0, 0.5)", 
-              "pointBorderColor": "rgba(102, 0, 0, 1)", 
-              "yAxisID": "absolute", 
-              "label": "code lines", 
-              "backgroundColor": "rgba(179, 0, 0, 0)", 
-              "pointBackgroundColor": "rgba(102, 0, 0, 1)", 
+              "borderColor": "rgba(179, 0, 0, 0.5)",
+              "pointBorderColor": "rgba(102, 0, 0, 1)",
+              "yAxisID": "absolute",
+              "label": "code lines",
+              "backgroundColor": "rgba(179, 0, 0, 0)",
+              "pointBackgroundColor": "rgba(102, 0, 0, 1)",
               "data": "%(code)d"
-            }, 
+            },
             {
-              "borderColor": "rgba(102, 153, 255, 0.5)", 
-              "pointBorderColor": "rgba(0, 60, 179, 1)", 
-              "yAxisID": "percent", 
-              "label": "% comment lines", 
-              "backgroundColor": "rgba(102, 153, 255, 0)", 
-              "pointBackgroundColor": "rgba(0, 60, 179, 1)", 
+              "borderColor": "rgba(102, 153, 255, 0.5)",
+              "pointBorderColor": "rgba(0, 60, 179, 1)",
+              "yAxisID": "percent",
+              "label": "% comment lines",
+              "backgroundColor": "rgba(102, 153, 255, 0)",
+              "pointBackgroundColor": "rgba(0, 60, 179, 1)",
               "data": "int(float(%(comment)d) / (float(%(comment)d) + float(%(code)d)) * 100)"
             }
           ]
-        }, 
-        "type": "line", 
+        },
+        "type": "line",
         "options": {
           "scales": {
             "xAxes": [
               {
                 "ticks": {
-                  "fontSize": 12, 
+                  "fontSize": 12,
                   "minRotation": 80
                 }
               }
-            ], 
+            ],
             "yAxes": [
               {
-                "position": "left", 
+                "position": "left",
                 "ticks": {
-                  "fontSize": 24, 
+                  "fontSize": 24,
                   "beginAtZero": true
-                }, 
-                "type": "linear", 
-                "id": "absolute", 
+                },
+                "type": "linear",
+                "id": "absolute",
                 "display": true
-              }, 
+              },
               {
-                "position": "right", 
+                "position": "right",
                 "ticks": {
-                  "max": 100, 
-                  "fontSize": 24, 
+                  "max": 100,
+                  "fontSize": 24,
                   "beginAtZero": true
-                }, 
-                "type": "linear", 
+                },
+                "type": "linear",
                 "id": "percent"
               }
             ]
-          }, 
+          },
           "title": {
-            "text": "%(module)s : cloc", 
+            "text": "%(module)s : cloc",
             "display": true
           }
         }
       }
-    ], 
+    ],
     "data": {
-      "comment": 2283, 
+      "comment": 2283,
       "code": 3266
-    }, 
+    },
     "label": "41 %"
-  } 
+  }
 
 ..
    Local Variables:

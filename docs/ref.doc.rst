@@ -1,3 +1,5 @@
+.. _DocRule:
+
 -------
 DocRule
 -------
@@ -28,7 +30,7 @@ Functions
 .. code-block:: cmake
 
   add_doc(module_name,
-    [INTPUT            <dir>     [ <dir>     ... ]],
+    [INPUT             <dir>     [ <dir>     ... ]],
     [FILE_PATTERNS     <pattern> [ <pattern> ... ]]
     [EXCLUDE           <file>    [ <file>    ... ]],
     [PREDEFINED        <name>    [ <name>    ... ]]
@@ -48,97 +50,84 @@ module. Generated targets are added as dependency of the global ``doc`` and
 
 **Parameters**
 
-.. _DocRule_module_name:
-
-:module_name: Name of the module. It determines the name of the generated cmake
+module_name
+  Name of the module. It determines the name of the generated cmake
   targets and the directory where targets generate the report.
 
-.. _DocRule_INPUT:
-
-:INPUT: List of directories where target should search source files to process.
+INPUT
+  List of directories where target should search source files to process.
   Ultimatly this paramter will be given to doxygen ``INPUT`` configuration
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_input).
 
-  Default value is given by :ref:`DocRule_DEFAULT_INPUT <DocRule_DEFAULT_INPUT>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_INPUT`
 
-.. _DocRule_FILE_PATTERNS:
-
-:FILE_PATTERNS: List of wildcards search files in given input directories.
+FILE_PATTERNS
+  List of wildcards search files in given input directories.
   Ultimatly this paramter will be given to doxygen ``FILE_PATTERNS`` configuration.
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_input).
-  Together with :ref:`INPUT <DocRule_INPUT>`, this paramter will determine the
+  Together with :py:obj:`INPUT`, this paramter will determine the
   files dependency of generated target.
 
-  Default value is given by :ref:`DocRule_DEFAULT_FILE_PATTERNS <DocRule_DEFAULT_FILE_PATTERNS>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_FILE_PATTERNS`
 
-.. _DocRule_EXCLUDE:
-
-:EXCLUDE: List of files to exclude from doxygen generation.
+EXCLUDE
+  List of files to exclude from doxygen generation.
   Ultimatly this paramter will be given to doxygen ``EXCLUDE`` configuration.
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_exclude).
 
-  Default value is given by :ref:`DocRule_DEFAULT_EXCLUDE <DocRule_DEFAULT_EXCLUDE>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_EXCLUDE`
 
-.. _DocRule_PREDEFINED:
-
-:EXCLUDE: List of predefined macro given to doxygen in ``PREDEFINED`` configuration
+EXCLUDE
+  List of predefined macro given to doxygen in ``PREDEFINED`` configuration
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_predefined).
 
-  Default value is given by :ref:`DocRule_DEFAULT_PREDEFINED <DocRule_DEFAULT_PREDEFINED>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_PREDEFINED`
 
-.. _DocRule_EXPAND_AS_DEFINED:
-
-:EXPAND_AS_DEFINED:
+EXPAND_AS_DEFINED
   List of predefined macro given to doxygen in ``EXPAND_AS_DEFINED`` configuration
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_expand_as_defined).
 
-  Default value is given by :ref:`DocRule_DEFAULT_EXPAND_AS_DEFINED <DocRule_DEFAULT_PREDEFINED>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_EXPAND_AS_DEFINED`
 
-.. _DocRule_EXAMPLE:
-
-:EXAMPLE: Directory containing examples files given to doxygen as ``EXAMPLE_PATH`` configuration
+EXAMPLE
+  Directory containing examples files given to doxygen as ``EXAMPLE_PATH`` configuration
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_example_path).
 
-  Default value is given by :ref:`DocRule_DEFAULT_EXAMPLE <DocRule_DEFAULT_EXAMPLE>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_EXAMPLE`
 
-.. _DocRule_IMAGE:
-
-:IMAGE: Directory containing images files given to doxygen as ``IMAGE_PATH`` configuration
+IMAGE
+  Directory containing images files given to doxygen as ``IMAGE_PATH`` configuration
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_image_path).
 
-  Default value is given by :ref:`DocRule_DEFAULT_IMAGE <DocRule_DEFAULT_IMAGE>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_IMAGE`
 
-.. _DocRule_PLANTUML:
-
-:PLANTUML: Path to plantuml jar file given to doxygen as ``PLANTUML_JAR_PATH`` configuration
+PLANTUML
+  Path to plantuml jar file given to doxygen as ``PLANTUML_JAR_PATH`` configuration
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_plantuml_jar_path).
 
-  Default value is given by :ref:`DocRule_DEFAULT_PLANTUML <DocRule_DEFAULT_PLANTUML>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_PLANTUML`
 
 .. warning::
   Plantml integration is not supported in doxygen version prior to 1.8.11. In that case
   this parameter has no effect.
 
-.. _DocRule_WERROR:
-
-:WERROR: If YES, doxygen warning are threated as errors
+WERROR
+  If YES, doxygen warning are threated as errors
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_warn_as_error).
 
-  Default value is given by :ref:`DocRule_DEFAULT_WERROR <DocRule_DEFAULT_WERROR>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_WERROR`
 
-.. _DocRule_CALL_GRAPHS:
-
-:CALL_GRAPHS: If YES, doxygen will generate call graph and caller graph. This option
+CALL_GRAPHS
+  If YES, doxygen will generate call graph and caller graph. This option
   requires grahviz to be installed.
 
-  Default value is given by :ref:`DocRule_DEFAULT_CALL_GRAPHS <DocRule_DEFAULT_CALL_GRAPHS>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_CALL_GRAPHS`
 
-.. _DocRule_CONFIGURE_TEMPLATE:
-
-:CONFIGURE_TEMPLATE: Path to doxygen configuration template to use. If empty, the function chooses
+CONFIGURE_TEMPLATE
+  Path to doxygen configuration template to use. If empty, the function chooses
   one if its own default templates based on currently installed doxygen version.
 
-  Default value is given by :ref:`DocRule_DEFAULT_CONFIG <DocRule_DEFAULT_CONFIG>`
+  Default value is given by :py:obj:`DocRule_DEFAULT_CONFIG`
 
 .. warning::
   For XTDMake to work correclty with your manually defined configure template, you must
@@ -167,58 +156,44 @@ module. Generated targets are added as dependency of the global ``doc`` and
 
 **Global variables**
 
-.. _DocRule_DEFAULT_EXCLUDE:
-
-:DocRule_DEFAULT_EXCLUDE: ``""``
-
-.. _DocRule_DEFAULT_FILE_PATTERNS:
-
-:DocRule_DEFAULT_FILE_PATTERNS: ``"*.cc;*.hh;*.hpp"``
-
-.. _DocRule_DEFAULT_PREDEFINED:
-
-:DocRule_DEFAULT_PREDEFINED: ``""``
-
-.. _DocRule_DEFAULT_EXPAND_AS_DEFINED:
-
-:DocRule_DEFAULT_EXPAND_AS_DEFINED: ``""``
-
-.. _DocRule_DEFAULT_EXAMPLE:
-
-:DocRule_DEFAULT_EXAMPLE: ``"\${CMAKE_CURRENT_SOURCE_DIR}/doc/example"``
-
-.. _DocRule_DEFAULT_IMAGE:
-
-:DocRule_DEFAULT_IMAGE: ``"\${CMAKE_CURRENT_SOURCE_DIR}/doc/image"``
-
-.. _DocRule_DEFAULT_PLANTUML:
-
-:DocRule_DEFAULT_PLANTUML: ``"/usr/share/plantuml/plantuml.jar"``
-
-.. _DocRule_DEFAULT_INPUT:
-
-:DocRule_DEFAULT_INPUT: ``"\${CMAKE_CURRENT_SOURCE_DIR}/src;\${CMAKE_CURRENT_SOURCE_DIR}/doc"``
-
-.. _DocRule_DEFAULT_WERROR:
-
-:DocRule_DEFAULT_WERROR: ``"YES"``
-
-.. _DocRule_DEFAULT_CALL_GRAPHS:
-
-:DocRule_DEFAULT_CALL_GRAPHS: ``"YES"``
-
-.. _DocRule_DEFAULT_CONFIG:
-
-:DocRule_DEFAULT_CONFIG: ``""``
+.. py:attribute:: DocRule_DEFAULT_EXCLUDE
+     ""
+.. py:attribute:: DocRule_DEFAULT_FILE_PATTERNS
+                  "*.cc;*.hh;*.hpp"
+.. py:attribute:: DocRule_DEFAULT_PREDEFINED
+                  ""
+.. py:attribute:: DocRule_DEFAULT_EXPAND_AS_DEFINED
+                  ""
+.. py:attribute:: DocRule_DEFAULT_EXAMPLE
+                  "\${CMAKE_CURRENT_SOURCE_DIR}/doc/example"
+.. py:attribute:: DocRule_DEFAULT_IMAGE
+                  "\${CMAKE_CURRENT_SOURCE_DIR}/doc/image"
+.. py:attribute:: DocRule_DEFAULT_PLANTUML
+                  "/usr/share/plantuml/plantuml.jar"
+.. py:attribute:: DocRule_DEFAULT_INPUT
+                  "\${CMAKE_CURRENT_SOURCE_DIR}/src;\${CMAKE_CURRENT_SOURCE_DIR}/doc"
+.. py:attribute:: DocRule_DEFAULT_WERROR
+                  "YES"
+.. py:attribute:: DocRule_DEFAULT_CALL_GRAPHS
+                  "YES"
+.. py:attribute:: DocRule_DEFAULT_CONFIG
+                  ""
 
 
 Generated rules
 ---------------
 
-:<module_name>-doc: generate doc report for module ``<module_name>``
-:<module_name>-doc-clean: removes doc report for module ``<module_name>``
-:doc: generate doc reports for all modules
-:doc-clean: removes doc reports for all modules
+<module_name>-doc
+  generate doc report for module ``<module_name>``
+
+<module_name>-doc-clean
+  removes doc report for module ``<module_name>``
+
+doc
+  generate doc reports for all modules
+
+doc-clean
+  removes doc reports for all modules
 
 
 **Dependencies**
@@ -239,7 +214,7 @@ Generated rules
 .. warning::
 
   The dependency of cmake build system to the modification time of
-  :ref:`INPUT <DocRule_INPUT>` directories doesn't work with cmake versions
+  :py:obj:`INPUT` directories doesn't work with cmake versions
   prior to 3.0. This mean you must re-run cmake after adding new sources files in
   order to properly update the rule files dependencies
 
