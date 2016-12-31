@@ -48,9 +48,7 @@ else()
       "${multiValueArgs}"
       ${ARGN})
 
-
     set(MemcheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/memcheck")
-
 
     get_target_property(l_test_list ${module}-check TESTLIST)
     if ("${l_test_list}" STREQUAL "NOTFOUND")

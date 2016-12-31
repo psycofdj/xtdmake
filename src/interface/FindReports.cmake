@@ -130,11 +130,11 @@ if (MemcheckRule_FOUND)
 endif()
 
 add_custom_target(reports
-  DEPENDS doc  doc-coverage  cloc  cppcheck  check  cov
+  DEPENDS doc  doc-coverage  cloc  cppcheck  check  cov memcheck
 )
 
 add_custom_target(reports-clean
-  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean
+  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean
 )
 
 add_custom_target(reports-show

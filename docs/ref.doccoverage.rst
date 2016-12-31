@@ -7,12 +7,10 @@ DocCoverageRule
 .. contents::
    :local:
 
-Overview
---------
-
 This module generates a report from result of cppcheck static analysis.
 
-**Prerequisites**
+Prerequisites
+-------------
 
 lcov
   Generates html report from coverage statistics. Available from ubuntu packages or
@@ -34,22 +32,22 @@ Functions
 
 .. code-block:: cmake
 
-  add_doc_coverage(<module_name>
+  add_doc_coverage(<module>
     [ KIND  <kind>  [<kind>  ...]]
     [ SCOPE <scope> [<scope> ...]]
     [ MIN_PERCENT <value> ]
     [ PREFIX              ]
   )
 
-
 This function generates cmake targets that produce reports that show your documentation's coverage.
 Generated targets are added as dependency of the global ``doc-coverage`` and ``doc-coverage-clean``
 targets.
 
 
-**Parameters**
+Parameters
+----------
 
-module_name
+module
   Name of the module. It determines the name of the generated cmake
   targets and the directory where targets generate the report.
 
@@ -77,33 +75,35 @@ PREFIX
   Default value is given by :py:obj:`DocCoverageRule_DEFAULT_PREFIX`.
 
 
-**Global variables**
+Global variables
+----------------
 
-.. py:attribute:: DocCoverageRule_KIND
+.. py:attribute:: DocCoverageRule_DEFAULT_KIND
                   "enum;typedef;variable;function;class;struct;define"
-.. py:attribute:: DocCoverageRule_SCOPE
+.. py:attribute:: DocCoverageRule_DEFAULT_SCOPE
                   "public;protected"
-.. py:attribute:: DocCoverageRule_MIN_PERCENT
+.. py:attribute:: DocCoverageRule_DEFAULT_MIN_PERCENT
                   "30"
-.. py:attribute:: DocCoverageRule_PREFIX
+.. py:attribute:: DocCoverageRule_DEFAULT_PREFIX
                   "\${CMAKE_CURRENT_SOURCE_DIR}/src"
 
-Generated rules
----------------
+Generated targets
+-----------------
 
-<module_name>-doc-coverage
-  generate documentation coverage report for module ``<module_name>``
-
-<module_name>-doc-coverage-clean
-  removes documentation coverage report for module ``<module_name>``
-
-doc-coverage
+``doc-coverage``
   generate documentation coverage reports for all modules
 
-doc-coverage-clean
+``doc-coverage-clean``
    removes documentation coverage reports for all modules
 
-**Dependencies**
+``<module>-doc-coverage``
+  generate documentation coverage report for module *<module>*
+
+``<module>-doc-coverage-clean``
+  removes documentation coverage report for module *<module>*
+
+Dependencies
+------------
 
 .. graphviz::
 
@@ -119,7 +119,18 @@ Generated reports
 -----------------
 
 
-**JSON** : ``reports/<module_name>/doc-coverage/data.json``
+**HTML** : ``reports/<module>/doc-coverage/index.html``
+
+Bellow an example of generated html report :
+
+.. image:: _static/doc-coverage-summary.png
+  :align: center
+
+.. image:: _static/doc-coverage-details.png
+  :align: center
+
+
+**JSON** : ``reports/<module>/doc-coverage/data.json``
 
 .. code-block:: json
 
@@ -142,19 +153,7 @@ Generated reports
     }
   ]
 
-
-**HTML** : ``reports/<module_name>/doc-coverage/index.html``
-
-Bellow an example of generated html report :
-
-.. image:: _static/doc-coverage-summary.png
-  :align: center
-
-.. image:: _static/doc-coverage-details.png
-  :align: center
-
-
-**JSON** : ``reports/<module_name>/doc-coverage/status.json``
+**JSON** : ``reports/<module>/doc-coverage/status.json``
 
 
 .. code-block:: json

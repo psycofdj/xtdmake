@@ -5,12 +5,10 @@ CppcheckRule
 .. contents::
    :local:
 
-Overview
---------
-
 This module generates a report from result of cppcheck static analysis.
 
-**Prerequisites**
+Prerequisites
+-------------
 
 cppcheck
   Static C++ code analyzer tool. Available from ubuntu packages or from
@@ -25,7 +23,7 @@ Functions
 
 .. code-block:: cmake
 
-  add_cppcheck(module_name,
+  add_cppcheck(module,
     [INTPUT        <dir>     [ <dir>     ... ]],
     [FILE_PATTERNS <pattern> [ <pattern> ... ]]
   )
@@ -36,9 +34,10 @@ Generated targets are added as dependency of the global ``cppcheck`` and ``cppch
 targets.
 
 
-**Parameters**
+Parameters
+----------
 
-module_name
+module
   Name of the module. It determines the name of the generated cmake
   targets and the directory where targets generate the report.
 
@@ -50,29 +49,31 @@ FILE_PATTERNS
   List of wildcards search files in given input directories.
   Default value is given by :py:obj:`CppcheckRule_DEFAULT_FILE_PATTERNS`
 
-**Global variables**
+Global variables
+----------------
 
 .. py:attribute:: CppcheckRule_DEFAULT_INPUT
                   "${CMAKE_CURRENT_SOURCE_DIR}/src"
-.. py:attribute:: CppcheckRule_FILE_PATTERNS
+.. py:attribute:: CppcheckRule_DEFAULT_FILE_PATTERNS
                   "*.cc;*.hh;*.hxx"
 
-Generated rules
----------------
+Generated targets
+-----------------
 
-<module_name>-cppcheck
-  generate cppcheck report for module ``<module_name>``
-
-<module_name>-cppcheck-clean
-  removes cppcheck report for module ``<module_name>``
-
-cppcheck
+``cppcheck``
   generate cppcheck reports for all modules
 
-cppcheck-clean
+``cppcheck-clean``
    removes cppcheck reports for all modules
 
-**Dependencies**
+``<module>-cppcheck``
+  generate cppcheck report for module *<module>*
+
+``<module>-cppcheck-clean``
+  removes cppcheck report for module *<module>*
+
+Dependencies
+------------
 
 .. graphviz::
 
@@ -97,7 +98,14 @@ cppcheck-clean
 Generated reports
 -----------------
 
-**XML** : ``reports/<module_name>/cppcheck/cppcheck.xml``
+**HTML** : ``reports/<module>/cppcheck/cppcheck.html``
+
+Bellow an example of generated html report :
+
+.. image:: _static/cppcheck.png
+  :align: center
+
+**XML** : ``reports/<module>/cppcheck/cppcheck.xml``
 
 .. code-block:: xml
 
@@ -115,14 +123,7 @@ Generated reports
     </errors>
   </results>
 
-**HTML** : ``reports/<module_name>/cppcheck/cppcheck.html``
-
-Bellow an example of generated html report :
-
-.. image:: _static/cppcheck.png
-  :align: center
-
-**JSON** : ``reports/<module_name>/cppcheck/status.json``
+**JSON** : ``reports/<module>/cppcheck/status.json``
 
 
 .. code-block:: json

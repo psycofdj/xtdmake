@@ -5,14 +5,11 @@ ClocRule
 .. contents::
    :local:
 
-
-Overview
---------
-
 This module generates a report counting the number of code, blank and comments lines
 of your module.
 
-**Prerequisites**
+Prerequisites
+-------------
 
 cloc
   Count line of code tool. Available from ubuntu packages (>= trusty) or from
@@ -27,7 +24,7 @@ Functions
 
 .. code-block:: cmake
 
-  add_cloc(module_name,
+  add_cloc(module,
     [INTPUT        <dir>     [ <dir>     ... ]],
     [FILE_PATTERNS <pattern> [ <pattern> ... ]]
   )
@@ -38,9 +35,10 @@ Generated targets are added as dependency of the global ``cloc`` and ``cloc-clea
 targets.
 
 
-**Parameters**
+Parameters
+----------
 
-module_name
+module
   Name of the module. It determines the name of the generated cmake
   targets and the directory where targets generate the report.
 
@@ -52,30 +50,34 @@ FILE_PATTERNS
   List of wildcards search files in given input directories.
   Default value is given by :py:obj:`ClocRule_DEFAULT_FILE_PATTERNS`
 
-**Global variables**
+
+Global variables
+----------------
 
 .. py:attribute:: ClocRule_DEFAULT_INPUT
                   "${CMAKE_CURRENT_SOURCE_DIR}/src"
-.. py:attribute:: ClocRule_FILE_PATTERNS
+.. py:attribute:: ClocRule_DEFAULT_FILE_PATTERNS
                   "*.cc;*.hh;*.hxx"
 
 
-Generated rules
----------------
+Generated target
+----------------
 
-<module_name>-cloc
-   generate cloc report for module ``<module_name>``
-
-<module_name>-cloc-clean
-   removes cloc report for module ``<module_name>``
-
-cloc generate
+``cloc generate``
    cloc reports for all modules
 
-cloc-clean
+``cloc-clean``
    removes cloc reports for all modules
 
-**Dependencies**
+``<module>-cloc``
+   generate cloc report for module *<module>*
+
+``<module>-cloc-clean``
+   removes cloc report for module *<module>*
+
+
+Dependencies
+------------
 
 .. graphviz::
 
@@ -100,7 +102,7 @@ cloc-clean
 Generated reports
 -----------------
 
-**XML** : ``reports/<module_name>/cppcheck/cloc.xml``
+**XML** : ``reports/<module>/cppcheck/cloc.xml``
 
 .. code-block:: xml
 
@@ -129,14 +131,14 @@ Generated reports
   </results>
 
 
-**HTML** : ``reports/<module_name>/cppcheck/index.html``
+**HTML** : ``reports/<module>/cppcheck/index.html``
 
 Bellow an example of generated html report :
 
 .. image:: _static/cloc.png
   :align: center
 
-**JSON** : ``reports/<module_name>/cppcheck/status.json``
+**JSON** : ``reports/<module>/cppcheck/status.json``
 
 
 .. code-block:: json

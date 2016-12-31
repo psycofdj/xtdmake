@@ -309,84 +309,11 @@ User may modify generated target at will with cmake's ```target_include_director
 Registered executable is then added as a standard cmake test using ```add_test```
 with given arguments ```ARGS```.
 
-
-
 Test source files in ```DIRECTORY``` that are prefixed by ```PREFIX``` and matches
 one of given ```PATTERNS``` are used to declare a test binary target. The name of
 the target is the source file name stripped of its prefix and extension.
 
 
-
-
-
-1. In your project's root CMakeLists.txt :
-  ```cmake
-  find_package(CheckRule REQUIRED)
-  ```
-
-2. In your module's CMakeLists.txt :
-  ```cmake
-  add_check(<module_name>
-    [PATTERNS pattern1  [pattern2 ...]]
-    [INCLUDES dir1      [dir2 ...]]
-    [LINKS    lib1      [lib2 ...]]
-    [ENV      name1=val [name2=val ...]]
-    [ARGS     arg1      [arg2 ...]]
-    [DIRECTORY dir]
-    [PREFIX    name]
-    [JOBS      number]
-    [NO_DEFAULT_ENV]
-    [NO_DEFAULT_ARGS]
-    [NO_DEFAULT_INCLUDES]
-  )
-  ```
-
-  - ```PATTERNS``` : List of wildcard to find source files in test directory.
-    Default is ```${CheckRule_DEFAULT_PATTERNS}``` .
-
-  - ```INCLUDES``` : List of include directories to add to test targets binaries.
-    Default is ```${CheckRule_DEFAULT_INCLUDES}```, unless ```NO_DEFAULT_INCLUDES```
-    is given.
-
-  - ```LINKS``` : List of libraries to link test targets. Values of
-   ```${CheckRule_DEFAULT_LINKS}``` are added unless ```NO_DEFAULT_LINKS``` is given.
-
-  - ```ENV``` : List of environment variable to set before running tests. Values of
-    ```${CheckRule_DEFAULT_ENV}``` as added unless ```NO_DEFAULT_ENV``` is given.
-
-  - ```ARGS``` : List of arguments to run the test binaries with. Values of
-    ```${CheckRule_DEFAULT_ARGS}``` are added unless ```NO_DEFAULT_ARGS``` is given.
-
-  - ```DIRECTORY``` : Test directory path. Default is
-    ```${CMAKE_CURRENT_SOURCE_DIR}/${CheckRule_DEFAULT_DIRECTORY}/``` .
-
-  - ```PREFIX``` : Prefix of test source files in directory. Default is
-    ```${CheckRule_DEFAULT_PREFIX}``` .
-
-  - ```JOBS``` : Number of parallel jobs to run tests suite. Default is
-    ```CheckRule_DEFAULT_JOBS``` .
-
-  - ```NO_DEFAULT_ENV``` : When given, ```${CheckRule_DEFAULT_ENV}``` are not
-    added to ```ENV``` .
-
-  - ```NO_DEFAULT_ARGS``` : When given, ```${CheckRule_DEFAULT_ARGS}``` are not
-    added to ```ARGS``` .
-
-  - ```NO_DEFAULT_INCLUDES``` : When given, ```${CheckRule_DEFAULT_INCLUDES}``` are not
-    added to ```INCLUDE``` .
-
-  - ```NO_DEFAULT_LINKS``` : When given, ```${CheckRule_DEFAULT_LINKS}``` are not
-    added to ```LINKS``` .
-
-  Global configuration values :
-  - ```CheckRule_DEFAULT_ARGS```      : Default is empty.
-  - ```CheckRule_DEFAULT_ENV```       : Default is empty.
-  - ```CheckRule_DEFAULT_INCLUDES```  : Default is empty.
-  - ```CheckRule_DEFAULT_LINKS```     : Default is empty.
-  - ```CheckRule_DEFAULT_DIRECTORY``` : Default is ```/unit```.
-  - ```CheckRule_DEFAULT_PATTERNS```  : Default is ```.c .cc .cpp```.
-  - ```CheckRule_DEFAULT_JOBS```      : Default is ```1```.
-  - ```CheckRule_DEFAULT_PREFIX```    : Default is ```Test```.
 
 
 

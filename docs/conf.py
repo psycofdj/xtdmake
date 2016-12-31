@@ -151,6 +151,3 @@ texinfo_documents = [
      author, 'XTDMake', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
