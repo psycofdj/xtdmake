@@ -1,4 +1,4 @@
 sphinx
 sphinx_rtd_theme
-sphinxcontrib-domaintools
 sphinxcontrib-cmakedomain
+sphinxcontrib-domaintools
