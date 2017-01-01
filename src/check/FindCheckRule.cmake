@@ -1,3 +1,23 @@
+xtdmake_find_program(Xsltproc
+  NAMES xsltproc
+  DOC "rendering xslt stylehseets"
+  URL "http://xmlsoft.org/"
+  VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
+  VERSION_POS "0"
+  REQUIRED CheckRule_FIND_REQUIRED)
+
+if (NOT Xsltproc_FOUND)
+  set(CheckRule_FOUND 0)
+  message(STATUS "Found module CheckRule : FALSE (unmet required dependencies)")
+  if (CheckRule_FIND_REQUIRED)
+    message(FATAL_ERROR "Unable to load required module CheckRule")
+  endif()
+else()
+  set(CheckRule_FOUND 1)
+  message(STATUS "Found module CheckRule : TRUE")
+endif()
+
+
 add_custom_target(check)
 add_custom_target(check-verbose)
 add_custom_target(check-clean)
@@ -17,17 +37,17 @@ message(STATUS "Found module CheckRule : TRUE")
 define_property(TARGET
   PROPERTY TESTLIST
   BRIEF_DOCS "Internal property to communicate test list to other rules"
-  FULL_DOCS "Internal property to communicate test list to other rules")
+  FULL_DOCS  "Internal property to communicate test list to other rules")
 
 define_property(TARGET
   PROPERTY ARGS
   BRIEF_DOCS "Internal property to communicate test arguments other rules"
-  FULL_DOCS "Internal property to communicate test arguments to other rules")
+  FULL_DOCS  "Internal property to communicate test arguments to other rules")
 
 define_property(TARGET
   PROPERTY ENV
   BRIEF_DOCS "Internal property to communicate test envs other rules"
-  FULL_DOCS "Internal property to communicate test envs to other rules")
+  FULL_DOCS  "Internal property to communicate test envs to other rules")
 
 
 function(add_check module)
@@ -133,8 +153,14 @@ function(add_check module)
 
   add_custom_command(
     COMMENT "Generating ${module} tests HTML and XML reports"
-    OUTPUT ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html ${CheckRule_OUTPUT}/status.json
-    DEPENDS ${l_test_list} ${XTDMake_HOME}/check/stylesheet.xsl ${XTDMake_HOME}/check/status.py
+    OUTPUT
+    ${CheckRule_OUTPUT}/tests.xml
+    ${CheckRule_OUTPUT}/index.html
+    ${CheckRule_OUTPUT}/status.json
+    DEPENDS
+    ${l_test_list}
+    ${XTDMake_HOME}/check/stylesheet.xsl
+    ${XTDMake_HOME}/check/status.py
     COMMAND mkdir -p ${CheckRule_OUTPUT}
     COMMAND rm -rf Testing/
     COMMAND touch DartConfiguration.tcl
@@ -145,7 +171,10 @@ function(add_check module)
     )
 
   add_custom_target(${module}-check
-    DEPENDS ${CheckRule_OUTPUT}/tests.xml ${CheckRule_OUTPUT}/index.html ${CheckRule_OUTPUT}/status.json)
+    DEPENDS
+    ${CheckRule_OUTPUT}/tests.xml
+    ${CheckRule_OUTPUT}/index.html
+    ${CheckRule_OUTPUT}/status.json)
 
 
   set_target_properties(${module}-check             PROPERTIES TESTLIST "${l_test_list}")

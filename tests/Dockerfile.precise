@@ -16,7 +16,7 @@ RUN apt-get update -y && \
             libboost-thread-dev \
             libcppunit-dev \
             wget
-RUN apt-get install -y make
+RUN apt-get install -y make rcs
 
 RUN wget -O /usr/bin/cloc 'https://github.com/AlDanial/cloc/releases/download/v1.70/cloc-1.70.pl'
 RUN chmod +x /usr/bin/cloc

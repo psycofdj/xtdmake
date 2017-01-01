@@ -27,7 +27,7 @@ endif()
 
 set(ClocRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "ClocRule default list of source directories")
 set(ClocRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "ClocRule default list of wildcard patterns to search in INPUT directories")
-set(ClocRule_DEFAULT_MIN_PERCENT   "30"                               CACHE STRING "ClocRule default mimunim comment percentage to consider task successful")
+set(ClocRule_DEFAULT_MIN_PERCENT   "30"                               CACHE STRING "ClocRule default mimunim comment percent to consider task successful")
 
 add_custom_target(cloc)
 add_custom_target(cloc-clean)
@@ -44,7 +44,7 @@ if (NOT ClocRule_FOUND)
 else()
   function(add_cloc module)
     set(multiValueArgs  INPUT FILE_PATTERNS)
-    set(oneValueArgs    )
+    set(oneValueArgs    MIN_PERCENT)
     set(options         )
     cmake_parse_arguments(ClocRule
       "${options}"

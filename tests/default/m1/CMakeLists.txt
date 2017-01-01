@@ -14,6 +14,10 @@ add_executable(bin_m1
 
 target_link_libraries(bin_m1 m1_s)
 
+install(TARGETS bin_m1
+  RUNTIME
+  DESTINATION bin)
+
 add_doc(m1)
 add_doc_coverage(m1)
 add_cloc(m1)

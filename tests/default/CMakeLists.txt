@@ -48,6 +48,8 @@ xtdmake_init(
   MemcheckRule    ${REQUIRED}
   Reports         ${REQUIRED})
 
+enable_tracking()
+
 # --------------------
 # compiler options
 # --------------------

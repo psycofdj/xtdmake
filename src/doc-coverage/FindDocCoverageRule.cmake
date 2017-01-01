@@ -50,7 +50,7 @@ else()
     endif()
 
     set(multiValueArgs  SCOPE KIND)
-    set(oneValueArgs    )
+    set(oneValueArgs    MIN_PERCENT PREFIX)
     set(options         )
     cmake_parse_arguments(DocCoverageRule
       "${options}"
@@ -89,7 +89,10 @@ else()
       VERBATIM)
 
     add_custom_target(${module}-doc-coverage
-      DEPENDS ${DocCoverageRule_OUTPUT}/index.html ${DocCoverageRule_OUTPUT}/data.json ${DocCoverageRule_OUTPUT}/status.json)
+      DEPENDS
+      ${DocCoverageRule_OUTPUT}/index.html
+      ${DocCoverageRule_OUTPUT}/data.json
+      ${DocCoverageRule_OUTPUT}/status.json)
     set_target_properties(${module}-doc-coverage
       PROPERTIES OUTPUT_DIR "${DocCoverageRule_OUTPUT}")
     add_custom_target(${module}-doc-coverage-clean
