@@ -143,14 +143,16 @@ else()
     xtdmake_stringify(DocRule_INPUT)
     xtdmake_stringify(DocRule_EXCLUDE)
 
-    if (DocRule_CONFIGURE_TEMPLATE STREQUAL "")
-      set(DocRule_CONFIGURE_TEMPLATE ${XTDMake_HOME}/doc/doxygen-1.8.11.in)
+    set(l_tpl ${DocRule_CONFIGURE_TEMPLATE})
+    if ("${l_tpl}" STREQUAL "")
+      set(l_tpl "${XTDMake_HOME}/doc/doxygen-1.8.11.in")
       if (Doxygen_VERSION VERSION_LESS "1.8.11")
-        set(DocRule_CONFIGURE_TEMPLATE ${XTDMake_HOME}/doc/doxygen.in)
+        set(l_tpl "${XTDMake_HOME}/doc/doxygen.in")
       endif()
     endif()
 
-    configure_file(${DocRule_CONFIGURE_TEMPLATE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg @ONLY)
+    message("template : ${l_tpl}")
+    configure_file(${l_tpl} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg @ONLY)
 
     add_custom_command(
       COMMENT "Generating ${module} API documentation"

@@ -17,6 +17,7 @@ RUN apt-get update -y && \
             libboost-thread-dev \
             libcppunit-dev
 
+RUN apt-get install -y rcs
 RUN pip install coverxygen
 RUN  mkdir -p /env
 COPY ./src /env/src

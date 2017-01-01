@@ -45,16 +45,38 @@ for c_file in $(echo ${l_checks[@]}); do
 done
 
 
-
 mkdir -p ${l_dir}/_tmp
 DESTDIR=${l_dir}/_tmp make install  ${VERBOSE}
 l_files=(lib/libp1m1.a lib/libp1m1.a lib/libp1m1.so.0.1.1 lib/libp1m1.so.0 lib/libp1m1.so)
 for c_file in $(echo ${l_files[@]}); do
   if [ ! -f "${l_dir}/_tmp/usr/local/${c_file}" ]; then
       echo "error : missing expected install file ${c_file}"
+      exit 1
   fi
 done
 
+
+for c_rcs in $(echo "time date revno"); do
+  for c_file in $(echo ${l_files[@]}); do
+    ident ${l_dir}/_tmp/usr/local/${c_file} | grep -q ${c_rcs} || {
+      echo "error: cannot find '${c_rcs}' in file '${c_file}'"
+      exit 1
+    }
+  done
+done
+
+
+l_bin=(bin/bin_m1)
+for c_rcs in $(echo "time" "date" "revno" "user" "pwd"); do
+  for c_file in $(echo ${l_bin[@]}); do
+    ident ${l_dir}/_tmp/usr/local/${c_file} | grep -q ${c_rcs} || {
+      echo "error: cannot find '${c_rcs}' in file '${c_file}'"
+      echo "indent information:"
+      ident ${l_dir}/_tmp/usr/local/${c_file}
+      exit 1
+    }
+  done
+done
 
 make  clean -j4  ${VERBOSE}
 if [ $? -ne 0 ]; then
