@@ -35,8 +35,8 @@ Functions
   add_doc_coverage(<module>
     [ KIND  <kind>  [<kind>  ...]]
     [ SCOPE <scope> [<scope> ...]]
-    [ MIN_PERCENT <value> ]
-    [ PREFIX              ]
+    [ MIN_PERCENT   <value> ]
+    [ PREFIX        <path>  ]
   )
 
 This function generates cmake targets that produce reports that show your documentation's coverage.

@@ -200,7 +200,8 @@ Generated targets
   removes doc report for module *<module>*
 
 
-**Dependencies**
+Dependencies
+------------
 
 .. graphviz::
 

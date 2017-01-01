@@ -14,6 +14,7 @@ l_parser.add_argument("--history-dir",  action="store", help ="path to history o
 l_parser.add_argument("--output-dir",   action="store", help ="path to javascript output", required=True)
 l_parser.add_argument("--build-label",  action="store", help ="name of current build",     required=True)
 l_parser.add_argument("--max-items",    action="store", help ="maximum number of build to keep in graph", type=int, default="75")
+l_parser.add_argument("--random",       action="store_true", help ="internal use",         default=False)
 l_result = l_parser.parse_args()
 
 l_graphDefs = {}
@@ -63,6 +64,13 @@ for c_kpi in l_values:
       for c_serie in l_graph["data"]["datasets"]:
         l_val = c_serie["data"] % l_values[c_kpi][c_module]
         l_val = eval(l_val)
+        if l_result.random:
+          l_rand = (random.random() / 2.0) - 0.25
+          l_val  = l_val * (1 + l_rand);
+          l_val  = max(l_val, 0);
+          if "percent" in c_serie["yAxisID"]:
+            l_val = min(l_val, 100)
+          l_val = int(l_val)
         c_serie["data"]  = [ l_val ]
       l_graph["data"]["labels"] = [ [ l_date, l_result.build_label ] ]
       l_graphs[c_kpi][c_module].append(l_graph)

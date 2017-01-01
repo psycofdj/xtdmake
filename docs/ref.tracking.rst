@@ -1,6 +1,0 @@
---------
-Tracking
---------
-
-.. contents::
-   :local:

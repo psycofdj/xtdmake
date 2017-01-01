@@ -25,8 +25,9 @@ Functions
 .. code-block:: cmake
 
   add_cloc(module,
-    [INTPUT        <dir>     [ <dir>     ... ]],
-    [FILE_PATTERNS <pattern> [ <pattern> ... ]]
+    [ INTPUT        <dir>     [ <dir>     ... ]],
+    [ FILE_PATTERNS <pattern> [ <pattern> ... ]],
+    [ MIN_PERCENT   <value> ]
   )
 
 
@@ -50,6 +51,12 @@ FILE_PATTERNS
   List of wildcards search files in given input directories.
   Default value is given by :py:obj:`ClocRule_DEFAULT_FILE_PATTERNS`
 
+MIN_PERCENT
+  Minimal percent of comment lines to consider target as successful. The target
+  itself won't fail but generated JSON status will be tagged as failure.
+
+  Default value is given by :py:obj:`ClocRule_DEFAULT_MIN_PERCENT`.
+
 
 Global variables
 ----------------
@@ -58,7 +65,8 @@ Global variables
                   "${CMAKE_CURRENT_SOURCE_DIR}/src"
 .. py:attribute:: ClocRule_DEFAULT_FILE_PATTERNS
                   "*.cc;*.hh;*.hxx"
-
+.. py:attribute:: ClocRule_DEFAULT_MIN_PERCENT
+                  "30"
 
 Generated target
 ----------------

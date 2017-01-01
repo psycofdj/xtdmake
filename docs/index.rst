@@ -8,7 +8,9 @@ Welcome to XTDMake's documentation!
    intro
    installation
    quickstart
-   ref
+   quality
+   utility
+   other
 
 
 Indices and tables
