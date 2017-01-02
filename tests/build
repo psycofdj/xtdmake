@@ -78,6 +78,13 @@ for c_rcs in $(echo "time" "date" "revno" "user" "pwd"); do
   done
 done
 
+
+# check that manual tests are correclty added
+cat ${l_dir}/reports/m1/check/tests.xml | grep -q tMyTest || {
+  echo "error: unable to find tMyTest in test reports"
+  exit 1
+}
+
 make  clean -j4  ${VERBOSE}
 if [ $? -ne 0 ]; then
     echo "error: failed to clean build tree"

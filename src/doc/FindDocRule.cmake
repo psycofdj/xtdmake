@@ -151,7 +151,6 @@ else()
       endif()
     endif()
 
-    message("template : ${l_tpl}")
     configure_file(${l_tpl} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg @ONLY)
 
     add_custom_command(

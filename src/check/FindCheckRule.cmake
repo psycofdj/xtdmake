@@ -49,6 +49,57 @@ define_property(TARGET
   BRIEF_DOCS "Internal property to communicate test envs other rules"
   FULL_DOCS  "Internal property to communicate test envs to other rules")
 
+define_property(TARGET
+  PROPERTY MANUAL_TESTS
+  BRIEF_DOCS "Internal property to communicate test envs other rules"
+  FULL_DOCS  "Internal property to communicate test envs to other rules")
+
+define_property(TEST
+  PROPERTY BIN
+  BRIEF_DOCS "Internal property to communicate test envs other rules"
+  FULL_DOCS  "Internal property to communicate test envs to other rules")
+
+define_property(TEST
+  PROPERTY ARGS
+  BRIEF_DOCS "Internal property to communicate test envs other rules"
+  FULL_DOCS  "Internal property to communicate test envs to other rules")
+
+
+function(add_check_test module name)
+  set(multiValueArgs  ENVIRONMENT COMMAND)
+  set(oneValueArgs    )
+  set(options         )
+  cmake_parse_arguments(__x
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN})
+
+  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/check")
+
+  list(GET __x_COMMAND 0 l_bin)
+  list(REMOVE_AT __x_COMMAND 0)
+  xtdmake_stringify(__x_COMMAND)
+  add_test(NAME t${name} COMMAND  ${l_bin} ${__x_COMMAND}
+    VERBATIM)
+
+  set_tests_properties(t${name} PROPERTIES
+    BIN         "${l_bin}"
+    ARGS        "${__x_COMMAND}"
+    ENVIRONMENT
+    ${__x_ENVIRONMENT})
+
+  if (NOT TARGET ${module}-check)
+    add_custom_target(${module}-check
+      DEPENDS
+      ${CheckRule_OUTPUT}/tests.xml
+      ${CheckRule_OUTPUT}/index.html
+      ${CheckRule_OUTPUT}/status.json)
+  endif()
+
+  set_property(TARGET ${module}-check APPEND PROPERTY MANUAL_TESTS "t${name}")
+endfunction()
+
 
 function(add_check module)
   set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
@@ -67,7 +118,7 @@ function(add_check module)
   xtdmake_set_default(CheckRule PREFIX)
   xtdmake_set_default(CheckRule JOBS)
 
-  set(CheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/check")
+  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/check")
 
   if (NOT CheckRule_NO_DEFAULT_ARGS)
     xtdmake_eval(l_args "${CheckRule_DEFAULT_ARGS}")
@@ -97,6 +148,7 @@ function(add_check module)
 
   xtdmake_stringify(CheckRule_ENV)
   set(${l_test_list} "")
+  set(${l_target_list}  "")
   set(${l_dir_list}  "")
   foreach(c_pattern ${CheckRule_PATTERNS})
     file(GLOB_RECURSE l_tests ${CheckRule_DIRECTORY}/${CheckRule_PREFIX}*${c_pattern})
@@ -112,10 +164,12 @@ function(add_check module)
           PUBLIC ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
       endif()
       target_link_libraries(${c_name_clean} ${CheckRule_LINKS} ${Cppunit_LIBRARY})
-      add_test(NAME ${c_name_clean} COMMAND ${c_name_clean} ${CheckRule_ARGS})
-      set_target_properties(${c_name_clean} PROPERTIES ARGS "${CheckRule_ARGS}")
-      set_target_properties(${c_name_clean} PROPERTIES ENVS "${CheckRule_ENV}")
+      add_test(NAME ${c_name_clean}
+        COMMAND ${c_name_clean} ${CheckRule_ARGS})
+      set_property(TEST ${c_name_clean} PROPERTY ARGS "${CheckRule_ARGS}")
+      set_property(TEST ${c_name_clean} PROPERTY ENVS "${CheckRule_ENV}")
       list(APPEND l_test_list ${c_name_clean})
+      list(APPEND l_get_list ${c_name_clean})
       list(APPEND l_dir_list  ${c_dir})
       add_custom_target(${module}-check-ut-${c_name_clean}
         COMMAND ${CheckRule_ENV} ${c_name_clean} ${CheckRule_ARGS}
@@ -128,15 +182,34 @@ function(add_check module)
     endforeach()
   endforeach()
 
+  if (NOT TARGET ${module}-check)
+    add_custom_target(${module}-check
+      DEPENDS
+      ${CheckRule_OUTPUT}/tests.xml
+      ${CheckRule_OUTPUT}/index.html
+      ${CheckRule_OUTPUT}/status.json)
+  endif()
+
+  get_target_property(l_tests ${module}-check MANUAL_TESTS)
+  foreach (c_test ${l_tests})
+    list(APPEND l_test_list ${c_test})
+    get_property(l_env  TEST ${c_test} PROPERTY ENVIRONMENT)
+    get_property(l_bin  TEST ${c_test} PROPERTY BIN)
+    get_property(l_args TEST ${c_test} PROPERTY ARGS)
+    add_custom_target(${module}-check-ut-${c_test}
+      COMMAND ${l_bin} ${l_args})
+    add_custom_target(${module}-check-ut-${c_test}-cmd
+      COMMAND echo ${l_env} ${l_bin} ${l_args})
+  endforeach()
+
   if (l_dir_list)
     list(REMOVE_DUPLICATES l_dir_list)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${l_dir_list})
   endif()
 
   string(REPLACE ";" "\\|" l_test_regex "${l_test_list}")
-
   add_custom_target(${module}-check-build
-    DEPENDS ${l_test_list})
+    DEPENDS ${l_target_list})
 
   add_custom_target(${module}-check-run-forced
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/testing
@@ -158,7 +231,7 @@ function(add_check module)
     ${CheckRule_OUTPUT}/index.html
     ${CheckRule_OUTPUT}/status.json
     DEPENDS
-    ${l_test_list}
+    ${l_target_list}
     ${XTDMake_HOME}/check/stylesheet.xsl
     ${XTDMake_HOME}/check/status.py
     COMMAND mkdir -p ${CheckRule_OUTPUT}
@@ -170,18 +243,10 @@ function(add_check module)
     COMMAND ${XTDMake_HOME}/check/status.py --input-file ${CheckRule_OUTPUT}/tests.xml --output-file ${CheckRule_OUTPUT}/status.json
     )
 
-  add_custom_target(${module}-check
-    DEPENDS
-    ${CheckRule_OUTPUT}/tests.xml
-    ${CheckRule_OUTPUT}/index.html
-    ${CheckRule_OUTPUT}/status.json)
-
-
-  set_target_properties(${module}-check             PROPERTIES TESTLIST "${l_test_list}")
-  set_target_properties(${module}-check-run         PROPERTIES TESTLIST "${l_test_list}")
-  set_target_properties(${module}-check-run-forced  PROPERTIES TESTLIST "${l_test_list}")
-  set_target_properties(${module}-check-run-verbose PROPERTIES TESTLIST "${l_test_list}")
-
+  set_target_properties(${module}-check             PROPERTIES TESTLIST "${l_target_list}")
+  set_target_properties(${module}-check-run         PROPERTIES TESTLIST "${l_target_list}")
+  set_target_properties(${module}-check-run-forced  PROPERTIES TESTLIST "${l_target_list}")
+  set_target_properties(${module}-check-run-verbose PROPERTIES TESTLIST "${l_target_list}")
 
   add_custom_target(${module}-check-clean
     COMMAND rm -rf ${CheckRule_OUTPUT} Testing DartConfiguration.tcl)

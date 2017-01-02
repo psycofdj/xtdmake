@@ -214,6 +214,32 @@ For each test *<name>*, the function also produces :
 Adding test manually
 --------------------
 
+To integrate manually defined tests with CheckRule module, you must use the following
+function.
+
+.. warning::
+  This function must be called **before** ``add_check``
+
+.. code-block:: cmake
+  
+  add_check_test(module name
+    COMMAND <command> [ <arg> ... ]
+    [ ENVIRONMENT <var>=<value> [ <var>=<value> ... ]
+  )
+
+module
+  name of targeted module
+
+name
+  name of the test target
+
+COMMAND
+  command line to run for this test
+  
+ENVIRONMENT
+  environment variable to define before running the test
+
+
 Target Dependencies
 -------------------
 
