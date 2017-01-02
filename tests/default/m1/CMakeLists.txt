@@ -7,7 +7,6 @@ add_shared_static_library(m1
   src/code.cc
   )
 
-
 add_executable(bin_m1
   src/main.cc
   )
@@ -18,10 +17,18 @@ install(TARGETS bin_m1
   RUNTIME
   DESTINATION bin)
 
+
+
 add_doc(m1)
 add_doc_coverage(m1)
 add_cloc(m1)
 add_cppcheck(m1)
+
+add_check_test(m1 MyTest
+  COMMAND     ${CMAKE_CURRENT_SOURCE_DIR}/unit/test.sh
+  ENVIRONMENT var=toto
+  )
+
 add_check(m1 INCLUDES ${m1_INCLUDE_DIRS} LINKS m1_s)
 add_cov(m1)
 add_memcheck(m1)

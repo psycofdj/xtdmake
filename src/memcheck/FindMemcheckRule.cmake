@@ -57,7 +57,7 @@ else()
 
     set(l_depends "")
     foreach(c_test ${l_test_list})
-      get_target_property(c_test_args ${c_test} ARGS)
+      get_property(c_test_args TEST ${c_test} PROPERTY ARGS)
 
       if (Valgrind_VERSION VERSION_LESS 3.9.0)
         add_custom_command(
