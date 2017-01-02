@@ -95,6 +95,7 @@ function(add_check_test module name)
       ${CheckRule_OUTPUT}/tests.xml
       ${CheckRule_OUTPUT}/index.html
       ${CheckRule_OUTPUT}/status.json)
+    set_property(TARGET ${module}-check PROPERTY MANUAL_TESTS "")
   endif()
 
   set_property(TARGET ${module}-check APPEND PROPERTY MANUAL_TESTS "t${name}")
@@ -169,7 +170,7 @@ function(add_check module)
       set_property(TEST ${c_name_clean} PROPERTY ARGS "${CheckRule_ARGS}")
       set_property(TEST ${c_name_clean} PROPERTY ENVS "${CheckRule_ENV}")
       list(APPEND l_test_list ${c_name_clean})
-      list(APPEND l_get_list ${c_name_clean})
+      list(APPEND l_target_list ${c_name_clean})
       list(APPEND l_dir_list  ${c_dir})
       add_custom_target(${module}-check-ut-${c_name_clean}
         COMMAND ${CheckRule_ENV} ${c_name_clean} ${CheckRule_ARGS}
@@ -188,10 +189,11 @@ function(add_check module)
       ${CheckRule_OUTPUT}/tests.xml
       ${CheckRule_OUTPUT}/index.html
       ${CheckRule_OUTPUT}/status.json)
+    set_property(TARGET ${module}-check PROPERTY MANUAL_TESTS "")
   endif()
 
-  get_target_property(l_tests ${module}-check MANUAL_TESTS)
-  foreach (c_test ${l_tests})
+  get_target_property(l_manual_tests ${module}-check MANUAL_TESTS)
+  foreach (c_test ${l_manual_tests})
     list(APPEND l_test_list ${c_test})
     get_property(l_env  TEST ${c_test} PROPERTY ENVIRONMENT)
     get_property(l_bin  TEST ${c_test} PROPERTY BIN)
