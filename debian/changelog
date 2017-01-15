@@ -1,3 +1,24 @@
+xtdmake (1.0.4ppa1~xenial) xenial; urgency=medium
+
+  * fix coverage rule dependency
+  * adds coverage lock system
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sun, 15 Jan 2017 03:30:00 +0100
+
+xtdmake (1.0.4ppa1~trusty) trusty; urgency=medium
+
+  * fix coverage rule dependency
+  * adds coverage lock system
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sun, 15 Jan 2017 03:30:00 +0100
+
+xtdmake (1.0.4ppa1~precise) precise; urgency=medium
+
+  * fix coverage rule dependency
+  * adds coverage lock system
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sun, 15 Jan 2017 03:30:00 +0100
+
 xtdmake (1.0.3ppa1~xenial) xenial; urgency=medium
 
   * fix compatibility with cmake 2.8.7 (precise)
