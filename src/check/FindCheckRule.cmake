@@ -148,9 +148,14 @@ function(add_check module)
   endif()
 
   xtdmake_stringify(CheckRule_ENV)
-  set(${l_test_list} "")
-  set(${l_target_list}  "")
-  set(${l_dir_list}  "")
+  set(l_test_list    "")
+  set(l_target_list  "")
+  set(l_dir_list     "")
+
+  if (EXISTS ${CheckRule_DIRECTORY})
+    list(APPEND l_dir_list  ${CheckRule_DIRECTORY})
+  endif()
+
   foreach(c_pattern ${CheckRule_PATTERNS})
     file(GLOB_RECURSE l_tests ${CheckRule_DIRECTORY}/${CheckRule_PREFIX}*${c_pattern})
     foreach(c_file ${l_tests})
@@ -173,7 +178,7 @@ function(add_check module)
       list(APPEND l_target_list ${c_name_clean})
       list(APPEND l_dir_list  ${c_dir})
       add_custom_target(${module}-check-ut-${c_name_clean}
-        COMMAND ${CheckRule_ENV} ${c_name_clean} ${CheckRule_ARGS}
+        COMMAND ${CheckRule_ENV} ./${c_name_clean} ${CheckRule_ARGS}
         DEPENDS ${c_name_clean})
       add_custom_target(${module}-check-ut-${c_name_clean}-gdb
         COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS}
