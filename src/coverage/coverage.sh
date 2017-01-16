@@ -3,7 +3,7 @@
 
 function lock
 {
-  l_timeout=180
+  l_timeout=600
   echo "[${module}-cov] acquiring cov lock..."
   while true; do
     if [ ! -f "${CMAKE_BINARY_DIR}/cov.lock" ]; then
