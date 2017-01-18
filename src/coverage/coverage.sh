@@ -1,5 +1,6 @@
 #!/bin/bash
-set -x
+# set -x
+quiet="-q"
 
 function lock
 {
@@ -40,10 +41,6 @@ rm -f \
 
 lock
 
-quiet="-q"
-quiet=""
-
-
 
 
 ${Lcov_EXECUTABLE} ${quiet} -z -d ${CMAKE_CURRENT_BINARY_DIR}
@@ -83,12 +80,8 @@ ${Lcov_EXECUTABLE} ${quiet} \
     cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
        ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
 
-# ${Lcov_EXECUTABLE} ${quiet} \
-#                    -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info \
-#                    "${CMAKE_CURRENT_SOURCE_DIR}/*" \
-#                    -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-
-# ${Lcov_EXECUTABLE} ${quiet} \
-#                    -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info \
-#                    "${CovRule_EXCLUDE_PATTERNS}" \
-#                    -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+# extract current source dir files
+${Lcov_EXECUTABLE} ${quiet} \
+                   -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info \
+                   "${CMAKE_CURRENT_SOURCE_DIR}/*" \
+                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
