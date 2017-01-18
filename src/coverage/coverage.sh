@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 
 function lock
 {
@@ -40,13 +40,55 @@ rm -f \
 
 lock
 
-${Lcov_EXECUTABLE} -q -z -d ${CMAKE_CURRENT_BINARY_DIR}
-${Lcov_EXECUTABLE} -q -c -i -d ${CMAKE_CURRENT_BINARY_DIR} -o "${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info"
-make ${module}-check-run-forced  > /dev/null 2>&1
-${Lcov_EXECUTABLE} -q -c -d ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
+quiet="-q"
+quiet=""
+
+
+
+
+${Lcov_EXECUTABLE} ${quiet} -z -d ${CMAKE_CURRENT_BINARY_DIR}
+
+# collect initial data
+${Lcov_EXECUTABLE} ${quiet} -c -i \
+                   -d ${CMAKE_CURRENT_BINARY_DIR} \
+                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
+
+# remove tests from initial
+${Lcov_EXECUTABLE} ${quiet} \
+                   -r ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
+                   "${CovRule_EXCLUDE_PATTERNS}" \
+                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
+
+# run tests
+make ${module}-check-run-forced  VERBOSE=1
+
+# delete tests run data
+find ${CMAKE_CURRENT_BINARY_DIR} -name 'test*.gcda' | xargs rm -f
+
+# collect run data
+${Lcov_EXECUTABLE} ${quiet} -c \
+                   -d ${CMAKE_CURRENT_BINARY_DIR} \
+                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info || \
+    cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
+       ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
 
 unlock
 
-${Lcov_EXECUTABLE} -q -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info || cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-${Lcov_EXECUTABLE} -q -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info "${CMAKE_CURRENT_SOURCE_DIR}/*"                          -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-${Lcov_EXECUTABLE} -q -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info ${CovRule_EXCLUDE_PATTERNS}                              -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+# assemble initial and run data
+
+${Lcov_EXECUTABLE} ${quiet} \
+                   -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
+                   -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info \
+                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info || \
+    cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
+       ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+
+# ${Lcov_EXECUTABLE} ${quiet} \
+#                    -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info \
+#                    "${CMAKE_CURRENT_SOURCE_DIR}/*" \
+#                    -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+
+# ${Lcov_EXECUTABLE} ${quiet} \
+#                    -r ${CMAKE_CURRENT_BINARY_DIR}/coverage.info \
+#                    "${CovRule_EXCLUDE_PATTERNS}" \
+#                    -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
