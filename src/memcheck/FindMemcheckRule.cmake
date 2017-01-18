@@ -3,7 +3,7 @@ add_custom_target(memcheck-clean)
 
 xtdmake_find_program(Valgrind
   NAMES valgrind
-  DOC "Dynamic analisys tool"
+  DOC "Dynamic analysis tool"
   URL "http://valgrind.org/"
   REQUIRED MemcheckRule_FIND_REQUIRED
   VERSION_OPT "--version | tr -- '-' ' '"
@@ -61,7 +61,7 @@ else()
 
       if (Valgrind_VERSION VERSION_LESS 3.9.0)
         add_custom_command(
-          COMMENT "Performing memory analisys for ${module} : ${c_test}"
+          COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
           DEPENDS ${c_test}
           COMMAND valgrind
@@ -75,7 +75,7 @@ else()
           VERBATIM)
       else()
         add_custom_command(
-          COMMENT "Performing memory analisys for ${module} : ${c_test}"
+          COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
           DEPENDS ${c_test}
           COMMAND valgrind
