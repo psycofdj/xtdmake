@@ -35,6 +35,7 @@ Functions
     [INPUT             <dir>     [ <dir>     ... ]],
     [FILE_PATTERNS     <pattern> [ <pattern> ... ]]
     [EXCLUDE           <file>    [ <file>    ... ]],
+    [EXCLUDE_PATTERNS  <pattern> [ <pattern> ... ]],
     [PREDEFINED        <name>    [ <name>    ... ]]
     [EXPAND_AS_DEFINED <name>    [ <name>    ... ]]
     [EXAMPLE           <dir> ]
@@ -79,6 +80,14 @@ EXCLUDE
   (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_exclude).
 
   Default value is given by :py:obj:`DocRule_DEFAULT_EXCLUDE`
+
+EXCLUDE
+  List of patterns to exclude from doxygen generation.
+  Ultimatly this paramter will be given to doxygen ``EXCLUDE_PATTERNS``
+  configuration.
+  (see https://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_exclude_patterns).
+
+  Default value is given by :py:obj:`DocRule_DEFAULT_EXCLUDE_PATTERNS`
 
 EXCLUDE
   List of predefined macro given to doxygen in ``PREDEFINED`` configuration
@@ -161,6 +170,8 @@ Global variables
 ----------------
 
 .. py:attribute:: DocRule_DEFAULT_EXCLUDE
+     ""
+.. py:attribute:: DocRule_DEFAULT_EXCLUDE_PATTERNS
      ""
 .. py:attribute:: DocRule_DEFAULT_FILE_PATTERNS
                   "*.cc;*.hh;*.hpp"

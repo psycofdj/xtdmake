@@ -26,10 +26,10 @@ else()
   message(STATUS "Found module DocCoverageRule : TRUE")
 endif()
 
-set(DocCoverageRule_DEFAULT_KIND          "enum;typedef;variable;function;class;struct;define"  CACHE STRING "DocCoverageRule default list of symbol kinds")
-set(DocCoverageRule_DEFAULT_SCOPE         "public;protected"                                    CACHE STRING "DocCoverageRule default list of symbol scope")
-set(DocCoverageRule_DEFAULT_PREFIX        "\${CMAKE_CURRENT_SOURCE_DIR}/src"                    CACHE STRING "DocCoverageRule default file prefix filter")
-set(DocCoverageRule_DEFAULT_MIN_PERCENT   "30"                                                  CACHE STRING "DocCoverageRule default mimunim coverage percentage to consider task successful")
+set(DocCoverageRule_DEFAULT_KIND        "enum;typedef;variable;function;class;struct;define"  CACHE STRING "DocCoverageRule default list of symbol kinds")
+set(DocCoverageRule_DEFAULT_SCOPE       "public;protected"                                    CACHE STRING "DocCoverageRule default list of symbol scope")
+set(DocCoverageRule_DEFAULT_PREFIX      "\${CMAKE_CURRENT_SOURCE_DIR}/src"                    CACHE STRING "DocCoverageRule default file prefix filter")
+set(DocCoverageRule_DEFAULT_MIN_PERCENT "30"                                                  CACHE STRING "DocCoverageRule default mimunim coverage percentage to consider task successful")
 
 
 add_custom_target(doc-coverage)
