@@ -1,10 +1,9 @@
 #!/bin/bash
-# set -x
 quiet="-q"
 
 function lock
 {
-  l_timeout=600
+  l_timeout=900
   echo "[${module}-cov] acquiring cov lock..."
   while true; do
     if [ ! -f "${CMAKE_BINARY_DIR}/cov.lock" ]; then
@@ -34,45 +33,55 @@ function unlock
   echo "[${module}-cov] cov lock released"
 }
 
+
+# export generated gcda to tmp dir, unlock asap
+l_tmp=$(mktemp -d)
+
+lock
+
+# delete existing gcda
+find ${CMAKE_CURRENT_BINARY_DIR} \
+     -name '*.gcda' \
+     -exec rm -f \{\} \;
+
+echo "[${module}-cov] running tests"
+make ${module}-check-run-forced >/dev/null 2>&1
+
+find ${CMAKE_CURRENT_BINARY_DIR} \
+     -name '*.gcda' \
+     -and \( ! -wholename "*${CovRule_EXCLUDE_PATTERNS}*.gcda" \) \
+     -exec cp --parents \{\} ${l_tmp} \;
+
+unlock
+
+
 rm -f \
    ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info \
    ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
    ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
 
-lock
 
+find ${CMAKE_CURRENT_BINARY_DIR} \
+     -name '*.gcno' \
+     -and \( ! -wholename "*${CovRule_EXCLUDE_PATTERNS}*.gcno" \) \
+     -exec cp --parents \{\} ${l_tmp} \;
 
-
-${Lcov_EXECUTABLE} ${quiet} -z -d ${CMAKE_CURRENT_BINARY_DIR}
 
 # collect initial data
+echo "[${module}-cov] collect initial data"
 ${Lcov_EXECUTABLE} ${quiet} -c -i \
-                   -d ${CMAKE_CURRENT_BINARY_DIR} \
-                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
+                   -d ${l_tmp} \
+                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info 2>&1 | \
+    grep -v 'Note:'
 
-# remove tests from initial
-${Lcov_EXECUTABLE} ${quiet} \
-                   -r ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
-                   "${CovRule_EXCLUDE_PATTERNS}" \
-                   -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info
-
-# run tests
-make ${module}-check-run-forced  VERBOSE=1
-
-# delete tests run data
-find ${CMAKE_CURRENT_BINARY_DIR} -name 'test*.gcda' | xargs rm -f
-
-# collect run data
+echo "[${module}-cov] collecting coverage data"
 ${Lcov_EXECUTABLE} ${quiet} -c \
-                   -d ${CMAKE_CURRENT_BINARY_DIR} \
+                   -d ${l_tmp} \
                    -o ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info || \
     cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
        ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info
 
-unlock
-
-# assemble initial and run data
-
+echo "[${module}-cov] assembling run and initial data"
 ${Lcov_EXECUTABLE} ${quiet} \
                    -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
                    -a ${CMAKE_CURRENT_BINARY_DIR}/coverage-run.info \
@@ -80,8 +89,12 @@ ${Lcov_EXECUTABLE} ${quiet} \
     cp ${CMAKE_CURRENT_BINARY_DIR}/coverage-initial.info \
        ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
 
-# extract current source dir files
+echo "[${module}-cov] extracting source directory data"
 ${Lcov_EXECUTABLE} ${quiet} \
                    -e ${CMAKE_CURRENT_BINARY_DIR}/coverage.info \
                    "${CMAKE_CURRENT_SOURCE_DIR}/*" \
                    -o ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
+
+
+# delete tmp dir
+rm -rf ${l_tmp}
