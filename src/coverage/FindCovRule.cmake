@@ -73,7 +73,9 @@ else()
       add_custom_command(
         COMMENT "Generating ${module} coverage informations"
         OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
-        DEPENDS ${l_test_list}
+        DEPENDS
+        ${l_test_list}
+        ${XTDMake_HOME}/coverage/coverage.sh
         COMMAND
         CMAKE_BINARY_DIR=${CMAKE_BINARY_DIR}
         CMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"

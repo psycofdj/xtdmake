@@ -1,3 +1,45 @@
+xtdmake (1.0.5ppa1~xenial) xenial; urgency=medium
+
+  * [cov] optimize cov parallel build
+  * [doc] adds exclude patterns configuration
+  * [doc] adds strip from path
+  * [doc-coverage] handle doxygen stipped path
+  * [doc-coverage] bump coverxygen minimal version
+  * [doc-coverage] fix devide by zero bug in status
+  * [reports] add graph generation manual target
+  * [reports] remember last selected module in graph viewer
+  * [memcheck] silent memcheck build output
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sat, 21 Jan 2017 12:05:02 +0100
+
+xtdmake (1.0.5ppa1~trusty) trusty; urgency=medium
+
+  * [cov] optimize cov parallel build
+  * [doc] adds exclude patterns configuration
+  * [doc] adds strip from path
+  * [doc-coverage] handle doxygen stipped path
+  * [doc-coverage] bump coverxygen minimal version
+  * [doc-coverage] fix devide by zero bug in status
+  * [reports] add graph generation manual target
+  * [reports] remember last selected module in graph viewer
+  * [memcheck] silent memcheck build output
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sat, 21 Jan 2017 12:05:01 +0100
+
+xtdmake (1.0.5ppa1~precise) precise; urgency=medium
+
+  * [cov] optimize cov parallel build
+  * [doc] adds exclude patterns configuration
+  * [doc] adds strip from path
+  * [doc-coverage] handle doxygen stipped path
+  * [doc-coverage] bump coverxygen minimal version
+  * [doc-coverage] fix devide by zero bug in status
+  * [reports] add graph generation manual target
+  * [reports] remember last selected module in graph viewer
+  * [memcheck] silent memcheck build output
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sat, 21 Jan 2017 12:05:00 +0100
+
 xtdmake (1.0.4ppa1~xenial) xenial; urgency=medium
 
   * fix coverage rule dependency

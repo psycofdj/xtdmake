@@ -17,6 +17,7 @@ l_data = json.loads(l_content)
 
 l_total = 0
 l_documented = 0
+l_percent = 0
 for c_item in l_data:
   for c_name, c_syms in c_item.items():
     for c_sym in c_syms:
@@ -24,8 +25,9 @@ for c_item in l_data:
       if c_sym["documented"]:
         l_documented += 1
 
-l_percent  = float(l_documented) / float(l_total)
-l_percent  = int(l_percent * 100.0)
+if l_total != 0:
+  l_percent  = float(l_documented) / float(l_total)
+  l_percent  = int(l_percent * 100.0)
 
 if l_result.output_file == "-":
   l_out = sys.stdout

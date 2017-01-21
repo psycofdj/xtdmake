@@ -11,6 +11,7 @@ add_custom_target(reports-update
   COMMAND ${XTDMake_HOME}/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
   VERBATIM)
 
+
 add_custom_command(
   COMMENT "Installing report interface"
   OUTPUT
@@ -28,6 +29,21 @@ add_custom_command(
   COMMAND cp ${XTDMake_HOME}/interface/index.html  ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp ${XTDMake_HOME}/interface/view.html   ${CMAKE_REPORT_OUTPUT}/
   COMMAND cp -r ${XTDMake_HOME}/interface/contribs/ ${CMAKE_REPORT_OUTPUT}/
+  VERBATIM)
+
+add_custom_command(
+  COMMENT "Generating graph data"
+  OUTPUT
+  ${CMAKE_REPORT_OUTPUT}/graph.js
+  DEPENDS
+  ${XTDMake_HOME}/interface/graph
+  COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
+  COMMAND ${XTDMake_HOME}/interface/graph
+    --report-dir ${CMAKE_REPORT_OUTPUT}/
+    --history-dir ${CMAKE_REPORT_OUTPUT}/
+    --output-dir ${CMAKE_REPORT_OUTPUT}/
+    --build-label XTDMake
+    --max-items 100
   VERBATIM)
 
 
@@ -129,12 +145,18 @@ if (MemcheckRule_FOUND)
     VERBATIM)
 endif()
 
+
 add_custom_target(reports
-  DEPENDS doc  doc-coverage  cloc  cppcheck  check  cov memcheck
+  DEPENDS doc doc-coverage cloc cppcheck check cov memcheck
+  ${CMAKE_REPORT_OUTPUT}/index.html
 )
 
 add_custom_target(reports-clean
   DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean
+)
+
+add_custom_target(reports-graph
+  DEPENDS ${CMAKE_REPORT_OUTPUT}/graph.js
 )
 
 add_custom_target(reports-show

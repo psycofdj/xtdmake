@@ -21,6 +21,8 @@
      function Handler(p_graphs) {
        var self = this;
 
+       self.lastModule = undefined;
+
        self.ui = {
          kpi     : $("select[name=kpi]"),
          module  : $("select[name=module]"),
@@ -38,7 +40,11 @@
          var l_selected = $("option:selected", self.ui.kpi).val();
          self.ui.module.find("option").remove();
          $.each(p_graphs[l_selected], function(p_moduleName, p_data) {
-           self.ui.module.append(self.createOption(p_moduleName,  { value : p_moduleName }));
+           var l_opt = self.createOption(p_moduleName,  { value : p_moduleName });
+           self.ui.module.append(l_opt);
+           if (self.lastModule && (self.lastModule == p_moduleName)) {
+             l_opt.prop("selected", true);
+           }
          });
          self.ui.module.change();
        }
@@ -62,6 +68,8 @@
          var l_module   = $("option:selected", self.ui.module).val();
          var l_context  = $("<canvas/>");
          var l_graphs   = p_graphs[l_kpi][l_module];
+
+         self.lastModule = l_module;
          $.each(l_graphs, function(c_idx, c_graph) {
            self.ui.content.find("canvas").remove();;
            self.ui.content.append(l_context);
