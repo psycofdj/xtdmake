@@ -16,7 +16,7 @@ xtdmake_find_python_module(Coverxygen
   VERSION_POS 0)
 
 set(DocCoverageRule_FOUND 0)
-if (NOT Coverxygen_FOUND OR NOT Genhtml_FOUND OR NOT DocRule_FOUND)
+if (NOT Coverxygen_FOUND OR NOT Genhtml_FOUND OR NOT DocRule_FOUND OR Coverxygen_VERSION VERSION_LESS 1.2.0)
   message(STATUS "Found module DocCoverageRule : FALSE (unmet required dependencies)")
   if (DocCoverageRule_FIND_REQUIRED)
     message(FATAL_ERROR "Unable to load required module DocCoverageRule")
@@ -74,8 +74,25 @@ else()
       OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json ${DocCoverageRule_OUTPUT}/status.json
       DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml ${XTDMake_HOME}/doc-coverage/status.py
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Coverxygen_INTERPRETER} -m ${Coverxygen_MODULE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/doc-coverage.info --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
-      COMMAND ${Coverxygen_INTERPRETER} -m ${Coverxygen_MODULE} --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/ --output ${DocCoverageRule_OUTPUT}/data.json --json  --prefix ${DocCoverageRule_PREFIX} --scope ${DocCoverageRule_SCOPE} --kind ${DocCoverageRule_KIND}
+      COMMAND ${Coverxygen_INTERPRETER}
+      -m ${Coverxygen_MODULE}
+      --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/
+      --src-dir ${CMAKE_CURRENT_SOURCE_DIR}
+      --output ${DocCoverageRule_OUTPUT}/doc-coverage.info
+      --prefix ${DocCoverageRule_PREFIX}
+      --scope ${DocCoverageRule_SCOPE}
+      --kind ${DocCoverageRule_KIND}
+
+      COMMAND ${Coverxygen_INTERPRETER}
+      -m ${Coverxygen_MODULE}
+      --xml-dir ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/
+      --src-dir ${CMAKE_CURRENT_SOURCE_DIR}
+      --output ${DocCoverageRule_OUTPUT}/data.json
+      --prefix ${DocCoverageRule_PREFIX}
+      --scope ${DocCoverageRule_SCOPE}
+      --kind ${DocCoverageRule_KIND}
+      --json
+
       COMMAND ${XTDMake_HOME}/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
       COMMAND ${XTDMake_HOME}/doc-coverage/status.py --input-file=${DocCoverageRule_OUTPUT}/data.json --output-file=${DocCoverageRule_OUTPUT}/status.json --min-percent=${DocCoverageRule_MIN_PERCENT}
       VERBATIM)
@@ -85,7 +102,7 @@ else()
       OUTPUT ${DocCoverageRule_OUTPUT}/index.html
       DEPENDS ${DocCoverageRule_OUTPUT}/doc-coverage.info
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
-      COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ -t "${module} documentation coverage" > /dev/null 2>&1
+      COMMAND ${Genhtml_EXECUTABLE} -q --no-function-coverage --no-branch-coverage ${DocCoverageRule_OUTPUT}/doc-coverage.info -o ${DocCoverageRule_OUTPUT}/ -t "${module} documentation coverage" 2> /dev/null
       VERBATIM)
 
     add_custom_target(${module}-doc-coverage
