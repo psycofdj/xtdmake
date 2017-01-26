@@ -79,15 +79,15 @@ function(add_check_test module name)
 
   list(GET __x_COMMAND 0 l_bin)
   list(REMOVE_AT __x_COMMAND 0)
-  xtdmake_stringify(__x_COMMAND)
-  add_test(NAME t${name} COMMAND  ${l_bin} ${__x_COMMAND}
-    VERBATIM)
+
+  add_test(NAME t${name}
+    COMMAND  ${l_bin} ${__x_COMMAND}
+  )
 
   set_tests_properties(t${name} PROPERTIES
     BIN         "${l_bin}"
     ARGS        "${__x_COMMAND}"
-    ENVIRONMENT
-    ${__x_ENVIRONMENT})
+    ENVIRONMENT "${__x_ENVIRONMENT}")
 
   if (NOT TARGET ${module}-check)
     add_custom_target(${module}-check
