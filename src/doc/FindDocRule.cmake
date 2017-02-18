@@ -69,7 +69,7 @@ else()
       ${ARGN})
 
     set(DocRule_MODULE   "${module}")
-    set(DocRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/doc")
+    set(DocRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/doc/${module}")
 
     # use default value argument if needed
     xtdmake_set_default(DocRule FILE_PATTERNS)
@@ -157,10 +157,15 @@ else()
 
     add_custom_command(
       COMMENT "Generating ${module} API documentation"
-      OUTPUT ${DocRule_OUTPUT}/html/index.html ${DocRule_OUTPUT}/xml/index.xml
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
+      OUTPUT
+      ${DocRule_OUTPUT}/html/index.html
+      ${DocRule_OUTPUT}/xml/index.xml
+      DEPENDS
+      ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
+      ${XTDMake_HOME}/doc/status.py
       COMMAND mkdir -p ${DocRule_OUTPUT}/html ${DocRule_OUTPUT}/xml
       COMMAND ${Doxygen_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cfg
+      COMMAND ${XTDMake_HOME}/doc/status.py --module ${module} --output-file=${DocRule_OUTPUT}/status.json
       )
 
     foreach (c_dep ${DocRule_DEPENDS})

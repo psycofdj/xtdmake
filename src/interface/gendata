@@ -1,0 +1,32 @@
+#!/usr/bin/python
+
+import sys
+import glob
+import os
+import json
+import argparse
+
+l_parser = argparse.ArgumentParser()
+l_parser.add_argument("--report-dir",   action="store", help ="path to reports root directory", required=True)
+l_parser.add_argument("--output-file",  action="store", help ="destination output file",        required=True)
+l_result = l_parser.parse_args()
+l_tree   = {}
+for c_root, c_dirs, c_files in os.walk(l_result.report_dir):
+  for c_file in c_files:
+    if c_file != "status.json":
+      continue
+    l_file    = open(os.path.join(c_root, c_file), "r")
+    l_content = l_file.read()
+    l_data    = json.loads(l_content)
+    l_kpi     = l_data["kpi"]
+    l_module  = l_data["module"]
+    del l_data["graphs"]
+    del l_data["kpi"]
+    if not l_kpi in l_tree:
+      l_tree[l_kpi] = []
+    l_data["file"] = os.path.relpath(os.path.join(c_root, l_data["index"]), l_result.report_dir);
+    l_tree[l_kpi].append(l_data)
+
+with open(l_result.output_file, "w") as l_file:
+  l_data = json.dumps(l_tree)
+  l_file.write("var g_data = %s" % l_data)

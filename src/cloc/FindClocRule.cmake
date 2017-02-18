@@ -56,7 +56,7 @@ else()
     xtdmake_set_default(ClocRule MIN_PERCENT)
     xtdmake_set_default_if_exists(ClocRule INPUT)
 
-    set(ClocRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cloc")
+    set(ClocRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/cloc/${module}")
     set(ClocRule_DEPENDS "")
     foreach(c_dir ${ClocRule_INPUT})
       foreach(c_pattern ${ClocRule_FILE_PATTERNS})
@@ -86,16 +86,25 @@ else()
 
     add_custom_command(
       COMMENT "Generating ${module} cloc HTML and XML reports"
-      OUTPUT ${ClocRule_OUTPUT}/cloc.xml ${ClocRule_OUTPUT}/cloc.html ${ClocRule_OUTPUT}/status.json
-      DEPENDS ${ClocRule_DEPENDS} ${XTDMake_HOME}/cloc/stylesheet.xsl ${XTDMake_HOME}/cloc/status.py
+      OUTPUT
+      ${ClocRule_OUTPUT}/cloc.xml
+      ${ClocRule_OUTPUT}/index.html
+      ${ClocRule_OUTPUT}/status.json
+      DEPENDS
+      ${ClocRule_DEPENDS}
+      ${XTDMake_HOME}/cloc/stylesheet.xsl
+      ${XTDMake_HOME}/cloc/status.py
       COMMAND mkdir -p ${ClocRule_OUTPUT}
       COMMAND ${Cloc_EXECUTABLE} ${ClocRule_DEPENDS} --xml --out ${ClocRule_OUTPUT}/cloc.xml --by-file-by-lang
-      COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cloc/stylesheet.xsl ${ClocRule_OUTPUT}/cloc.xml > ${ClocRule_OUTPUT}/cloc.html
-      COMMAND ${XTDMake_HOME}/cloc/status.py --input-file=${ClocRule_OUTPUT}/cloc.xml --output-file=${ClocRule_OUTPUT}/status.json --min-percent=${ClocRule_MIN_PERCENT}
+      COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cloc/stylesheet.xsl ${ClocRule_OUTPUT}/cloc.xml > ${ClocRule_OUTPUT}/index.html
+      COMMAND ${XTDMake_HOME}/cloc/status.py --module ${module} --input-file=${ClocRule_OUTPUT}/cloc.xml --output-file=${ClocRule_OUTPUT}/status.json --min-percent=${ClocRule_MIN_PERCENT}
       VERBATIM)
 
     add_custom_target(${module}-cloc
-      DEPENDS ${ClocRule_OUTPUT}/cloc.html ${ClocRule_OUTPUT}/status.json ${ClocRule_OUTPUT}/cloc.xml)
+      DEPENDS
+      ${ClocRule_OUTPUT}/index.html
+      ${ClocRule_OUTPUT}/status.json
+      ${ClocRule_OUTPUT}/cloc.xml)
     add_custom_target(${module}-cloc-clean
       COMMAND rm -rf ${ClocRule_OUTPUT})
     add_dependencies(cloc       ${module}-cloc)

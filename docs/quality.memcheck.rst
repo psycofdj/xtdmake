@@ -64,14 +64,14 @@ Generated reports
 -----------------
 
 
-**HTML** : ``reports/<module>/memcheck/index.html``
+**HTML** : ``reports/memcheck/<module>/index.html``
 
 Bellow an example of generated html report :
 
 .. image:: _static/memcheck.png
   :align: center
 
-**JSON** : ``reports/<module>/memcheck/memcheck.json``
+**JSON** : ``reports/memcheck/<module>/memcheck.json``
 
 .. code-block:: json
 
@@ -131,7 +131,7 @@ Bellow an example of generated html report :
   }
 
 
-**JSON** : ``reports/<module>/memcheck/status.json``
+**JSON** : ``reports/memcheck/<module>/status.json``
 
 .. code-block:: json
 

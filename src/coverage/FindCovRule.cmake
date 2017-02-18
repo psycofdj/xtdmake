@@ -61,7 +61,7 @@ else()
         "${multiValueArgs}"
         ${ARGN})
 
-      set(CovRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/coverage")
+      set(CovRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/coverage/${module}")
       xtdmake_set_default(CovRule EXCLUDE_PATTERNS)
       xtdmake_set_default(CovRule MIN_PERCENT)
 
@@ -97,7 +97,7 @@ else()
         ${XTDMake_HOME}/coverage/status.py
         COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ --function-coverage -t "${module} unit test coverage" --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --legend -s
         COMMAND ${XTDMake_HOME}/coverage/lcov_cobertura.py ${CMAKE_CURRENT_BINARY_DIR}/coverage.info -d -o ${CovRule_OUTPUT}/coverage.xml
-        COMMAND ${XTDMake_HOME}/coverage/status.py --input-file=${CovRule_OUTPUT}/coverage.xml --output-file=${CovRule_OUTPUT}/status.json --min-percent=${CovRule_MIN_PERCENT}
+        COMMAND ${XTDMake_HOME}/coverage/status.py --module ${module}  --input-file=${CovRule_OUTPUT}/coverage.xml --output-file=${CovRule_OUTPUT}/status.json --min-percent=${CovRule_MIN_PERCENT}
         )
 
       add_custom_target(${module}-cov

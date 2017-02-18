@@ -276,7 +276,7 @@ Target Dependencies
 Generated reports
 -----------------
 
-**HTML** : ``reports/<module>/check/index.html``
+**HTML** : ``reports/check/<module>/index.html``
 
 Bellow an example of generated html report :
 
@@ -284,7 +284,7 @@ Bellow an example of generated html report :
   :align: center
 
 
-**XML** : ``reports/<module>/check/index.xml``
+**XML** : ``reports/check/<module>/index.xml``
 
 .. code-block:: xml
 
@@ -360,7 +360,7 @@ Bellow an example of generated html report :
   </Site>
 
 
-**JSON** : ``reports/<module>/check/status.json``
+**JSON** : ``reports/check/<module>/status.json``
 
 .. code-block:: json
 

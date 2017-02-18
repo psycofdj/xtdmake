@@ -39,10 +39,15 @@
        self.onChangeKpi = function() {
          var l_selected = $("option:selected", self.ui.kpi).val();
          self.ui.module.find("option").remove();
-         $.each(p_graphs[l_selected], function(p_moduleName, p_data) {
-           var l_opt = self.createOption(p_moduleName,  { value : p_moduleName });
+         var l_keys = Object.keys(p_graphs[l_selected]);
+         l_keys.sort();
+         //$.each(p_graphs[l_selected], function(p_moduleName, p_data) {
+         $.each(l_keys, function(p_idx, p_key) {
+           // (p_moduleName, p_data)
+           p_graphs[l_selected][p_key]
+           var l_opt = self.createOption(p_key,  { value : p_key });
            self.ui.module.append(l_opt);
-           if (self.lastModule && (self.lastModule == p_moduleName)) {
+           if (self.lastModule && (self.lastModule == p_key)) {
              l_opt.prop("selected", true);
            }
          });
@@ -85,8 +90,10 @@
        }
 
        self.init = function() {
-         $.each(p_graphs, function(p_kpiName, p_kpi) {
-           self.ui.kpi.append(self.createOption(p_kpiName, { value : p_kpiName }));
+         var l_keys = Object.keys(p_graphs);
+         l_keys.sort();
+         $.each(l_keys, function(p_idx, p_key) {
+           self.ui.kpi.append(self.createOption(p_key, { value : p_key }));
          });
 
          self.ui.kpi.change(self.onChangeKpi);

@@ -6,9 +6,9 @@ add_custom_target(reports-update
   ${CMAKE_REPORT_OUTPUT}/menu.html
   ${CMAKE_REPORT_OUTPUT}/index.html
   ${CMAKE_REPORT_OUTPUT}/view.html
-  ${XTDMake_HOME}/interface/gendata.py
+  ${XTDMake_HOME}/interface/gendata
   COMMAND mkdir -p ${CMAKE_REPORT_OUTPUT}
-  COMMAND ${XTDMake_HOME}/interface/gendata.py --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
+  COMMAND ${XTDMake_HOME}/interface/gendata --report-dir ${CMAKE_REPORT_OUTPUT}/ --output-file ${CMAKE_REPORT_OUTPUT}/data.js
   VERBATIM)
 
 

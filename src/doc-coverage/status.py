@@ -6,6 +6,7 @@ import json
 import argparse
 
 l_parser = argparse.ArgumentParser()
+l_parser.add_argument("--module",       action="store", help ="current module name",            required=True)
 l_parser.add_argument("--input-file",   action="store", help ="path to xml check results",      required=True)
 l_parser.add_argument("--output-file",  action="store", help ="destination output file",        required=True)
 l_parser.add_argument("--min-percent",  action="store", help ="minimum coverage for success",   default=0, type=int)
@@ -42,8 +43,15 @@ if l_result.min_percent != 0:
     l_status = "failure"
 
 l_out.write(json.dumps({
+  "kpi"    : "doc-coverage",
+  "module" : l_result.module,
   "status" : l_status,
+  "index"  : "index.html",
   "label"  : l_label,
+  "data" : {
+    "documented" : l_documented,
+    "total"      : l_total
+  },
   "graphs" : [
     {
       "type"   : "line",
@@ -116,15 +124,11 @@ l_out.write(json.dumps({
         }
       }
     }
-  ],
-  "data" : {
-    "documented" : l_documented,
-    "total"      : l_total
-  }
+  ]
 }, indent=2))
 l_out.close()
 os.rename(l_result.output_file + ".tmp", l_result.output_file)
 
 # Local Variables:
-# ispell-local-dictionary: "american"
+# ispell-local-dictionary: "en"
 # End:
