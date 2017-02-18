@@ -1,3 +1,21 @@
+xtdmake (1.1.0ppa1~xenial) xenial; urgency=medium
+
+  * allow external reports in xtdmake interface and graphs
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sat, 18 Feb 2017 14:22:00 +0100
+
+xtdmake (1.1.0ppa1~trusty) trusty; urgency=medium
+
+  * allow external reports in xtdmake interface and graphs
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sat, 18 Feb 2017 14:22:00 +0100
+
+xtdmake (1.1.0ppa1~precise) precise; urgency=medium
+
+  * allow external reports in xtdmake interface and graphs
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sat, 18 Feb 2017 14:22:00 +0100
+
 xtdmake (1.0.5ppa1~xenial) xenial; urgency=medium
 
   * [cov] optimize cov parallel build
