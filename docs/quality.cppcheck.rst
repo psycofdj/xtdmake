@@ -98,14 +98,14 @@ Dependencies
 Generated reports
 -----------------
 
-**HTML** : ``reports/<module>/cppcheck/cppcheck.html``
+**HTML** : ``reports/cppcheck/<module>/index.html``
 
 Bellow an example of generated html report :
 
 .. image:: _static/cppcheck.png
   :align: center
 
-**XML** : ``reports/<module>/cppcheck/cppcheck.xml``
+**XML** : ``reports/cppcheck/<module>/cppcheck.xml``
 
 .. code-block:: xml
 
@@ -123,7 +123,7 @@ Bellow an example of generated html report :
     </errors>
   </results>
 
-**JSON** : ``reports/<module>/cppcheck/status.json``
+**JSON** : ``reports/cppcheck/<module>/status.json``
 
 
 .. code-block:: json

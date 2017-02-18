@@ -119,7 +119,7 @@ Generated reports
 -----------------
 
 
-**HTML** : ``reports/<module>/doc-coverage/index.html``
+**HTML** : ``reports/doc-coverage/<module>/index.html``
 
 Bellow an example of generated html report :
 
@@ -130,7 +130,7 @@ Bellow an example of generated html report :
   :align: center
 
 
-**JSON** : ``reports/<module>/doc-coverage/data.json``
+**JSON** : ``reports/doc-coverage/<module>/data.json``
 
 .. code-block:: json
 
@@ -153,7 +153,7 @@ Bellow an example of generated html report :
     }
   ]
 
-**JSON** : ``reports/<module>/doc-coverage/status.json``
+**JSON** : ``reports/doc-coverage/<module>/status.json``
 
 
 .. code-block:: json

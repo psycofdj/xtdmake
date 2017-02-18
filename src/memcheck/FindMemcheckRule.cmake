@@ -48,7 +48,7 @@ else()
       "${multiValueArgs}"
       ${ARGN})
 
-    set(MemcheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/${module}/memcheck")
+    set(MemcheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/memcheck/${module}")
 
     get_target_property(l_test_list ${module}-check TESTLIST)
     if ("${l_test_list}" STREQUAL "NOTFOUND")
@@ -112,7 +112,7 @@ else()
       COMMAND cat ${MemcheckRule_OUTPUT}/memcheck.json >> ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND echo -n ";" >> ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND cp ${XTDMake_HOME}/memcheck/index.html ${MemcheckRule_OUTPUT}/index.html
-      COMMAND ${XTDMake_HOME}/memcheck/status.py --input-file=${MemcheckRule_OUTPUT}/memcheck.json --output-file=${MemcheckRule_OUTPUT}/status.json
+      COMMAND ${XTDMake_HOME}/memcheck/status.py --module ${module} --input-file=${MemcheckRule_OUTPUT}/memcheck.json --output-file=${MemcheckRule_OUTPUT}/status.json
       VERBATIM)
 
     add_custom_target(${module}-memcheck

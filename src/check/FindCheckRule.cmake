@@ -75,7 +75,7 @@ function(add_check_test module name)
     "${multiValueArgs}"
     ${ARGN})
 
-  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/check")
+  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/check/${module}")
 
   list(GET __x_COMMAND 0 l_bin)
   list(REMOVE_AT __x_COMMAND 0)
@@ -119,7 +119,7 @@ function(add_check module)
   xtdmake_set_default(CheckRule PREFIX)
   xtdmake_set_default(CheckRule JOBS)
 
-  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/check")
+  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/check/${module}")
 
   if (NOT CheckRule_NO_DEFAULT_ARGS)
     xtdmake_eval(l_args "${CheckRule_DEFAULT_ARGS}")
@@ -247,7 +247,7 @@ function(add_check module)
     COMMAND $(MAKE) ${module}-check-run-forced
     COMMAND cp Testing/*/*.xml ${CheckRule_OUTPUT}/tests.xml
     COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/check/stylesheet.xsl ${CheckRule_OUTPUT}/tests.xml > ${CheckRule_OUTPUT}/index.html
-    COMMAND ${XTDMake_HOME}/check/status.py --input-file ${CheckRule_OUTPUT}/tests.xml --output-file ${CheckRule_OUTPUT}/status.json
+    COMMAND ${XTDMake_HOME}/check/status.py --module ${module} --input-file ${CheckRule_OUTPUT}/tests.xml --output-file ${CheckRule_OUTPUT}/status.json
     )
 
   set_target_properties(${module}-check             PROPERTIES TESTLIST "${l_target_list}")

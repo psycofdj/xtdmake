@@ -67,12 +67,17 @@ else()
     string(REPLACE ";" "," DocCoverageRule_SCOPE "${DocCoverageRule_SCOPE}")
 
     get_target_property(DocCoverageRule_DOXYGEN_OUTPUT ${module}-doc OUTPUT_DIR)
-    set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/doc-coverage")
+    set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/doc-coverage/${module}")
 
     add_custom_command(
       COMMENT "Generating ${module} documentation coverage informations"
-      OUTPUT ${DocCoverageRule_OUTPUT}/doc-coverage.info ${DocCoverageRule_OUTPUT}/data.json ${DocCoverageRule_OUTPUT}/status.json
-      DEPENDS ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml ${XTDMake_HOME}/doc-coverage/status.py
+      OUTPUT
+      ${DocCoverageRule_OUTPUT}/doc-coverage.info
+      ${DocCoverageRule_OUTPUT}/data.json
+      ${DocCoverageRule_OUTPUT}/status.json
+      DEPENDS
+      ${DocCoverageRule_DOXYGEN_OUTPUT}/xml/index.xml
+      ${XTDMake_HOME}/doc-coverage/status.py
       COMMAND mkdir -p ${DocCoverageRule_OUTPUT}
       COMMAND ${Coverxygen_INTERPRETER}
       -m ${Coverxygen_MODULE}
@@ -94,7 +99,7 @@ else()
       --json
 
       COMMAND ${XTDMake_HOME}/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
-      COMMAND ${XTDMake_HOME}/doc-coverage/status.py --input-file=${DocCoverageRule_OUTPUT}/data.json --output-file=${DocCoverageRule_OUTPUT}/status.json --min-percent=${DocCoverageRule_MIN_PERCENT}
+      COMMAND ${XTDMake_HOME}/doc-coverage/status.py --module ${module} --input-file=${DocCoverageRule_OUTPUT}/data.json --output-file=${DocCoverageRule_OUTPUT}/status.json --min-percent=${DocCoverageRule_MIN_PERCENT}
       VERBATIM)
 
     add_custom_command(

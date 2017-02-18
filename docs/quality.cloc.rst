@@ -110,7 +110,7 @@ Dependencies
 Generated reports
 -----------------
 
-**XML** : ``reports/<module>/cppcheck/cloc.xml``
+**XML** : ``reports/cloc/<module>/cloc.xml``
 
 .. code-block:: xml
 
@@ -139,14 +139,14 @@ Generated reports
   </results>
 
 
-**HTML** : ``reports/<module>/cppcheck/index.html``
+**HTML** : ``reports/cloc/<module>/index.html``
 
 Bellow an example of generated html report :
 
 .. image:: _static/cloc.png
   :align: center
 
-**JSON** : ``reports/<module>/cppcheck/status.json``
+**JSON** : ``reports/cloc/<module>/status.json``
 
 
 .. code-block:: json

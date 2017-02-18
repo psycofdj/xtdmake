@@ -24,11 +24,13 @@ l_values    = {}
 for c_root, c_dirs, c_files in os.walk(l_result.report_dir):
   for c_file in c_files:
     if c_file == "status.json":
-      l_module=os.path.basename(os.path.dirname(c_root))
-      l_kpi=os.path.basename(c_root)
       l_file = open(os.path.join(c_root, c_file), "r")
       l_content = l_file.read()
       l_data = json.loads(l_content)
+      l_module=l_data["module"]
+      l_kpi=l_data["kpi"]
+      if not len(l_data["graphs"]):
+        continue
       if not l_kpi in l_values:
         l_values[l_kpi] = {}
       if not l_kpi in l_graphs:

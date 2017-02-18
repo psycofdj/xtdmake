@@ -54,7 +54,7 @@ else()
     xtdmake_set_default(CppcheckRule FILE_PATTERNS)
     xtdmake_set_default_if_exists(CppcheckRule INPUT)
 
-    set(CppcheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/${module}/cppcheck")
+    set(CppcheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/cppcheck/${module}")
     set(CppcheckRule_DEPENDS "")
     foreach(c_dir ${CppcheckRule_INPUT})
       foreach(c_pattern ${CppcheckRule_FILE_PATTERNS})
@@ -84,16 +84,24 @@ else()
 
     add_custom_command(
       COMMENT "Generating ${module} cppcheck HTML and XML reports"
-      OUTPUT ${CppcheckRule_OUTPUT}/cppcheck.xml ${CppcheckRule_OUTPUT}/cppcheck.html ${CppcheckRule_OUTPUT}/status.json
-      DEPENDS ${CppcheckRule_DEPENDS} ${XTDMake_HOME}/cppcheck/stylesheet.xsl ${XTDMake_HOME}/cppcheck/status.py
+      OUTPUT
+      ${CppcheckRule_OUTPUT}/cppcheck.xml
+      ${CppcheckRule_OUTPUT}/index.html
+      ${CppcheckRule_OUTPUT}/status.json
+      DEPENDS
+      ${CppcheckRule_DEPENDS}
+      ${XTDMake_HOME}/cppcheck/stylesheet.xsl
+      ${XTDMake_HOME}/cppcheck/status.py
       COMMAND mkdir -p ${CppcheckRule_OUTPUT}
       COMMAND ${Cppcheck_EXECUTABLE} -q --xml ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
-      COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/cppcheck.html
-      COMMAND ${XTDMake_HOME}/cppcheck/status.py --input-file=${CppcheckRule_OUTPUT}/cppcheck.xml --output-file=${CppcheckRule_OUTPUT}/status.json
+      COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/index.html
+      COMMAND ${XTDMake_HOME}/cppcheck/status.py --module ${module} --input-file=${CppcheckRule_OUTPUT}/cppcheck.xml --output-file=${CppcheckRule_OUTPUT}/status.json
       VERBATIM)
-
     add_custom_target(${module}-cppcheck
-      DEPENDS ${CppcheckRule_OUTPUT}/cppcheck.html ${CppcheckRule_OUTPUT}/cppcheck.xml ${CppcheckRule_OUTPUT}/status.json)
+      DEPENDS
+      ${CppcheckRule_OUTPUT}/index.html
+      ${CppcheckRule_OUTPUT}/cppcheck.xml
+      ${CppcheckRule_OUTPUT}/status.json)
     add_custom_target(${module}-cppcheck-clean
       COMMAND rm -rf ${CppcheckRule_OUTPUT})
     add_dependencies(cppcheck       ${module}-cppcheck)

@@ -7,6 +7,7 @@ import argparse
 import xml.etree.ElementTree as ET
 
 l_parser = argparse.ArgumentParser()
+l_parser.add_argument("--module",       action="store", help ="current module name",                          required=True)
 l_parser.add_argument("--input-file",   action="store", help ="path to xml results",                          required=True)
 l_parser.add_argument("--output-file",  action="store", help ="destination output file",                      required=True)
 l_parser.add_argument("--min-percent",  action="store", help ="minimum percentage of comments for success",   default=0, type=int)
@@ -34,10 +35,17 @@ if l_result.min_percent != 0:
     l_status = "failure"
   
 l_out.write(json.dumps({
+  "kpi"    : "cloc",
+  "module" : l_result.module,
   "status" : l_status,
+  "index"  : "index.html",
   "label"  : l_label,
+  "data" : {
+    "code"    : int(l_code),
+    "comment" : int(l_comment)
+  },
   "graphs" : [
-        {
+    {
       "type"   : "line",
       "data"   : {
         "labels"   : [],
@@ -108,11 +116,7 @@ l_out.write(json.dumps({
         }
       }
     }
-  ],
-  "data" : {
-    "code"    : int(l_code),
-    "comment" : int(l_comment)
-  }
+  ]
 }, indent=2))
 l_out.close()
 os.rename(l_result.output_file + ".tmp", l_result.output_file)

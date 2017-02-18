@@ -237,9 +237,9 @@ Dependencies
 Generated reports
 -----------------
 
-**XML** : ``reports/<module>/doc/xml/index.xml``
+**XML** : ``reports/doc/xml/<module>/index.xml``
 
-**HTML** : ``reports/<module>/doc/html/index.html``
+**HTML** : ``reports/doc/html/<module>/index.html``
 
 Bellow an example of generated html report :
 

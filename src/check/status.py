@@ -7,6 +7,7 @@ import argparse
 import xml.etree.ElementTree as ET
 
 l_parser = argparse.ArgumentParser()
+l_parser.add_argument("--module",       action="store", help ="current module name",       required=True)
 l_parser.add_argument("--input-file",   action="store", help ="path to xml check results", required=True)
 l_parser.add_argument("--output-file",  action="store", help ="destination output file",   required=True)
 l_result = l_parser.parse_args()
@@ -28,8 +29,15 @@ if len(l_tests) == 0:
   l_status = "warning"
   
 l_out.write(json.dumps({
+  "kpi"    : "check",
+  "module" : l_result.module,
   "status" : l_status,
   "label"  : l_label,
+  "index"  : "index.html",
+  "data"   : {
+    "failures" : len(l_tests) - len(l_ok),
+    "success"  : len(l_ok),
+  },
   "graphs" : [
     {
       "type"   : "line",
@@ -83,11 +91,7 @@ l_out.write(json.dumps({
         }
       }
     }
-  ],
-  "data" : {
-    "failures" : len(l_tests) - len(l_ok),
-    "success"  : len(l_ok),
-  }
+  ]
 }, indent=2))
 l_out.close()
 os.rename(l_result.output_file + ".tmp", l_result.output_file)

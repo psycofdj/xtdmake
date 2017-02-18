@@ -79,7 +79,7 @@
          var l_link = $("<a/>", {
            "data-ref"  : p_data["file"],
            "class"     : "content"
-         }).append(p_data["name"]);
+         }).append(p_data["module"]);
 
          l_res.append(l_link);
          if ("label" in p_data) {
@@ -94,7 +94,7 @@
            }
 
            l_link.append("&nbsp;");
-           l_link.append($("<span/>", { "class" : "pull-right label " + l_class })
+           l_link.append($("<span/>", { "class" : "pull-right ssection label " + l_class, "style" : "width:40px;"})
              .append(p_data["label"]));
          }
 
@@ -115,7 +115,7 @@
        self.makeSection = function(p_name, p_url) {
          var l_id    = self.uniqueID();
          var l_caret = $("<span/>", { "class" : "glyphicon glyphicon-menu-down", "style" : "margin-right:5px" });
-         var l_badge = $("<span/>", { "class" : "danger badge pull-right" }).append(0);
+         var l_badge = $("<span/>", { "class" : "section label pull-right" }).append(0);
          var l_link  = $("<a/>",    {
            "href" : "#",
            "data-toggle" : "collapse",
@@ -141,13 +141,19 @@
 
        self.init = function() {
          self.ui.toggle.click(self.onClickToggle);
-         $.each(g_data, function(c_idx, c_sec) {
-           var l_sec = self.makeSection(c_sec["name"]);
-           $.each(c_sec["childs"], function(c_iidx, c_ssec) {
+         $.each(g_data, function(c_kpi, c_modules) {
+           var l_sec = self.makeSection(c_kpi);
+           $.each(c_modules, function(c_iidx, c_ssec) {
              var l_ssec = self.makeSSection(c_ssec);
              self.addToSection(l_sec, l_ssec);
            });
-           $(".badge", l_sec).html($(".label-danger", l_sec).length);
+           var l_nbError = $(".ssection.label-danger", l_sec).length;
+           $(".section.label", l_sec).html(l_nbError)
+           if (l_nbError == 0) {
+             $(".section.label", l_sec).addClass("label-success");
+           } else {
+             $(".section.label", l_sec).addClass("label-danger");
+           }
          });
 
 
@@ -155,7 +161,7 @@
            "data-ref"    : "./view.html",
            "class"       : "collapsed content",
            "style"       : "padding-left:35px"
-         }).append("Graphs");
+         }).append("graphs");
 
          var l_li = $("<li/>", {
          }).append(l_link);
