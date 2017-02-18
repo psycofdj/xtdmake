@@ -10,12 +10,12 @@ if [ -z "${l_buildType}" ]; then
     l_buildType=Debug
 fi
 
-l_checks=(check/index.html      cppcheck/cppcheck.html      doc-coverage/index.html
-          check/status.json     cppcheck/status.json        doc-coverage/status.json
-          cloc/cloc.html        doc-coverage/data.json      cloc/status.json)
+l_checks=(check/m1/index.html      cppcheck/m1/index.html      doc-coverage/m1/index.html
+          check/m1/status.json     cppcheck/m1/status.json     doc-coverage/m1/status.json
+          cloc/m1/index.html       doc-coverage/m1/data.json   cloc/m1/status.json)
 
 if [ "${l_buildType}" == "Debug" ]; then
-    l_checks+=(coverage/status.json coverage/index.html)
+    l_checks+=(coverage/m1/status.json coverage/m1/index.html)
 fi
 
 cd ${l_dir}
@@ -38,7 +38,7 @@ if [ $? -ne 0 ]; then
 fi
 
 for c_file in $(echo ${l_checks[@]}); do
-  if [ ! -f ${l_dir}/reports/m1/${c_file} ]; then
+  if [ ! -f ${l_dir}/reports/${c_file} ]; then
       echo "error : missing expected report file ${c_file}"
       exit 1
   fi
@@ -80,17 +80,17 @@ done
 
 
 # check that manual tests are correclty added
-cat ${l_dir}/reports/m1/check/tests.xml | grep -q tMyTest || {
+cat ${l_dir}/reports/check/m1/tests.xml | grep -q tMyTest || {
   echo "error: unable to find tMyTest in test reports"
   exit 1
 }
 
 
 # check check has incremental build
-l_mtime1=$(stat ${l_dir}/reports/m1/check/tests.xml | grep Modify | cut -d' ' -f2-3)
+l_mtime1=$(stat ${l_dir}/reports/check/m1/tests.xml | grep Modify | cut -d' ' -f2-3)
 touch ${l_srcdir}/m1/unit/TestCode.cc
 make check -j4
-l_mtime2=$(stat ${l_dir}/reports/m1/check/tests.xml | grep Modify | cut -d' ' -f2-3)
+l_mtime2=$(stat ${l_dir}/reports/check/m1/tests.xml | grep Modify | cut -d' ' -f2-3)
 if [ "${l_mtime1}" = "${l_mtime2}" ]; then
     echo "error : check target is not incremental"
     exit 1
