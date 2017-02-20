@@ -155,6 +155,26 @@
       <td><pre><xsl:value-of select="./samplerData"/></pre></td>
     </tr>
     </xsl:if>
+    <xsl:for-each select="./assertionResult">
+      <xsl:element name="tr">
+        <xsl:attribute name="class">details details-<xsl:value-of select="$id"/></xsl:attribute>
+        <td>assert</td>
+        <xsl:element name="td">
+          <xsl:choose>
+            <xsl:when test="./failure = 'false'">
+              <xsl:attribute name="class"></xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="class">danger</xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:value-of select="./name"/>
+          <xsl:if test="./failureMessage != ''">
+            <pre><xsl:value-of select="./failureMessage"/></pre>
+          </xsl:if>
+        </xsl:element>
+      </xsl:element>
+    </xsl:for-each>
   </xsl:template>
 
   <xsl:template match="httpSample">
