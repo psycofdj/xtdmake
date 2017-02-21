@@ -52,7 +52,7 @@ l_out.write(json.dumps({
         "datasets" : [
           {
             "yAxisID" : "absolute",
-            "label"   : "comment lines",
+            "label"   : "cloc: # comment lines",
             "data"    : "%(comment)d",
             "borderColor" : "rgba(51, 204, 51, 0.5)",
             "backgroundColor" : "rgba(51, 204, 51, 0)",
@@ -61,7 +61,7 @@ l_out.write(json.dumps({
           },
           {
             "yAxisID" : "absolute",
-            "label"   : "code lines",
+            "label"   : "cloc: # code lines",
             "data"    : "%(code)d",
             "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0)",
@@ -70,7 +70,7 @@ l_out.write(json.dumps({
           },
           {
             "yAxisID" : "percent",
-            "label"   : "% comment lines",
+            "label"   : "cloc: % comment",
             "data"    : "int(float(%(comment)d) / (float(%(comment)d) + float(%(code)d)) * 100)",
             "borderColor" : "rgba(102, 153, 255, 0.5)",
             "backgroundColor" : "rgba(102, 153, 255, 0)",

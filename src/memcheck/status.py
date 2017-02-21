@@ -49,7 +49,7 @@ l_out.write(json.dumps({
         "datasets" : [
           {
             "yAxisID" : "absolute",
-            "label"   : "memcheck error count",
+            "label"   : "memcheck: # error count",
             "data"    : "%(total)d",
             "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0.5)",

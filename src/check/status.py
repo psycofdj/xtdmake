@@ -46,7 +46,7 @@ l_out.write(json.dumps({
         "datasets" : [
           {
             "yAxisID" : "absolute",
-            "label"   : "success tests",
+            "label"   : "unittests: # success",
             "data"    : "%(success)d",
             "borderColor" : "rgba(51, 204, 51, 0.5)",
             "backgroundColor" : "rgba(51, 204, 51, 0)",
@@ -55,7 +55,7 @@ l_out.write(json.dumps({
           },
           {
             "yAxisID" : "absolute",
-            "label"   : "failure tests",
+            "label"   : "unittests: # failures",
             "data"    : "%(failures)d",
             "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0)",

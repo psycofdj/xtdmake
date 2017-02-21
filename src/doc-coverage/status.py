@@ -60,7 +60,7 @@ l_out.write(json.dumps({
         "datasets" : [
           {
             "yAxisID" : "absolute",
-            "label"   : "documented lines",
+            "label"   : "doc-coverage: # documented lines",
             "data"    : "%(documented)d",
             "borderColor" : "rgba(51, 204, 51, 0.5)",
             "backgroundColor" : "rgba(51, 204, 51, 0)",
@@ -69,7 +69,7 @@ l_out.write(json.dumps({
           },
           {
             "yAxisID" : "absolute",
-            "label"   : "total lines",
+            "label"   : "doc-coverage: # total lines",
             "data"    : "%(total)d",
             "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0)",
@@ -78,7 +78,7 @@ l_out.write(json.dumps({
           },
           {
             "yAxisID" : "percent",
-            "label"   : "% covered lines",
+            "label"   : "doc-coverage: % commented lines",
             "data"    : "int((float(%(documented)d) / float(%(total)d)) * 100)",
             "borderColor" : "rgba(102, 153, 255, 0.5)",
             "backgroundColor" : "rgba(102, 153, 255, 0)",

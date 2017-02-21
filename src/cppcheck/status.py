@@ -42,7 +42,7 @@ l_out.write(json.dumps({
         "datasets" : [
           {
             "yAxisID" : "absolute",
-            "label"   : "cppcheck error count",
+            "label"   : "cppcheck: # error count",
             "data"    : "%(total)d",
             "borderColor" : "rgba(179, 0, 0, 0.5)",
             "backgroundColor" : "rgba(179, 0, 0, 0.5)",
