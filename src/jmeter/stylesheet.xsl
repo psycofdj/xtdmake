@@ -4,10 +4,10 @@
     <html>
       <head>
         <title>Jmeter report</title>
-        <link href="/data/gitlab-cache/root/valkey/feature/ci_runner/precise/reports/contribs//bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-        <link href="/data/gitlab-cache/root/valkey/feature/ci_runner/precise/reports/contribs//bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
-        <script src="/data/gitlab-cache/root/valkey/feature/ci_runner/precise/reports/contribs//jquery/jquery.min.js"></script>
-        <script src="/data/gitlab-cache/root/valkey/feature/ci_runner/precise/reports/contribs//bootstrap/js/bootstrap.min.js"></script>
+        <link href="../../contribs/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="../../contribs/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
+        <script src="../../contribs/jquery/jquery.min.js"></script>
+        <script src="../../contribs/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript">
          <![CDATA[
            $(document).ready(function() {
