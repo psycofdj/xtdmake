@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Cppcheck report</title>
+    <title>Memcheck report</title>
     <link href="../../contribs/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="../../contribs/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
     <script src="../../contribs/jquery/jquery.min.js"></script>
@@ -116,7 +116,11 @@
        $.each(g_data["tests"], function(c_idx, c_val) {
          l_testID += 1;
 
+         var l_labelColor = "label-success";
          var l_nbErrors = c_val["errors"].length;
+         if (l_nbErrors != 0) {
+           l_labelColor = "label-danger";
+         }
          var l_name     = c_val["args"]["bin"];
          var l_cmd      = c_val["args"]["bin"] + " " + c_val["args"]["args"].join(" ");
          var l_errors   = "";
@@ -163,6 +167,7 @@
            testid: l_testID,
            name     : l_name,
            nberrors : l_nbErrors,
+           labelcolor : l_labelColor,
            cmd      : l_cmd
          }, function(p_el) {
            $(".errors", p_el).append(l_errors);
@@ -228,7 +233,7 @@
       <tbody id="tpl-details-test">
         <tr>
           <td> <button data-tid="[[testid]]" class="test btn btn-xs btn-primary glyphicon glyphicon-plus"></button> </td>
-          <td> [[name]] <span class="badge pull-right">[[nberrors]]</span> </td>
+          <td> [[name]] <span class="label [[labelcolor]] pull-right">[[nberrors]]</span> </td>
         </tr>
         <tr class="test-[[testid]]" style="display:none;">
           <td class="parent" colspan="2">

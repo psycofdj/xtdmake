@@ -39,7 +39,7 @@ if (NOT MemcheckRule_FOUND)
   endfunction()
 else()
   function(add_memcheck module)
-    set(multiValueArgs  )
+    set(multiValueArgs  SUPPRESSIONS)
     set(oneValueArgs    )
     set(options         )
     cmake_parse_arguments(MemcheckRule
@@ -47,6 +47,11 @@ else()
       "${oneValueArgs}"
       "${multiValueArgs}"
       ${ARGN})
+
+    set(l_supprs "")
+    foreach(c_suppr ${MemcheckRule_SUPPRESSIONS})
+      set(l_supprs "--suppressions=${c_suppr}")
+    endforeach()
 
     set(MemcheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/memcheck/${module}")
 
@@ -63,13 +68,14 @@ else()
         add_custom_command(
           COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
-          DEPENDS ${c_test}
+          DEPENDS ${c_test} ${MemcheckRule_SUPPRESSIONS}
           COMMAND valgrind
           --tool=memcheck
           --leak-check=full
           --num-callers=50
           --show-reachable=no
           --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
+          ${l_supprs}
           --
           ./${c_test} ${c_test_args} > /dev/null 2>&1 || true
           VERBATIM)
@@ -77,7 +83,7 @@ else()
         add_custom_command(
           COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
-          DEPENDS ${c_test}
+          DEPENDS ${c_test} ${MemcheckRule_SUPPRESSIONS}
           COMMAND valgrind
           --tool=memcheck
           --leak-check=full
@@ -85,6 +91,7 @@ else()
           --num-callers=500
           --show-reachable=no
           --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
+          ${l_supprs}
           --
           ./${c_test} ${c_test_args} > /dev/null 2>&1 || true
           VERBATIM)
