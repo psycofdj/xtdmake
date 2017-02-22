@@ -141,12 +141,21 @@
 
        self.init = function() {
          self.ui.toggle.click(self.onClickToggle);
-         $.each(g_data, function(c_kpi, c_modules) {
+         var l_kpiKeys = Object.keys(g_data);
+         l_kpiKeys.sort();
+         $.each(l_kpiKeys, function(p_idx, c_kpi) {
            var l_sec = self.makeSection(c_kpi);
-           $.each(c_modules, function(c_iidx, c_ssec) {
+           var l_modules = g_data[c_kpi];
+           l_modules.sort(function(p_o1, p_o2) {
+             if (p_o1.module > p_o2.module) return 1;
+             if (p_o1.module < p_o2.module) return -1;
+             return 0;
+           });
+           $.each(l_modules, function(c_iidx, c_ssec) {
              var l_ssec = self.makeSSection(c_ssec);
              self.addToSection(l_sec, l_ssec);
            });
+
            var l_nbError = $(".ssection.label-danger", l_sec).length;
            $(".section.label", l_sec).html(l_nbError)
            if (l_nbError == 0) {
@@ -161,7 +170,7 @@
            "data-ref"    : "./view.html",
            "class"       : "collapsed content",
            "style"       : "padding-left:35px"
-         }).append("graphs");
+         }).append("Graphs");
 
          var l_li = $("<li/>", {
          }).append(l_link);
