@@ -46,19 +46,19 @@ l_out.write(json.dumps({
           {
             "borderColor": "rgba(179, 0, 0, 0.5)",
             "pointBorderColor": "rgba(102, 0, 0, 1)",
-            "yAxisID": "absolute",
+            "yAxisID": "failure",
             "label": "jmeter: # failures",
             "backgroundColor": "rgba(179, 0, 0, 0.8)",
-            "pointBackgroundColor": "rgba(102, 0, 0, 1)",
+            "pointBackgroundColor": "rgba(102, 0, 0, 0)",
             "data": "%(failures)d"
           },
           {
             "borderColor": "rgba(51, 204, 51, 0.5)",
             "pointBorderColor": "rgba(31, 122, 31, 1)",
-            "yAxisID": "absolute",
+            "yAxisID": "success",
             "label": "jmeter: # success",
             "backgroundColor": "rgba(51, 204, 51, 0.8)",
-            "pointBackgroundColor": "rgba(31, 122, 31, 1)",
+            "pointBackgroundColor": "rgba(31, 122, 31, 0)",
             "data": "%(success)d"
           }
         ]
@@ -82,7 +82,17 @@ l_out.write(json.dumps({
                 "beginAtZero": True
               },
               "type": "linear",
-              "id": "absolute",
+              "id": "success",
+              "display": True
+            },
+            {
+              "position": "right",
+              "ticks": {
+                "fontSize": 24,
+                "beginAtZero": True
+              },
+              "type": "linear",
+              "id": "failure",
               "display": True
             }
           ]
