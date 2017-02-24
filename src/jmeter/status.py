@@ -48,8 +48,8 @@ l_out.write(json.dumps({
             "pointBorderColor": "rgba(102, 0, 0, 1)",
             "yAxisID": "failure",
             "label": "jmeter: # failures",
-            "backgroundColor": "rgba(179, 0, 0, 0.8)",
-            "pointBackgroundColor": "rgba(102, 0, 0, 0)",
+            "backgroundColor": "rgba(179, 0, 0, 0)",
+            "pointBackgroundColor": "rgba(102, 0, 0, 1)",
             "data": "%(failures)d"
           },
           {
@@ -57,8 +57,8 @@ l_out.write(json.dumps({
             "pointBorderColor": "rgba(31, 122, 31, 1)",
             "yAxisID": "success",
             "label": "jmeter: # success",
-            "backgroundColor": "rgba(51, 204, 51, 0.8)",
-            "pointBackgroundColor": "rgba(31, 122, 31, 0)",
+            "backgroundColor": "rgba(51, 204, 51, 0)",
+            "pointBackgroundColor": "rgba(31, 122, 31, 1)",
             "data": "%(success)d"
           }
         ]

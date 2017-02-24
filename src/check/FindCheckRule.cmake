@@ -164,9 +164,9 @@ function(add_check module)
       string(REPLACE ${CheckRule_PREFIX} "t" c_name_clean ${c_name})
       add_executable(${c_name_clean} ${c_file})
       if (CMAKE_VERSION VERSION_LESS 2.8.12)
-        include_directories(${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
+        include_directories(BEFORE ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
       else()
-        target_include_directories(${c_name_clean}
+        target_include_directories(${c_name_clean} BEFORE 
           PUBLIC ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
       endif()
       target_link_libraries(${c_name_clean} ${CheckRule_LINKS} ${Cppunit_LIBRARY})

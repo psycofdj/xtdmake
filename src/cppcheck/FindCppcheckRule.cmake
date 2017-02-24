@@ -93,7 +93,7 @@ else()
       ${XTDMake_HOME}/cppcheck/stylesheet.xsl
       ${XTDMake_HOME}/cppcheck/status.py
       COMMAND mkdir -p ${CppcheckRule_OUTPUT}
-      COMMAND ${Cppcheck_EXECUTABLE} -q --xml ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
+      COMMAND ${Cppcheck_EXECUTABLE} --language=c++ --suppress=cppcheckError -q --xml ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
       COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/index.html
       COMMAND ${XTDMake_HOME}/cppcheck/status.py --module ${module} --input-file=${CppcheckRule_OUTPUT}/cppcheck.xml --output-file=${CppcheckRule_OUTPUT}/status.json
       VERBATIM)
