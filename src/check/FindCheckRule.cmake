@@ -23,14 +23,15 @@ add_custom_target(check-verbose)
 add_custom_target(check-clean)
 
 set(CheckRule_FOUND 1)
-set(CheckRule_DEFAULT_ARGS      ""                                  CACHE STRING "CheckRule default unit-test binary parameter template")
-set(CheckRule_DEFAULT_ENV       ""                                  CACHE STRING "CheckRule default unit-test binary environment template")
-set(CheckRule_DEFAULT_INCLUDES  ""                                  CACHE STRING "CheckRule default unit-test header includes")
-set(CheckRule_DEFAULT_LINKS     ""                                  CACHE STRING "CheckRule default unit-test link libraries")
-set(CheckRule_DEFAULT_DIRECTORY "\${CMAKE_CURRENT_SOURCE_DIR}/unit" CACHE STRING "CheckRule default unit-test source directory")
-set(CheckRule_DEFAULT_PATTERNS  ".c;.cc;.cpp"                       CACHE STRING "CheckRule default wildcard to find unit-test source files in directory")
-set(CheckRule_DEFAULT_JOBS      "1"                                 CACHE STRING "CheckRule default parallel jobs to run unit-test")
-set(CheckRule_DEFAULT_PREFIX    "Test"                              CACHE STRING "CheckRule default unit-test source file prefix")
+set(CheckRule_DEFAULT_ARGS           ""                                         CACHE STRING "CheckRule default unit-test binary parameter template")
+set(CheckRule_DEFAULT_ENV            ""                                         CACHE STRING "CheckRule default unit-test binary environment template")
+set(CheckRule_DEFAULT_INCLUDES       ""                                         CACHE STRING "CheckRule default unit-test header includes")
+set(CheckRule_DEFAULT_LINKS          ""                                         CACHE STRING "CheckRule default unit-test link libraries")
+set(CheckRule_DEFAULT_DIRECTORY      "\${CMAKE_CURRENT_SOURCE_DIR}/unit"        CACHE STRING "CheckRule default unit-test source directory")
+set(CheckRule_DEFAULT_PATTERNS       ".c;.cc;.cpp"                              CACHE STRING "CheckRule default wildcard to find unit-test source files in directory")
+set(CheckRule_DEFAULT_JOBS           "1"                                        CACHE STRING "CheckRule default parallel jobs to run unit-test")
+set(CheckRule_DEFAULT_PREFIX         "Test"                                     CACHE STRING "CheckRule default unit-test source file prefix")
+set(CheckRule_DEFAULT_CMAKEVARS_NAME "\${CMAKE_CURRENT_BINARY_DIR}/cmakevars.h" CACHE STRING "CheckRule default filename for cmakevars include")
 
 message(STATUS "Found module CheckRule : TRUE")
 
@@ -104,7 +105,7 @@ endfunction()
 
 function(add_check module)
   set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
-  set(oneValueArgs    DIRECTORY PREFIX JOBS)
+  set(oneValueArgs    DIRECTORY PREFIX JOBS CMAKEVARS_NAME)
   set(options         NO_DEFAULT_ENV NO_DEFAULT_ARGS NO_DEFAULT_INCLUDES NO_DEFAULT_LINKS)
   cmake_parse_arguments(CheckRule
     "${options}"
@@ -112,12 +113,13 @@ function(add_check module)
     "${multiValueArgs}"
     ${ARGN})
 
-  configure_file(${XTDMake_HOME}/check/cmakevars.h.in ${CMAKE_CURRENT_BINARY_DIR}/cmakevars.h)
-
   xtdmake_set_default(CheckRule PATTERNS)
   xtdmake_set_default(CheckRule DIRECTORY)
   xtdmake_set_default(CheckRule PREFIX)
   xtdmake_set_default(CheckRule JOBS)
+  xtdmake_set_default(CheckRule CMAKEVARS_NAME)
+
+  configure_file(${XTDMake_HOME}/check/cmakevars.h.in ${CheckRule_CMAKEVARS_NAME})
 
   set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/check/${module}")
 
