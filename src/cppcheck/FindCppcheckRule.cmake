@@ -28,6 +28,7 @@ endif()
 
 set(CppcheckRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "CppcheckRule default list of source directories relative to CMAKE_CURRENT_SOURCE_DIR")
 set(CppcheckRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "CppcheckRule default list of wildcard patterns to search in INPUT directories")
+set(CppcheckRule_DEFAULT_ARGS          ""                                 CACHE STRING "CppcheckRule default list of additional arguments to pass to cppcheck binary")
 
 add_custom_target(cppcheck)
 add_custom_target(cppcheck-clean)
@@ -43,7 +44,7 @@ if(NOT CppcheckRule_FOUND)
 else()
   function(add_cppcheck module)
     set(multiValueArgs  INPUT FILE_PATTERNS)
-    set(oneValueArgs    )
+    set(oneValueArgs    ARGS)
     set(options         )
     cmake_parse_arguments(Cppcheck
       "${options}"
@@ -52,6 +53,7 @@ else()
       ${ARGN})
 
     xtdmake_set_default(CppcheckRule FILE_PATTERNS)
+    xtdmake_set_default(CppcheckRule ARGS)
     xtdmake_set_default_if_exists(CppcheckRule INPUT)
 
     set(CppcheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/cppcheck/${module}")
@@ -93,7 +95,7 @@ else()
       ${XTDMake_HOME}/cppcheck/stylesheet.xsl
       ${XTDMake_HOME}/cppcheck/status.py
       COMMAND mkdir -p ${CppcheckRule_OUTPUT}
-      COMMAND ${Cppcheck_EXECUTABLE} --suppress=cppcheckError -q --xml ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
+      COMMAND ${Cppcheck_EXECUTABLE} --suppress=cppcheckError -q --xml ${CppcheckRule_ARGS} ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
       COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/index.html
       COMMAND ${XTDMake_HOME}/cppcheck/status.py --module ${module} --input-file=${CppcheckRule_OUTPUT}/cppcheck.xml --output-file=${CppcheckRule_OUTPUT}/status.json
       VERBATIM)
