@@ -94,6 +94,7 @@ else()
       ${CppcheckRule_DEPENDS}
       ${XTDMake_HOME}/cppcheck/stylesheet.xsl
       ${XTDMake_HOME}/cppcheck/status.py
+      ${XTDMake_HOME}/cppcheck/FindCppcheckRule.cmake
       COMMAND mkdir -p ${CppcheckRule_OUTPUT}
       COMMAND ${Cppcheck_EXECUTABLE} --suppress=cppcheckError -q --xml ${CppcheckRule_ARGS} ${CppcheckRule_DEPENDS} 2> ${CppcheckRule_OUTPUT}/cppcheck.xml
       COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/cppcheck/stylesheet.xsl ${CppcheckRule_OUTPUT}/cppcheck.xml > ${CppcheckRule_OUTPUT}/index.html
