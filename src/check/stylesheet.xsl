@@ -20,6 +20,17 @@
            });
          ]]>
         </script>
+        <style>
+          <![CDATA[
+            pre {
+              white-space: pre-wrap;
+              white-space: -moz-pre-wrap;
+              white-space: -pre-wrap;
+              white-space: -o-pre-wrap;
+              word-wrap: break-word;
+            }
+          ]]>
+        </style>
       </head>
       <body bgcolor="#ffffff" style="padding-top:50px;">
         <div class="container-fluid">
