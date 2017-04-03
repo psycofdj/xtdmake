@@ -32,6 +32,7 @@ set(CheckRule_DEFAULT_PATTERNS       ".c;.cc;.cpp"                              
 set(CheckRule_DEFAULT_JOBS           "1"                                        CACHE STRING "CheckRule default parallel jobs to run unit-test")
 set(CheckRule_DEFAULT_PREFIX         "Test"                                     CACHE STRING "CheckRule default unit-test source file prefix")
 set(CheckRule_DEFAULT_CMAKEVARS_NAME "\${CMAKE_CURRENT_BINARY_DIR}/cmakevars.h" CACHE STRING "CheckRule default filename for cmakevars include")
+set(CheckRule_DEFAULT_TIMEOUT        "120"                                      CACHE STRING "CheckRule default test execution timeout")
 
 message(STATUS "Found module CheckRule : TRUE")
 
@@ -118,6 +119,7 @@ function(add_check module)
   xtdmake_set_default(CheckRule PREFIX)
   xtdmake_set_default(CheckRule JOBS)
   xtdmake_set_default(CheckRule CMAKEVARS_NAME)
+  xtdmake_set_default(CheckRule TIMEOUT)
 
   configure_file(${XTDMake_HOME}/check/cmakevars.h.in ${CheckRule_CMAKEVARS_NAME})
 
@@ -222,7 +224,7 @@ function(add_check module)
 
   add_custom_target(${module}-check-run-forced
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/testing
-    COMMAND ${CheckRule_ENV} ctest  -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" || true
+    COMMAND ${CheckRule_ENV} ctest --timeout ${CheckRule_TIMEOUT} -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" || true
     COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/testing)
 
   add_custom_target(${module}-check-run-verbose
