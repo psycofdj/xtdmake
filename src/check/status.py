@@ -27,7 +27,7 @@ if len(l_tests) == len(l_ok):
   l_status = "success"
 if len(l_tests) == 0:
   l_status = "warning"
-  
+
 l_out.write(json.dumps({
   "kpi"    : "check",
   "module" : l_result.module,
@@ -54,7 +54,7 @@ l_out.write(json.dumps({
             "pointBackgroundColor" : "rgba(31, 122, 31, 1)"
           },
           {
-            "yAxisID" : "absolute",
+            "yAxisID" : "absolute2",
             "label"   : "unittests: # failures",
             "data"    : "%(failures)d",
             "borderColor" : "rgba(179, 0, 0, 0.5)",
@@ -81,6 +81,16 @@ l_out.write(json.dumps({
               "id"     : "absolute",
               "type"     : "linear",
               "position" : "left",
+              "display": True,
+              "ticks": {
+                "beginAtZero": True,
+                "fontSize" : 24
+              }
+            },
+            {
+              "id"     : "absolute2",
+              "type"     : "linear",
+              "position" : "right",
               "display": True,
               "ticks": {
                 "beginAtZero": True,
