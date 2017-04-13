@@ -1,3 +1,6 @@
+add_custom_target(cppcheck)
+add_custom_target(cppcheck-clean)
+
 xtdmake_find_program(Cppcheck
   NAMES cppcheck
   DOC "cppcheck static code anylyser tool"
@@ -29,8 +32,6 @@ endif()
 set(CppcheckRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "CppcheckRule default list of source directories relative to CMAKE_CURRENT_SOURCE_DIR")
 set(CppcheckRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "CppcheckRule default list of wildcard patterns to search in INPUT directories")
 
-add_custom_target(cppcheck)
-add_custom_target(cppcheck-clean)
 if(NOT CppcheckRule_FOUND)
   function(add_cppcheck module)
     add_custom_target(${module}-cppcheck
@@ -54,7 +55,7 @@ else()
     xtdmake_set_default(CppcheckRule FILE_PATTERNS)
     xtdmake_set_default_if_exists(CppcheckRule INPUT)
 
-    set(CppcheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/cppcheck/${module}")
+    set(CppcheckRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/cppcheck/${module}")
     set(CppcheckRule_DEPENDS "")
     foreach(c_dir ${CppcheckRule_INPUT})
       foreach(c_pattern ${CppcheckRule_FILE_PATTERNS})

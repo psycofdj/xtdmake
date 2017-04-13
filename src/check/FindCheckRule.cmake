@@ -1,3 +1,7 @@
+add_custom_target(check)
+add_custom_target(check-verbose)
+add_custom_target(check-clean)
+
 xtdmake_find_program(Xsltproc
   NAMES xsltproc
   DOC "rendering xslt stylehseets"
@@ -17,10 +21,6 @@ else()
   message(STATUS "Found module CheckRule : TRUE")
 endif()
 
-
-add_custom_target(check)
-add_custom_target(check-verbose)
-add_custom_target(check-clean)
 
 set(CheckRule_FOUND 1)
 set(CheckRule_DEFAULT_ARGS           ""                                         CACHE STRING "CheckRule default unit-test binary parameter template")
@@ -77,7 +77,7 @@ function(add_check_test module name)
     "${multiValueArgs}"
     ${ARGN})
 
-  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/check/${module}")
+  set(CheckRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/check/${module}")
 
   list(GET __x_COMMAND 0 l_bin)
   list(REMOVE_AT __x_COMMAND 0)
@@ -123,7 +123,7 @@ function(add_check module)
 
   configure_file(${XTDMake_HOME}/check/cmakevars.h.in ${CheckRule_CMAKEVARS_NAME})
 
-  set(CheckRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/check/${module}")
+  set(CheckRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/check/${module}")
 
   if (NOT CheckRule_NO_DEFAULT_ARGS)
     xtdmake_eval(l_args "${CheckRule_DEFAULT_ARGS}")
@@ -170,7 +170,7 @@ function(add_check module)
       if (CMAKE_VERSION VERSION_LESS 2.8.12)
         include_directories(BEFORE ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
       else()
-        target_include_directories(${c_name_clean} BEFORE 
+        target_include_directories(${c_name_clean} BEFORE
           PUBLIC ${CheckRule_INCLUDES} ${Cppunit_INCLUDE_DIR})
       endif()
       target_link_libraries(${c_name_clean} ${CheckRule_LINKS} ${Cppunit_LIBRARY})

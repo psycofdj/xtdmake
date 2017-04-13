@@ -1,3 +1,6 @@
+add_custom_target(doc)
+add_custom_target(doc-clean)
+
 xtdmake_find_program(Doxygen
   NAMES doxygen
   DOC "Source documentation generation tool"
@@ -46,8 +49,7 @@ set(DocRule_DEFAULT_CALL_GRAPHS       "YES"                                     
 set(DocRule_DEFAULT_CONFIGURE_TEMPLATE ""                                                                 CACHE STRING "DocRule default value of CONFIGURE_TEMPLATE option")
 
 
-add_custom_target(doc)
-add_custom_target(doc-clean)
+
 if (NOT DocRule_FOUND)
   function(add_doc module)
     add_custom_target(${module}-doc
@@ -69,7 +71,7 @@ else()
       ${ARGN})
 
     set(DocRule_MODULE   "${module}")
-    set(DocRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/doc/${module}")
+    set(DocRule_OUTPUT   "${PROJECT_BINARY_DIR}/reports/doc/${module}")
 
     # use default value argument if needed
     xtdmake_set_default(DocRule FILE_PATTERNS)

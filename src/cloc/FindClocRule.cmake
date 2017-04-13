@@ -1,3 +1,6 @@
+add_custom_target(cloc)
+add_custom_target(cloc-clean)
+
 xtdmake_find_program(Cloc
   NAMES cloc
   DOC "cloc code line counting tool"
@@ -29,8 +32,6 @@ set(ClocRule_DEFAULT_INPUT         "\${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRI
 set(ClocRule_DEFAULT_FILE_PATTERNS "*.cc;*.hh;*.hxx"                  CACHE STRING "ClocRule default list of wildcard patterns to search in INPUT directories")
 set(ClocRule_DEFAULT_MIN_PERCENT   "30"                               CACHE STRING "ClocRule default mimunim comment percent to consider task successful")
 
-add_custom_target(cloc)
-add_custom_target(cloc-clean)
 
 if (NOT ClocRule_FOUND)
   function(add_cloc module)
@@ -56,7 +57,7 @@ else()
     xtdmake_set_default(ClocRule MIN_PERCENT)
     xtdmake_set_default_if_exists(ClocRule INPUT)
 
-    set(ClocRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/cloc/${module}")
+    set(ClocRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/cloc/${module}")
     set(ClocRule_DEPENDS "")
     foreach(c_dir ${ClocRule_INPUT})
       foreach(c_pattern ${ClocRule_FILE_PATTERNS})

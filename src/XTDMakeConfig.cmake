@@ -23,10 +23,9 @@ include(xtdmake_set_default)
 include(xtdmake_find_program)
 include(xtdmake_find_python_module)
 
-
 message(STATUS "Found module XTDMake : TRUE")
 
-function(xtdmake_init)
+function(xtdmake_init project dir)
   set(multiValueArgs  )
   set(oneValueArgs    StaticShared DocRule DocCoverageRule CppcheckRule ClocRule Tracking Cppunit CheckRule CovRule MemcheckRule Reports)
   set(options         )

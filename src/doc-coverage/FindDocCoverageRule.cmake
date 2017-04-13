@@ -1,3 +1,6 @@
+add_custom_target(doc-coverage)
+add_custom_target(doc-coverage-clean)
+
 xtdmake_find_program(Genhtml
   NAMES genhtml
   DOC "Html report generation tool"
@@ -32,8 +35,6 @@ set(DocCoverageRule_DEFAULT_PREFIX      "\${CMAKE_CURRENT_SOURCE_DIR}/src"      
 set(DocCoverageRule_DEFAULT_MIN_PERCENT "30"                                                  CACHE STRING "DocCoverageRule default mimunim coverage percentage to consider task successful")
 
 
-add_custom_target(doc-coverage)
-add_custom_target(doc-coverage-clean)
 if (NOT DocCoverageRule_FOUND)
   function(add_doc_coverage module)
     add_custom_target(${module}-doc-coverage
@@ -67,7 +68,7 @@ else()
     string(REPLACE ";" "," DocCoverageRule_SCOPE "${DocCoverageRule_SCOPE}")
 
     get_target_property(DocCoverageRule_DOXYGEN_OUTPUT ${module}-doc OUTPUT_DIR)
-    set(DocCoverageRule_OUTPUT "${CMAKE_BINARY_DIR}/reports/doc-coverage/${module}")
+    set(DocCoverageRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/doc-coverage/${module}")
 
     add_custom_command(
       COMMENT "Generating ${module} documentation coverage informations"
