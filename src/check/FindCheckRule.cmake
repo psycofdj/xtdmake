@@ -224,8 +224,10 @@ function(add_check module)
 
   add_custom_target(${module}-check-run-forced
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/testing
-    COMMAND ${CheckRule_ENV} ctest --timeout ${CheckRule_TIMEOUT} -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" || true
-    COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/testing)
+    COMMAND rm -f ${CheckRule_OUTPUT}/check-success
+    COMMAND ${CheckRule_ENV} ctest --timeout ${CheckRule_TIMEOUT} -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" && touch ${CheckRule_OUTPUT}/check-success || true
+    COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/testing
+    )
 
   add_custom_target(${module}-check-run-verbose
     COMMAND $(MAKE) ${module}-check-build
@@ -241,6 +243,7 @@ function(add_check module)
     ${CheckRule_OUTPUT}/tests.xml
     ${CheckRule_OUTPUT}/index.html
     ${CheckRule_OUTPUT}/status.json
+    ${CheckRule_OUTPUT}/check-success
     DEPENDS
     ${l_target_list}
     ${XTDMake_HOME}/check/stylesheet.xsl
