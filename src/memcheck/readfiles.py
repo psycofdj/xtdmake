@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import json
 import sys
 import xml.etree.ElementTree as ET
@@ -20,7 +21,13 @@ def get_default(p_tree, p_path, p_default=""):
   return p_default
 
 def process_file(p_path, p_data):
-  l_tree = ET.parse(p_path)
+  try:
+    l_tree = ET.parse(p_path)
+  except Exception as l_error:
+    print("error while readfile file '%s'" % p_path)
+    os.remove(p_path)
+    return
+
   l_root = l_tree.getroot()
   l_test = {
     "args" : {
@@ -76,7 +83,7 @@ def write_xml(p_data):
   for c_key,c_val in p_data["stats"].items():
     c_key = c_key.replace("_", "")
     l_item = ET.SubElement(l_stats, c_key)
-    l_item.attrib["count"] = str(c_val) 
+    l_item.attrib["count"] = str(c_val)
   ET.dump(l_root)
 
 def main():

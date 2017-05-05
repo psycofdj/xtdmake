@@ -61,7 +61,7 @@ else()
         "${multiValueArgs}"
         ${ARGN})
 
-      set(CovRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/coverage/${module}")
+      set(CovRule_OUTPUT   "${PROJECT_BINARY_DIR}/reports/coverage/${module}")
       xtdmake_set_default(CovRule EXCLUDE_PATTERNS)
       xtdmake_set_default(CovRule MIN_PERCENT)
 
@@ -77,7 +77,7 @@ else()
         ${l_test_list}
         ${XTDMake_HOME}/coverage/coverage.sh
         COMMAND
-        CMAKE_BINARY_DIR=${CMAKE_BINARY_DIR}
+        PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
         CMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
         Lcov_EXECUTABLE="${Lcov_EXECUTABLE}"
         module="${module}"

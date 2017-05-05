@@ -6,13 +6,13 @@ function lock
   l_timeout=900
   echo "[${module}-cov] acquiring cov lock..."
   while true; do
-    if [ ! -f "${CMAKE_BINARY_DIR}/cov.lock" ]; then
-        echo -n "$$" > ${CMAKE_BINARY_DIR}/cov.lock
+    if [ ! -f "${PROJECT_BINARY_DIR}/cov.lock" ]; then
+        echo -n "$$" > ${PROJECT_BINARY_DIR}/cov.lock
         break;
     else
-      l_pid=$(cat "${CMAKE_BINARY_DIR}/cov.lock")
+      l_pid=$(cat "${PROJECT_BINARY_DIR}/cov.lock")
       kill -0 "${l_pid}" 2>/dev/null || {
-        rm -f ${CMAKE_BINARY_DIR}/cov.lock
+        rm -f ${PROJECT_BINARY_DIR}/cov.lock
       }
     fi
     l_timeout=$((l_timeout - 1))
@@ -29,7 +29,7 @@ function lock
 function unlock
 {
   echo "[${module}-cov] releasing cov lock..."
-  rm -f ${CMAKE_BINARY_DIR}/cov.lock
+  rm -f ${PROJECT_BINARY_DIR}/cov.lock
   echo "[${module}-cov] cov lock released"
 }
 

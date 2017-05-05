@@ -53,7 +53,7 @@ else()
       set(l_supprs "--suppressions=${c_suppr}")
     endforeach()
 
-    set(MemcheckRule_OUTPUT   "${CMAKE_BINARY_DIR}/reports/memcheck/${module}")
+    set(MemcheckRule_OUTPUT   "${PROJECT_BINARY_DIR}/reports/memcheck/${module}")
 
     get_target_property(l_test_list ${module}-check TESTLIST)
     if ("${l_test_list}" STREQUAL "NOTFOUND")
