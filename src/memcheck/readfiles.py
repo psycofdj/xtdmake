@@ -24,8 +24,10 @@ def process_file(p_path, p_data):
   try:
     l_tree = ET.parse(p_path)
   except Exception as l_error:
+    print("error while readfile file '%s'" % p_path)
     os.remove(p_path)
-    raise l_error
+    return
+
   l_root = l_tree.getroot()
   l_test = {
     "args" : {
