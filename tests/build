@@ -12,7 +12,8 @@ fi
 
 l_checks=(check/m1/index.html      cppcheck/m1/index.html      doc-coverage/m1/index.html
           check/m1/status.json     cppcheck/m1/status.json     doc-coverage/m1/status.json
-          cloc/m1/index.html       doc-coverage/m1/data.json   cloc/m1/status.json)
+          cloc/m1/index.html       doc-coverage/m1/data.json   cloc/m1/status.json
+          codedup/m1/index.html    codedup/m1/codedup.xml      codedup/m1/status.json)
 
 if [ "${l_buildType}" == "Debug" ]; then
     l_checks+=(coverage/m1/status.json coverage/m1/index.html)

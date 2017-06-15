@@ -15,10 +15,21 @@ RUN apt-get update -y && \
             g++ \
             libboost-dev \
             libboost-thread-dev \
-            libcppunit-dev
+            libcppunit-dev \
+            python-software-properties \
+            debconf-utils \
+            wget \
+            unzip \
+            rcs
 
-RUN apt-get install -y rcs
+
+RUN apt-get install -y software-properties-common
+RUN apt-add-repository -y ppa:webupd8team/java
+RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+RUN apt-get update -y && apt-get install -y oracle-java8-installer
 RUN pip install coverxygen
+RUN wget -O /tmp/pmd-bin-5.7.0.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip
+RUN unzip -d /usr/share/ /tmp/pmd-bin-5.7.0.zip
 RUN  mkdir -p /env
 COPY ./src /env/src
 COPY ./tests /env/tests

@@ -15,10 +15,14 @@ RUN apt-get update -y && \
             g++ \
             libboost-dev \
             libboost-thread-dev \
-            libcppunit-dev
+            libcppunit-dev \
+            openjdk-8-jre \
+            wget
 
-RUN apt-get install -y rcs
+RUN apt-get install -y rcs unzip
 RUN pip install coverxygen
+RUN wget -O /tmp/pmd-bin-5.7.0.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip
+RUN unzip -d /usr/share/ /tmp/pmd-bin-5.7.0.zip
 RUN  mkdir -p /env
 COPY ./src /env/src
 COPY ./tests /env/tests

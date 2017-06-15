@@ -1,5 +1,6 @@
 FROM ubuntu:12.04
 
+
 RUN apt-get update -y && \
     apt-get install -y \
             cmake \
@@ -15,12 +16,21 @@ RUN apt-get update -y && \
             libboost-dev \
             libboost-thread-dev \
             libcppunit-dev \
-            wget
-RUN apt-get install -y make rcs
+            wget \
+            python-software-properties \
+            make \
+            rcs \
+            unzip \
+            debconf-utils
 
+RUN apt-add-repository -y ppa:webupd8team/java
+RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+RUN apt-get update -y && apt-get install -y oracle-java8-installer
 RUN wget -O /usr/bin/cloc 'https://github.com/AlDanial/cloc/releases/download/v1.70/cloc-1.70.pl'
 RUN chmod +x /usr/bin/cloc
 RUN pip install coverxygen
+RUN wget -O /tmp/pmd-bin-5.7.0.zip 'https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip'
+RUN unzip -d /usr/share/ /tmp/pmd-bin-5.7.0.zip
 RUN  mkdir -p /env
 COPY ./src /env/src
 COPY ./tests /env/tests
