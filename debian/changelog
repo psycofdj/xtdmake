@@ -3,21 +3,21 @@ xtdmake (1.2.0ppa1~xenial) xenial; urgency=medium
   * adds codedup rule to detect code duplication
   * handle MIN_VERSION in xtdmake_find_program
 
--- Xavier MARCELET <xavier@marcelet.com>  Thu, 15 Jun 2017 22:56:53 +0200
+ -- Xavier MARCELET <xavier@marcelet.com>  Thu, 15 Jun 2017 22:56:53 +0200
 
 xtdmake (1.2.0ppa1~trusty) trusty; urgency=medium
 
   * adds codedup rule to detect code duplication
   * handle MIN_VERSION in xtdmake_find_program
 
--- Xavier MARCELET <xavier@marcelet.com>  Thu, 15 Jun 2017 22:56:53 +0200
+ -- Xavier MARCELET <xavier@marcelet.com>  Thu, 15 Jun 2017 22:56:53 +0200
 
 xtdmake (1.2.0ppa1~precise) precise; urgency=medium
 
   * adds codedup rule to detect code duplication
   * handle MIN_VERSION in xtdmake_find_program
 
--- Xavier MARCELET <xavier@marcelet.com>  Thu, 15 Jun 2017 22:56:53 +0200
+ -- Xavier MARCELET <xavier@marcelet.com>  Thu, 15 Jun 2017 22:56:53 +0200
 
 xtdmake (1.1.0ppa1~xenial) xenial; urgency=medium
 
