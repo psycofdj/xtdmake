@@ -2,9 +2,9 @@ add_custom_target(reports-update)
 add_custom_target(reports-show)
 add_custom_target(reports-graph)
 add_custom_target(reports
-  DEPENDS doc doc-coverage cloc cppcheck check cov memcheck)
+  DEPENDS doc doc-coverage cloc cppcheck check cov memcheck codedup)
 add_custom_target(reports-clean
-  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean)
+  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean)
 
 function(xtdmake_init_project name directory)
   add_custom_command(
@@ -117,6 +117,17 @@ if (CppcheckRule_FOUND)
     COMMAND $(MAKE) reports-update
     VERBATIM)
   add_custom_command(TARGET cppcheck-clean
+    POST_BUILD
+    COMMAND $(MAKE) reports-update
+    VERBATIM)
+endif()
+
+if (CodeDupRule_FOUND)
+  add_custom_command(TARGET codedup
+    POST_BUILD
+    COMMAND $(MAKE) reports-update
+    VERBATIM)
+  add_custom_command(TARGET codedup-clean
     POST_BUILD
     COMMAND $(MAKE) reports-update
     VERBATIM)
