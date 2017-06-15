@@ -7,7 +7,7 @@ xtdmake_find_program(Doxygen
   URL "http://www.doxygen.org/"
   VERSION_OPT "--version"
   VERSION_POS "0"
-  REQUIRED DocRule_FIND_REQUIRED)
+  REQUIRED ${DocRule_FIND_REQUIRED})
 
 xtdmake_find_program(Plantuml
   NAMES plantuml
@@ -21,7 +21,7 @@ xtdmake_find_program(Dot
   DOC "Graph drawing tools"
   URL "http://www.graphviz.org/"
   VERSION_OPT "-V 2>&1"
-  VERSION_POS "0")
+  VERSION_POS "4")
 
 if (NOT Doxygen_FOUND)
   set(DocRule_FOUND 0)

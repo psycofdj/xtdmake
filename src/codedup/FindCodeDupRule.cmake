@@ -20,15 +20,17 @@ xtdmake_find_program(Xsltproc
   URL "http://xmlsoft.org/"
   VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
   VERSION_POS "0"
-  REQUIRED CppcheckRule_FIND_REQUIRED)
+  REQUIRED ${CppcheckRule_FIND_REQUIRED})
 
 xtdmake_find_program(Java
   NAMES java
   DOC "Java runtime environment"
   URL "http://openjdk.java.net/"
-  REQUIRED CodeDupRule_FIND_REQUIRED
+  REQUIRED ${CodeDupRule_FIND_REQUIRED}
   VERSION_OPT "-version 2>&1 | head -n1 | cut -d' ' -f3 | sed 's/\"//g' | cut -d_ -f1"
-  VERSION_POS 0)
+  VERSION_POS 0
+  MIN_VERSION 1.8.0)
+
 
 if (NOT EXISTS "${CodeDupRule_PMD_HOME}/lib/pmd-core-${CodeDupRule_PMD_VERSION}.jar")
   set(Pmd_FOUND 0)

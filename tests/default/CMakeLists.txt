@@ -46,6 +46,7 @@ xtdmake_init(
   Cppunit         ${REQUIRED}
   CovRule         ${REQUIRED}
   MemcheckRule    ${REQUIRED}
+  CodeDupRule     ${REQUIRED}
   Reports         ${REQUIRED})
 
 enable_tracking()
