@@ -41,6 +41,7 @@ In your root CMakeLists.txt
     Cppunit         REQUIRED
     CovRule         REQUIRED
     MemcheckRule    REQUIRED
+    CodeDupRule     REQUIRED
     Reports         REQUIRED)
 
   enable_tracking()
@@ -107,6 +108,8 @@ In your module CMakelists.txt, example core/CMakeLists.txt :
   # enable test memory check report
   add_memcheck(core)
 
+  # enable code duplication report
+  add_codedup(core)
 
 Adds some unittests
 -------------------

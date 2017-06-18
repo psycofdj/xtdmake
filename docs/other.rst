@@ -65,6 +65,7 @@ xtdmake_find_program
     REQUIRED <bool>
     [ VERSION_OPT <options> ]
     [ VERSION_POS <int>     ]
+    [ MIN_VERSION <version> ]
   )
 
 Search program matching one of given ``NAMES``, try to extract its version using
@@ -103,6 +104,9 @@ VERSION_POS
   position of the version number in the space-delimited string outputted by program
   with ``VERSION_OPT``
 
+MIN_VERSION
+  minimum allowed version of searched program
+
 
 **Example**
 
@@ -114,6 +118,7 @@ VERSION_POS
      URL "http://cloc.sourceforge.net/"
      VERSION_OPT "--version"
      VERSION_POS "0"
+     MIN_VERSION 1.2
      REQUIRED 0)
 
    if (cloc_FOUND)

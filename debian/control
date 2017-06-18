@@ -9,7 +9,7 @@ X-Python2-Version: >= 2.7
 Package: xtdmake
 Architecture: all
 Depends: python (>= 2.7), python (<< 2.8), cmake (>= 2.6), ${misc:Depends}
-Suggests: doxygen, graphviz, xsltproc, lcov, cloc, cppcheck, valgrind
+Suggests: doxygen, graphviz, xsltproc, lcov, cloc, cppcheck, valgrind, default-jre
 Description: CMake modules to generate C and CXX code quality measurements targets
  http://github.com/psycofdj/xtdmake
  .

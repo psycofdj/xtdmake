@@ -31,7 +31,7 @@ Generated Targets
 
 ``reports-clean``
   clean all generated code quality reports
-  
+
 ``reports-update``
   (internal use) update report static interface with available generated code
   quality targets
@@ -55,6 +55,7 @@ Dependencies
      "reports"            -> "cloc"
      "reports"            -> "memcheck"
      "reports"            -> "check"
+     "reports"            -> "codedup"
      "reports-clean"      -> "doc-clean"
      "reports-clean"      -> "doc-coverage-clean"
      "reports-clean"      -> "cov-clean"
@@ -62,12 +63,14 @@ Dependencies
      "reports-clean"      -> "cloc-clean"
      "reports-clean"      -> "memcheck-clean"
      "reports-clean"      -> "check-clean"
+     "reports-clean"      -> "codedup-clean"
      "doc"                -> "reports-update"
      "doc-coverage"       -> "reports-update"
      "cov"                -> "reports-update"
      "cppcheck"           -> "reports-update"
      "cloc"               -> "reports-update"
      "memcheck"           -> "reports-update"
+     "codedup"            -> "reports-update"
      "check"              -> "reports-update"
      "doc-clean"          -> "reports-update"
      "doc-coverage-clean" -> "reports-update"
@@ -76,6 +79,8 @@ Dependencies
      "cloc-clean"         -> "reports-update"
      "memcheck-clean"     -> "reports-update"
      "check-clean"        -> "reports-update"
+     "codedup-clean"      -> "reports-update"
+
    }
 
 
@@ -125,7 +130,7 @@ the code quality measurements in time.
 .. note::
 
    This tool not run automatically by XTDMake since it has no way to know
-   when to pin a new "release".  It's designed to be run in your continuous 
+   when to pin a new "release".  It's designed to be run in your continuous
    integration process.
 
 Example of generated graph :
