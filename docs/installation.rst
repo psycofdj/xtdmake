@@ -6,19 +6,19 @@ From PPA Package
 
 Project homepage : https://launchpad.net/~psycofdj/+archive/ubuntu/xtdmake
 
-1. Add PPA repository to apt 
+1. Add PPA repository to apt
 
    .. code-block:: bash
 
      sudo add-apt-repository ppa:psycofdj/xtdmake
 
-2. Update apt 
+2. Update apt
 
    .. code-block:: bash
 
      sudo apt-get update
 
-3. Install XTDMake 
+3. Install XTDMake
 
    .. code-block:: bash
 
@@ -52,6 +52,11 @@ Project homepage : https://github.com/psycofdj/xtdmake
     sudo apt-get install valgrind
     # jq, awk for json
     sudo apt-get install jq
+    # java 8
+    sudo apt-get install openjdk-8-jre
+    # PMD
+    wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip
+    sudo unzip -d /usr/share pmd-bin-5.7.0.zip
 
 2. Download latest release
 

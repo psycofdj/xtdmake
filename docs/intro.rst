@@ -11,6 +11,7 @@ code quality measurements reports :
 * Unit tests
 * Coverage of unit tests
 * Memory leak of unit tests
+* Code duplication analysis
 
 
 Each target generates both a locally readable and machine processable reports.

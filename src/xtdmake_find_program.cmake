@@ -1,7 +1,7 @@
 macro(xtdmake_find_program var)
   if (NOT DEFINED ${var}_FOUND)
     set(multiValueArgs  NAMES)
-    set(oneValueArgs    DOC URL REQUIRED VERSION_OPT VERSION_POS MIN_VERSION TOTO)
+    set(oneValueArgs    DOC URL REQUIRED VERSION_OPT VERSION_POS MIN_VERSION)
     set(options         NOWARNING)
     cmake_parse_arguments(x
       "${options}"

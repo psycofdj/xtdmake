@@ -7,7 +7,8 @@ MemcheckRule
 .. contents::
    :local:
 
-This module generates a report from result of cppcheck static analysis.
+This module generates a report that shows defects memory detected by valgrind for
+available unit tests.
 
 Prerequisites
 -------------
@@ -25,12 +26,31 @@ Functions
 
 .. code-block:: cmake
 
-  add_memcheck(<module>)
+  add_memcheck(<module>
+  [SUPPRESSIONS <file> [<file> ... ]]
+  [EXTRA_ARGS   <args>]
+  )
 
 This function generates cmake targets that produce reports that show memory flaws
 detected by valgrind on module's test suite. Generated targets are added as dependency
 of the global ``memcheck`` and ``memcheck-clean`` targets.
 
+
+
+Parameters
+----------
+
+module
+  Name of the module. It determines the name of the generated cmake
+  targets and the directory where targets generate the report.
+
+SUPPRESSIONS
+  List of existing files to add as valgrind supression stacks. See
+  http://valgrind.org/docs/manual/manual-core.html#manual-core.suppress
+
+EXTRA_ARGS
+  List of additional arguments to pass to valgrind. Use with caution,
+  parameters must be compatible with ```--tool=memcheck```.
 
 Generated targets
 -----------------

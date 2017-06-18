@@ -40,7 +40,7 @@ if (NOT MemcheckRule_FOUND)
 else()
   function(add_memcheck module)
     set(multiValueArgs  SUPPRESSIONS)
-    set(oneValueArgs    )
+    set(oneValueArgs    EXTRA_ARGS)
     set(options         )
     cmake_parse_arguments(MemcheckRule
       "${options}"
@@ -76,6 +76,7 @@ else()
           --show-reachable=no
           --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
           ${l_supprs}
+          ${MemcheckRule_EXTRA_ARGS}
           --
           ./${c_test} ${c_test_args} > /dev/null 2>&1 || true
           VERBATIM)
@@ -92,6 +93,7 @@ else()
           --show-reachable=no
           --xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
           ${l_supprs}
+          ${MemcheckRule_EXTRA_ARGS}
           --
           ./${c_test} ${c_test_args} > /dev/null 2>&1 || true
           VERBATIM)

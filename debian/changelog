@@ -1,3 +1,24 @@
+xtdmake (1.2.1ppa1~xenial) xenial; urgency=medium
+
+  * update documentation
+  * adds extra_args for memcheck
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sun, 18 Jun 2017 11:25:28 +0200
+
+xtdmake (1.2.1ppa1~trusty) trusty; urgency=medium
+
+  * update documentation
+  * adds extra_args for memcheck
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sun, 18 Jun 2017 11:25:28 +0200
+
+xtdmake (1.2.1ppa1~precise) precise; urgency=medium
+
+  * update documentation
+  * adds extra_args for memcheck
+
+ -- Xavier MARCELET <xavier@marcelet.com>  Sun, 18 Jun 2017 11:25:28 +0200
+
 xtdmake (1.2.0ppa1~xenial) xenial; urgency=medium
 
   * adds codedup rule to detect code duplication

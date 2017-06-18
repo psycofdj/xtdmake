@@ -11,6 +11,7 @@ Code quality modules
    quality.check
    quality.cov
    quality.memcheck
+   quality.codedup
    quality.reports
 
 
