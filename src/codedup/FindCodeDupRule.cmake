@@ -1,13 +1,14 @@
 add_custom_target(codedup)
 add_custom_target(codedup-clean)
 
-set(CodeDupRule_DEFAULT_PMD_VERSION      "5.7.0"                                          CACHE STRING "CodeDupRule PDM installed version")
-set(CodeDupRule_DEFAULT_PMD_HOME         "/usr/share/pmd-bin-\${CodeDupRule_PMD_VERSION}" CACHE STRING "CodeDupRule location of PDM installation")
-set(CodeDupRule_DEFAULT_INPUT            "\${CMAKE_CURRENT_SOURCE_DIR}/src"               CACHE STRING "CodeDupRule default list of input source directories")
-set(CodeDupRule_DEFAULT_FILE_PATTERNS    "*.cc;*.hh;*.hxx"                                CACHE STRING "CodeDupRule default list of wildcard patterns to search in INPUT directories")
-set(CodeDupRule_DEFAULT_EXCLUDE_PATTERNS "\${CMAKE_CURRENT_SOURCE_DIR}/unit/.*"           CACHE STRING "CodeDupRule default list of regexp to exclude from analysis")
-set(CodeDupRule_DEFAULT_MIN_TOKENS       "100"                                            CACHE STRING "CodeDupRule default minimum token length which should be reported as a duplicate")
-set(CodeDupRule_DEFAULT_ARGS             "--skip-lexical-errors"                          CACHE STRING "CodeDupRule default additional arguments to give to PMD")
+set(CodeDupRule_DEFAULT_PMD_VERSION      "5.7.0"                                              CACHE STRING "CodeDupRule PDM installed version")
+set(CodeDupRule_DEFAULT_PMD_HOME         "/usr/share/pmd-bin-\${CodeDupRule_PMD_VERSION}"     CACHE STRING "CodeDupRule location of PDM installation")
+set(CodeDupRule_DEFAULT_INPUT            "\${CMAKE_CURRENT_SOURCE_DIR}/src"                   CACHE STRING "CodeDupRule default list of input source directories")
+set(CodeDupRule_DEFAULT_FILE_PATTERNS    "*.cc;*.hh;*.hxx"                                    CACHE STRING "CodeDupRule default list of wildcard patterns to search in INPUT directories")
+set(CodeDupRule_DEFAULT_EXCLUDE_PATTERNS "\${CMAKE_CURRENT_SOURCE_DIR}/unit/.*"               CACHE STRING "CodeDupRule default list of regexp to exclude from analysis")
+set(CodeDupRule_DEFAULT_MIN_TOKENS       "100"                                                CACHE STRING "CodeDupRule default minimum token length which should be reported as a duplicate")
+set(CodeDupRule_DEFAULT_ARGS             "--skip-lexical-errors"                              CACHE STRING "CodeDupRule default additional arguments to give to PMD")
+set(CodeDupRule_DEFAULT_SUPRESSION       "\${CMAKE_CURRENT_SOURCE_DIR}/src/codedup.suppr"     CACHE STRING "CodeDupRule default supression list for legit code duplications")
 
 xtdmake_eval(CodeDupRule_PMD_VERSION2 "${CodeDupRule_DEFAULT_PMD_VERSION}")
 set(CodeDupRule_PMD_VERSION "${CodeDupRule_PMD_VERSION2}" CACHE STRING "")
@@ -80,6 +81,7 @@ else()
     xtdmake_set_default(CodeDupRule ARGS)
     xtdmake_set_default(CodeDupRule EXCLUDE_PATTERNS)
     xtdmake_set_default_if_exists(CodeDupRule INPUT)
+    xtdmake_set_default_if_exists(CodeDupRule SUPRESSION)
 
     file(GLOB_RECURSE CodeDupRule_PMD_CLASSPATH "${CodeDupRule_PMD_HOME}/lib/*.jar")
     string(REPLACE ";" ":" CodeDupRule_PMD_CLASSPATH "${CodeDupRule_PMD_CLASSPATH}")
@@ -94,7 +96,6 @@ else()
         foreach(c_res ${l_files})
           foreach(c_exclude_pattern ${CodeDupRule_EXCLUDE_PATTERNS})
             if (NOT ${c_res} MATCHES ${c_exclude_pattern})
-
               get_filename_component(l_abspath ${c_res} REALPATH)
               list(APPEND l_args --files ${l_abspath})
             endif()
@@ -122,28 +123,53 @@ else()
     endif()
 
     add_custom_command(
-      COMMENT "Generating ${module} codedup HTML and XML reports"
+      COMMENT "Generating ${module} codedup reports"
       OUTPUT
       ${CodeDupRule_OUTPUT}/codedup.xml
+      DEPENDS
+      ${CodeDupRule_DEPENDS}
+      ${XTDMake_HOME}/codedup/FindCodeDupRule.cmake
+      COMMAND mkdir -p ${CodeDupRule_OUTPUT}
+      COMMAND ${Java_EXECUTABLE} -cp ${CodeDupRule_PMD_CLASSPATH} net.sourceforge.pmd.cpd.CPD --minimum-tokens ${CodeDupRule_MIN_TOKENS} --format xml  --language cpp ${l_args} ${CodeDupRule_ARGS} > ${CodeDupRule_OUTPUT}/codedup.xml || true
+      VERBATIM)
+
+    add_custom_command(
+      COMMENT "Filtering suppressions ${module} codedup reports"
+      OUTPUT
+      ${CodeDupRule_OUTPUT}/codedup_clean.xml
+      DEPENDS
+      ${CodeDupRule_SUPRESSION}
+      ${CodeDupRule_OUTPUT}/codedup.xml
+      ${XTDMake_HOME}/codedup/FindCodeDupRule.cmake
+      ${XTDMake_HOME}/codedup/filter.py
+      COMMAND
+        ${XTDMake_HOME}/codedup/filter.py
+         --supression "${CodeDupRule_SUPRESSION}"
+         --basesrc    "${CMAKE_CURRENT_SOURCE_DIR}"
+         --report     "${CodeDupRule_OUTPUT}/codedup.xml"
+         --output     "${CodeDupRule_OUTPUT}/codedup_clean.xml"
+      VERBATIM)
+
+    add_custom_command(
+      COMMENT "Generating ${module} codedup HTML and XML reports"
+      OUTPUT
       ${CodeDupRule_OUTPUT}/index.html
       ${CodeDupRule_OUTPUT}/status.json
       DEPENDS
-      ${CodeDupRule_DEPENDS}
+      ${CodeDupRule_OUTPUT}/codedup_clean.xml
       ${XTDMake_HOME}/codedup/stylesheet.xsl
       ${XTDMake_HOME}/codedup/status.py
       ${XTDMake_HOME}/codedup/FindCodeDupRule.cmake
       COMMAND mkdir -p ${CodeDupRule_OUTPUT}
-      COMMAND ${Java_EXECUTABLE} -cp ${CodeDupRule_PMD_CLASSPATH} net.sourceforge.pmd.cpd.CPD --minimum-tokens ${CodeDupRule_MIN_TOKENS} --format xml  --language cpp ${l_args} ${CodeDupRule_ARGS} > ${CodeDupRule_OUTPUT}/codedup.xml || true
-      COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/codedup/stylesheet.xsl ${CodeDupRule_OUTPUT}/codedup.xml > ${CodeDupRule_OUTPUT}/index.html
-      COMMAND ${XTDMake_HOME}/codedup/status.py --module ${module} --input-file=${CodeDupRule_OUTPUT}/codedup.xml --output-file=${CodeDupRule_OUTPUT}/status.json
+      COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/codedup/stylesheet.xsl ${CodeDupRule_OUTPUT}/codedup_clean.xml > ${CodeDupRule_OUTPUT}/index.html
+      COMMAND ${XTDMake_HOME}/codedup/status.py --module ${module} --input-file=${CodeDupRule_OUTPUT}/codedup_clean.xml --output-file=${CodeDupRule_OUTPUT}/status.json
       VERBATIM)
 
     add_custom_target(${module}-codedup
       DEPENDS
       ${CodeDupRule_OUTPUT}/index.html
-      ${CodeDupRule_OUTPUT}/codedup.xml
+      ${CodeDupRule_OUTPUT}/codedup_clean.xml
       ${CodeDupRule_OUTPUT}/status.json)
-
     add_custom_target(${module}-codedup-clean
       COMMAND rm -rf ${CodeDupRule_OUTPUT})
     add_dependencies(codedup       ${module}-codedup)
