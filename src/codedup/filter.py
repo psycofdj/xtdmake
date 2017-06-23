@@ -8,8 +8,6 @@ import xml.etree.ElementTree as ET
 
 
 def target_matches(p_target, p_suppr):
-  print("target : " + str(p_target))
-  print("suppr  : " + str(p_suppr))
   return ((p_suppr["file"] == p_target["file"]) and
           (p_suppr["from"] <= p_target["from"]) and
           (p_suppr["to"]   >= p_target["to"]))
@@ -18,9 +16,7 @@ def target_matches(p_target, p_suppr):
 def target_found_in_supprs(p_target, p_supprs):
   for c_suppr in p_supprs:
     if target_matches(p_target, c_suppr):
-      print("match")
       return True;
-    print("no match")
   return False;
 
 def targets_found_in_supprs(p_targets, p_supprs):
