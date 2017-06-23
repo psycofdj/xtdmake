@@ -82,6 +82,7 @@ else()
     xtdmake_set_default(CodeDupRule EXCLUDE_PATTERNS)
     xtdmake_set_default_if_exists(CodeDupRule INPUT)
     xtdmake_set_default_if_exists(CodeDupRule SUPRESSION)
+    get_filename_component(l_realSrcDir ${CMAKE_CURRENT_SOURCE_DIR} REALPATH)
 
     file(GLOB_RECURSE CodeDupRule_PMD_CLASSPATH "${CodeDupRule_PMD_HOME}/lib/*.jar")
     string(REPLACE ";" ":" CodeDupRule_PMD_CLASSPATH "${CodeDupRule_PMD_CLASSPATH}")
@@ -145,7 +146,7 @@ else()
       COMMAND
         ${XTDMake_HOME}/codedup/filter.py
          --supression "${CodeDupRule_SUPRESSION}"
-         --basesrc    "${CMAKE_CURRENT_SOURCE_DIR}"
+         --basesrc    "${l_realSrcDir}"
          --report     "${CodeDupRule_OUTPUT}/codedup.xml"
          --output     "${CodeDupRule_OUTPUT}/codedup_clean.xml"
       VERBATIM)
