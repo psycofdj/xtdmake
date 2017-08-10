@@ -17,9 +17,15 @@ xtdmake_find_program(Genhtml
   VERSION_OPT "--version"
   VERSION_POS 3)
 
+
 set(CovRule_DEFAULT_EXCLUDE_PATTERNS "Test*.*" CACHE STRING "CovRule default file exclude wildcards")
 set(CovRule_DEFAULT_MIN_PERCENT      "30"      CACHE STRING "CovRule default mimunim coverage percentage to consider task successful")
 set(CovRule_FOUND 0)
+
+execute_process(
+  COMMAND bash ${XTDMake_HOME}/coverage/clean-gcno.sh ${PROJECT_BINARY_DIR}
+  )
+
 
 if (NOT Lcov_FOUND OR NOT Genhtml_FOUND OR NOT CheckRule_FOUND)
   message(STATUS "Found module CovRule : FALSE (unmet required dependencies)")
