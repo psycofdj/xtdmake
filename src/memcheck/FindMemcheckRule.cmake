@@ -65,6 +65,18 @@ else()
       get_property(c_test_args TEST ${c_test} PROPERTY ARGS)
 
       if (Valgrind_VERSION VERSION_LESS 3.9.0)
+        add_custom_target(${module}-memcheck-ut-${c_test}
+          COMMAND valgrind
+          --tool=memcheck
+          --leak-check=full
+          --num-callers=50
+          --show-reachable=no
+          --gen-suppressions=all
+          ${l_supprs}
+          ${MemcheckRule_EXTRA_ARGS}
+          --
+          ./${c_test} ${c_test_args}
+          VERBATIM)
         add_custom_command(
           COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
@@ -81,6 +93,19 @@ else()
           ./${c_test} ${c_test_args} > /dev/null 2>&1 || true
           VERBATIM)
       else()
+        add_custom_target(${module}-memcheck-ut-${c_test}
+          COMMAND valgrind
+          --tool=memcheck
+          --leak-check=full
+          --show-leak-kinds=all
+          --num-callers=500
+          --show-reachable=no
+          --gen-suppressions=all
+          ${l_supprs}
+          ${MemcheckRule_EXTRA_ARGS}
+          --
+          ./${c_test} ${c_test_args}
+          VERBATIM)
         add_custom_command(
           COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
