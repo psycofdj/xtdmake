@@ -75,8 +75,9 @@
          var l_graphs   = p_graphs[l_kpi][l_module];
 
          self.lastModule = l_module;
+         self.ui.content.find("canvas").remove();
          $.each(l_graphs, function(c_idx, c_graph) {
-           self.ui.content.find("canvas").remove();;
+           var l_context  = $("<canvas/>");
            self.ui.content.append(l_context);
            var myChart = new Chart(l_context[0], c_graph);
            l_context.click(function(p_event) {
