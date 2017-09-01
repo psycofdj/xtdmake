@@ -24,6 +24,7 @@ endif()
 
 set(CheckRule_FOUND 1)
 set(CheckRule_DEFAULT_ARGS           ""                                         CACHE STRING "CheckRule default unit-test binary parameter template")
+set(CheckRule_DEFAULT_DBG_ARGS       ""                                         CACHE STRING "CheckRule default unit-test binary parameter template when running gdb commands")
 set(CheckRule_DEFAULT_ENV            ""                                         CACHE STRING "CheckRule default unit-test binary environment template")
 set(CheckRule_DEFAULT_INCLUDES       ""                                         CACHE STRING "CheckRule default unit-test header includes")
 set(CheckRule_DEFAULT_LINKS          ""                                         CACHE STRING "CheckRule default unit-test link libraries")
@@ -126,9 +127,13 @@ function(add_check module)
   set(CheckRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/check/${module}")
 
   if (NOT CheckRule_NO_DEFAULT_ARGS)
-    xtdmake_eval(l_args "${CheckRule_DEFAULT_ARGS}")
+    xtdmake_eval(l_argsDbg "${CheckRule_DEFAULT_DBG_ARGS}")
+    xtdmake_eval(l_args    "${CheckRule_DEFAULT_ARGS}")
     foreach (c_arg ${l_args})
       list(APPEND CheckRule_ARGS ${c_arg})
+    endforeach()
+    foreach (c_arg ${l_argsDbg})
+      list(APPEND CheckRule_DBG_ARGS ${c_arg})
     endforeach()
   endif()
 
@@ -185,7 +190,7 @@ function(add_check module)
         COMMAND ${CheckRule_ENV} ./${c_name_clean} ${CheckRule_ARGS}
         DEPENDS ${c_name_clean})
       add_custom_target(${module}-check-ut-${c_name_clean}-gdb
-        COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS}
+        COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} ${CheckRule_DBG_ARGS}
         DEPENDS ${c_name_clean})
       add_custom_target(${module}-check-ut-${c_name_clean}-cmd
         COMMAND echo ${CheckRule_ENV} ${CMAKE_CURRENT_BINARY_DIR}/${c_name_clean} ${CheckRule_ARGS})
