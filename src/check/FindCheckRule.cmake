@@ -189,8 +189,15 @@ function(add_check module)
       add_custom_target(${module}-check-ut-${c_name_clean}
         COMMAND ${CheckRule_ENV} ./${c_name_clean} ${CheckRule_ARGS}
         DEPENDS ${c_name_clean})
+
+      if (USE_CLANG)
+        set(l_cmd ${CheckRule_ENV} lldb -o run ${c_name_clean} -- ${CheckRule_ARGS} ${CheckRule_DBG_ARGS})
+      else()
+        set(l_cmd ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} ${CheckRule_DBG_ARGS})
+      endif()
+
       add_custom_target(${module}-check-ut-${c_name_clean}-gdb
-        COMMAND ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} ${CheckRule_DBG_ARGS}
+        COMMAND ${l_cmd}
         DEPENDS ${c_name_clean})
       add_custom_target(${module}-check-ut-${c_name_clean}-cmd
         COMMAND echo ${CheckRule_ENV} ${CMAKE_CURRENT_BINARY_DIR}/${c_name_clean} ${CheckRule_ARGS})
