@@ -22,6 +22,7 @@
   { include: ["@<boost/fusion/tuple/.*>",                           private, "<boost/fusion/tuple.hpp>",                          public ] },
   { include: ["@<boost/fusion/view/.*>",                            private, "<boost/fusion/view.hpp>",                           public ] },
   { include: ["@<boost/format/.*>",                                 private, "<boost/format.hpp>",                                public ] },
+  { include: ["@<boost/regex/.*>",                                  private, "<boost/regex.hpp>",                                 public ] },
   { include: ["@<boost/preprocessor/.*>",                           private, "<boost/preprocessor.hpp>",                          public ] },
   { include: ["<boost/circular_buffer/details.hpp>",                private, "<boost/circular_buffer.hpp>",                       public ] },
   { include: ["<boost/tuple/detail/tuple_basic.hpp>",               private, "<boost/tuple/tuple.hpp>",                           public ] },

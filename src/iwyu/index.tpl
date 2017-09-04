@@ -47,11 +47,11 @@ max-width:500px;
                   <td>${len(items)}</td>
                 </tr>
                 <tr>
-                  <th>Ok files</th>
+                  <th>Files Ok</th>
                   <td>${ len({x:y for x,y in items.items() if y["errors"] == False and y["full"] == [] }) }</td>
                 </tr>
                 <tr>
-                  <th>Error founds</th>
+                  <th>Files Ko</th>
                   <td>${ len({x:y for x,y in items.items() if y["errors"] == False and y["full"] != [] }) }</td>
                 </tr>
                 <tr>
@@ -75,10 +75,24 @@ max-width:500px;
                   <tr>
                     <th style="width:50px;"></th>
                     <th>File name</th>
-                    <th>Error count</th>
+                    <th>Missing count</th>
+                    <th>Unwanted count</th>
                   </tr>
                 </thead>
                 <tbody>
+                  <%
+                  l_base = items.keys()[0]
+                  while len(l_base):
+                    l_found=True
+                    for c_file in items.keys():
+                      if not c_file.startswith(l_base):
+                        l_found=False
+                        break
+                    if l_found:
+                      l_base += "/"
+                      break
+                    l_base = "/".join(l_base.split("/")[:-1])
+                  %>
                   % for c_file, c_data in sorted(items.items(), cmp=lambda x,y:cmp(x[0],y[0])):
                     <% css="warning" %>
                     % if c_data["errors"] == False:
@@ -93,10 +107,12 @@ max-width:500px;
                       <button class="btn btn-xs btn-primary glyphicon glyphicon-plus"></button>
                       % endif
                     </td>
-                    <td>${c_file}</td>
+                    <td> ${ c_file.replace(l_base, "") } </td>
                     % if css != "warning":
-                    <td>${len(c_data["full"])}</td>
+                    <td>${len(c_data["add"])}</td>
+                    <td>${len(c_data["rm"])}</td>
                     % else:
+                    <td>err.</td>
                     <td>err.</td>
                     % endif
                   </tr>
