@@ -5,7 +5,7 @@ xtdmake_find_program(Valgrind
   NAMES valgrind
   DOC "Dynamic analysis tool"
   URL "http://valgrind.org/"
-  REQUIRED MemcheckRule_FIND_REQUIRED
+  REQUIRED ${MemcheckRule_FIND_REQUIRED}
   VERSION_OPT "--version | tr -- '-' ' '"
   VERSION_POS 1)
 
@@ -15,7 +15,7 @@ xtdmake_find_program(Xsltproc
   URL "http://xmlsoft.org/"
   VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
   VERSION_POS "0"
-  REQUIRED CppcheckRule_FIND_REQUIRED)
+  REQUIRED ${CppcheckRule_FIND_REQUIRED})
 
 set(MemcheckRule_FOUND 0)
 if (NOT Valgrind_FOUND OR NOT Xsltproc_FOUND)

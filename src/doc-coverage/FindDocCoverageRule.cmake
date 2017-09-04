@@ -5,7 +5,7 @@ xtdmake_find_program(Genhtml
   NAMES genhtml
   DOC "Html report generation tool"
   URL "http://ltp.sourceforge.net/coverage/lcov.php"
-  REQUIRED DocCoverageRule_FIND_REQUIRED
+  REQUIRED ${DocCoverageRule_FIND_REQUIRED}
   VERSION_OPT "--version"
   VERSION_POS 3)
 
@@ -14,7 +14,7 @@ xtdmake_find_python_module(Coverxygen
   INTERPRETERS python3 python
   DOC "Tool to generate coverage report from Doxygen documentation"
   URL "https://github.com/psycofdj/coverxygen"
-  REQUIRED DocCoverageRule_FIND_REQUIRED
+  REQUIRED ${DocCoverageRule_FIND_REQUIRED}
   VERSION_MEMBER "__version__"
   VERSION_POS 0)
 

@@ -1,6 +1,6 @@
 macro(xtdmake_find_program var)
   if (NOT DEFINED ${var}_FOUND)
-    set(multiValueArgs  NAMES)
+    set(multiValueArgs  NAMES HINTS)
     set(oneValueArgs    DOC URL REQUIRED VERSION_OPT VERSION_POS MIN_VERSION)
     set(options         NOWARNING)
     cmake_parse_arguments(x
@@ -12,6 +12,7 @@ macro(xtdmake_find_program var)
     find_program(${var}_EXECUTABLE
       NAMES ${x_NAMES}
       DOC   ${x_DOC}
+      HINTS ${x_HINTS}
       ${x_UNPARSED_ARGUMENTS})
 
 
@@ -58,8 +59,8 @@ macro(xtdmake_find_program var)
       message(STATUS "Found program ${var} : ${l_cause}")
     else()
       set(${var}_FOUND 0 CACHE STRING "Program found")
-      if (${x_REQUIRED})
-        message(SEND_ERROR "${l_error}")
+      if (${x_REQUIRED} STREQUAL "1")
+        message(FATAL_ERROR "${l_error}")
       elseif(NOT ${x_NOWARNING} STREQUAL "TRUE")
         message(STATUS "Found program ${var} : FALSE, ${l_cause}")
       endif()

@@ -5,7 +5,7 @@ xtdmake_find_program(Cppcheck
   NAMES cppcheck
   DOC "cppcheck static code anylyser tool"
   URL "http://cppcheck.sourceforge.net/"
-  REQUIRED CppcheckRule_FIND_REQUIRED
+  REQUIRED ${CppcheckRule_FIND_REQUIRED}
   VERSION_OPT "--version"
   VERSION_POS 1)
 
@@ -15,7 +15,7 @@ xtdmake_find_program(Xsltproc
   URL "http://xmlsoft.org/"
   VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
   VERSION_POS "0"
-  REQUIRED CppcheckRule_FIND_REQUIRED)
+  REQUIRED ${CppcheckRule_FIND_REQUIRED})
 
 if (NOT Xsltproc_FOUND)
   set(CppcheckRule_FOUND 0)

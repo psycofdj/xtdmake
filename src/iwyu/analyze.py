@@ -10,6 +10,7 @@ import threading
 import subprocess
 import fnmatch
 import time
+import re
 
 class Worker(threading.Thread):
   def __init__(self, p_queue, p_app):
@@ -26,7 +27,7 @@ class Worker(threading.Thread):
     l_lines    = p_data.split("\n")
     l_file     = None
     l_res      = {}
-
+    l_dst      = None
     for c_line in l_lines:
       if c_line.startswith(l_fullTok):
         l_newFile = c_line.replace(l_fullTok, "")[:-1]
@@ -62,7 +63,8 @@ class Worker(threading.Thread):
       if (c_line == "---") or (0 == len(c_line)):
         continue
 
-      l_dst.append(c_line)
+      if not l_dst is None:
+        l_dst.append(c_line)
 
     for c_file, c_data in l_res.items():
       l_rm = []
@@ -75,6 +77,7 @@ class Worker(threading.Thread):
   def processItem(self, p_item):
     l_file = p_item["file"]
     l_cmd  = p_item["command"]
+    l_cmd  = re.sub(r'-D(.*)=\\"(.*)\\"', r'-D\1="\2"', l_cmd)
     l_args = [ self.m_app.iwyu_bin ]
     l_args += l_cmd.split("-o")[0].split(" ")[1:]
     l_args += self.m_app.iwyu_args.split(" ")

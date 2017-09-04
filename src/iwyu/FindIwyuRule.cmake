@@ -5,7 +5,7 @@ xtdmake_find_program(Iwyu
   NAMES include-what-you-use
   DOC "Include-what-you-use header analyzer"
   URL "https://include-what-you-use.org/"
-  REQUIRED IwyuRule_FIND_REQUIRED
+  REQUIRED ${IwyuRule_FIND_REQUIRED}
   VERSION_OPT "--version | cut -d' ' -f2"
   VERSION_POS 0)
 
@@ -14,7 +14,7 @@ xtdmake_find_python_module(Mako
   INTERPRETERS python3 python
   DOC "Library to generate template in python"
   URL "http://www.makotemplates.org/"
-  REQUIRED IwyuRule_FIND_REQUIRED
+  REQUIRED ${IwyuRule_FIND_REQUIRED}
   VERSION_MEMBER "__version__"
   VERSION_POS 0)
 
@@ -54,7 +54,6 @@ else()
       "${multiValueArgs}"
       ${ARGN})
 
-    message("comm : ${IwyuRule_COMMENTS}")
     xtdmake_set_default(IwyuRule EXCLUDE_PATTERN)
     xtdmake_set_default(IwyuRule JOBS)
     xtdmake_set_default(IwyuRule VERBOSE)
@@ -113,7 +112,7 @@ else()
       ${XTDMake_HOME}/iwyu/FindIwyuRule.cmake
       ${XTDMake_HOME}/iwyu/status.py
       ${XTDMake_HOME}/iwyu/index.tpl
-      COMMAND ${XTDMake_HOME}/iwyu/status.py
+      COMMAND ${Mako_INTERPRETER} ${XTDMake_HOME}/iwyu/status.py
                --module "${module}"
                --input-file    "${IwyuRule_OUTPUT}/iwyu.json"
                --output-status "${IwyuRule_OUTPUT}/status.json"

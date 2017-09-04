@@ -8,7 +8,7 @@ xtdmake_find_program(Xsltproc
   URL "http://xmlsoft.org/"
   VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
   VERSION_POS "0"
-  REQUIRED CheckRule_FIND_REQUIRED)
+  REQUIRED ${CheckRule_FIND_REQUIRED})
 
 if (NOT Xsltproc_FOUND)
   set(CheckRule_FOUND 0)
