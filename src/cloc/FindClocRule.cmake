@@ -7,7 +7,7 @@ xtdmake_find_program(Cloc
   URL "http://cloc.sourceforge.net/"
   VERSION_OPT "--version"
   VERSION_POS "0"
-  REQUIRED ClocRule_FIND_REQUIRED)
+  REQUIRED ${ClocRule_FIND_REQUIRED})
 
 xtdmake_find_program(Xsltproc
   NAMES xsltproc
@@ -15,7 +15,7 @@ xtdmake_find_program(Xsltproc
   URL "http://xmlsoft.org/"
   VERSION_OPT " --version | head -n1 | cut -d' ' -f3 | sed 's/,//g'"
   VERSION_POS "0"
-  REQUIRED ClocRule_FIND_REQUIRED)
+  REQUIRED ${ClocRule_FIND_REQUIRED})
 
 if (NOT Cloc_FOUND OR NOT Xsltproc_FOUND)
   set(ClocRule_FOUND 0)

@@ -5,7 +5,7 @@ xtdmake_find_program(Lcov
   NAMES lcov
   DOC "code coverage generation tool"
   URL "http://ltp.sourceforge.net/coverage/lcov.php"
-  REQUIRED CovRule_FIND_REQUIRED
+  REQUIRED ${CovRule_FIND_REQUIRED}
   VERSION_OPT "--version"
   VERSION_POS 3)
 
@@ -13,7 +13,7 @@ xtdmake_find_program(Genhtml
   NAMES genhtml
   DOC "Html report generation tool"
   URL "http://ltp.sourceforge.net/coverage/lcov.php"
-  REQUIRED CovRule_FIND_REQUIRED
+  REQUIRED ${CovRule_FIND_REQUIRED}
   VERSION_OPT "--version"
   VERSION_POS 3)
 

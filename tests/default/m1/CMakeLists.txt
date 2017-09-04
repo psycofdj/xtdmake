@@ -32,4 +32,5 @@ add_check_test(m1 MyTest
 add_check(m1 INCLUDES ${m1_INCLUDE_DIRS} LINKS m1_s)
 add_cov(m1)
 add_memcheck(m1)
+add_iwyu(m1)
 
