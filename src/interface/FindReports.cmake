@@ -133,6 +133,17 @@ if (CodeDupRule_FOUND)
     VERBATIM)
 endif()
 
+if (IwyuRule_FOUND)
+  add_custom_command(TARGET iwyu
+    POST_BUILD
+    COMMAND $(MAKE) reports-update
+    VERBATIM)
+  add_custom_command(TARGET iwyu-clean
+    POST_BUILD
+    COMMAND $(MAKE) reports-update
+    VERBATIM)
+endif()
+
 
 if (CheckRule_FOUND)
   add_custom_command(TARGET check

@@ -16,6 +16,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/check")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/coverage")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/memcheck")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/codedup")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/iwyu")
 
 include(CMakeParseArguments)
 include(xtdmake_lang)
@@ -28,7 +29,7 @@ message(STATUS "Found module XTDMake : TRUE")
 
 function(xtdmake_init project dir)
   set(multiValueArgs  )
-  set(oneValueArgs    StaticShared DocRule DocCoverageRule CppcheckRule ClocRule Tracking Cppunit CheckRule CovRule MemcheckRule CodeDupRule Reports)
+  set(oneValueArgs    StaticShared DocRule DocCoverageRule CppcheckRule ClocRule Tracking Cppunit CheckRule CovRule MemcheckRule CodeDupRule IwyuRule Reports)
   set(options         )
   cmake_parse_arguments(__x
     "${options}"
