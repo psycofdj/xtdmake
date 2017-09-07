@@ -63,7 +63,9 @@ else()
     set(l_depends "")
     foreach(c_test ${l_test_list})
       get_property(c_test_args TEST ${c_test} PROPERTY ARGS)
-      execute_process(COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success)
+      if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success)
+        execute_process(COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success)
+      endif()
 
       if (Valgrind_VERSION VERSION_LESS 3.9.0)
         add_custom_target(${module}-memcheck-ut-${c_test}
