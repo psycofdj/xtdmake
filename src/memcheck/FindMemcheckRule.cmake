@@ -63,6 +63,7 @@ else()
     set(l_depends "")
     foreach(c_test ${l_test_list})
       get_property(c_test_args TEST ${c_test} PROPERTY ARGS)
+      execute_process(COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success)
 
       if (Valgrind_VERSION VERSION_LESS 3.9.0)
         add_custom_target(${module}-memcheck-ut-${c_test}
@@ -80,7 +81,7 @@ else()
         add_custom_command(
           COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
-          DEPENDS ${c_test} ${MemcheckRule_SUPPRESSIONS}
+          DEPENDS ${c_test} ${MemcheckRule_SUPPRESSIONS} ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success
           COMMAND valgrind
           --tool=memcheck
           --leak-check=full
@@ -109,7 +110,7 @@ else()
         add_custom_command(
           COMMENT "Performing memory analysis for ${module} : ${c_test}"
           OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${c_test}.memcheck.xml
-          DEPENDS ${c_test} ${MemcheckRule_SUPPRESSIONS}
+          DEPENDS ${c_test} ${MemcheckRule_SUPPRESSIONS} ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success
           COMMAND valgrind
           --tool=memcheck
           --leak-check=full
@@ -141,7 +142,7 @@ else()
       ${XTDMake_HOME}/memcheck/index.html
       ${XTDMake_HOME}/memcheck/status.py
       COMMAND mkdir -p ${MemcheckRule_OUTPUT}
-      COMMAND ${XTDMake_HOME}/memcheck/readfiles.py ${l_depends} > ${MemcheckRule_OUTPUT}/memcheck.json
+      COMMAND ${XTDMake_HOME}/memcheck/readfiles.py ${l_depends} > ${MemcheckRule_OUTPUT}/memcheck.json || touch ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success
       COMMAND echo -n "var g_data = " > ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND cat ${MemcheckRule_OUTPUT}/memcheck.json >> ${MemcheckRule_OUTPUT}/memcheck.js
       COMMAND echo -n ";" >> ${MemcheckRule_OUTPUT}/memcheck.js
