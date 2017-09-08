@@ -1,3 +1,44 @@
+<%def name="header(loop, color, name, key, data)">
+<tr class="idm${loop.index}-details header" style="display: none;">
+  <td></td>
+  <td class="${color}" colspan="4">
+    <div class="text-center"><strong>${name}</strong></div>
+    <pre class="includes ${color}">
+                      % for c_inc in data[key]:
+${c_inc.strip() | h}
+                      % endfor
+</pre>
+  </td>
+</tr>
+</%def>
+
+<%def name="headersplit(loop, color, name, key, data)">
+<tr class="idm${loop.index}-details hidden header-split" style="display: none;">
+  <td></td>
+  <td class="${color}" colspan="2">
+    <div class="text-center"><strong>${name}</strong></div>
+    <pre class="includes ${color}">
+                      % for c_inc in data[key]:
+${c_inc.split("//")[0].strip() | h}
+                      % endfor
+</pre>
+  </td>
+  <td class="${color}" colspan="2">
+    <div class="text-center"><strong>${name}</strong></div>
+    <pre class="includes ${color}">
+                      % for c_inc in data[key]:
+                      % if "//" in c_inc:
+// ${c_inc.split("//")[1].strip() | h}
+                      % else:
+
+                      % endif
+                      % endfor
+</pre>
+  </td>
+</tr>
+</%def>
+
+
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -7,31 +48,49 @@
     <script src="../../contribs/jquery/jquery.min.js"></script>
     <script src="../../contribs/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+     function SelectText(text) {
+       var doc = document,
+           range, selection
+       ;
+       if (doc.body.createTextRange) {
+         range = document.body.createTextRange();
+         range.moveToElementText(text);
+         range.select();
+       } else if (window.getSelection) {
+         selection = window.getSelection();
+         range = document.createRange();
+         range.selectNodeContents(text);
+         selection.removeAllRanges();
+         selection.addRange(range);
+       }
+     }
      $(document).ready(function() {
-       $("button").click(function() {
+       $("button.open").click(function() {
          var l_tr        = $(this).parents("tr");
          var l_id        = l_tr.attr("id");
          var l_detailsID = l_id + "-details";
-         $("#" + l_detailsID).toggle();
+         $("." + l_detailsID).toggle();
+       });
+       $("pre").dblclick(function() {
+         SelectText($(this)[0]);
+       });
+       $("#split").click(function() {
+         $(".header").toggleClass("hidden");
+         $(".header-split").toggleClass("hidden");
        });
      });
     </script>
     <style>
-     .header {
-max-width:500px;
-       min-height:150px;
-       max-height:150px;
+
+     .includes {
        overflow: scroll;
+       font-size:10px;
      }
 
-     pre {
-       /* white-space: pre-wrap;
-          white-space: -moz-pre-wrap;
-          white-space: -pre-wrap;
-          white-space: -o-pre-wrap;
-          word-wrap: break-word; */
-       overflow: scroll;
+     .maintable {
+       table-layout:fixed;
      }
+
     </style>
   </head>
   <body bgcolor="#ffffff" style="padding-top:50px;">
@@ -40,7 +99,7 @@ max-width:500px;
         <div class="col-lg-4 col-lg-offset-4"><div class="panel panel-default">
           <div class="panel-heading">Summary report</div>
           <div class="panel-body">
-            <table class="table table-striped table-bordered table-condensed small">
+            <table class="table table-bordered table-condensed small">
               <tbody>
                 <tr>
                   <th>Analyzed files</th>
@@ -58,6 +117,25 @@ max-width:500px;
                   <th>Iwyu errors</th>
                   <td>${ len({x:y for x,y in items.items() if y["errors"] }) }</td>
                 </tr>
+                <tr class="bg-warning">
+                  <th>(from Ko files) Missing includes</th>
+                  <td>${ sum([ len(items[x]["add"]) for x in items ]) }</td>
+                </tr>
+                <tr class="bg-danger">
+                  <th>(from Ko files) Unwanted includes</th>
+                  <td>${ sum([ len(items[x]["rm"]) for x in items ]) }</td>
+                </tr>
+                <tr class="bg-info">
+                  <th>(from Ko files) Total includes</th>
+                  <td>${ sum([ len(items[x]["full"]) for x in items ]) }</td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="text-center">
+                    <button id="split" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+                      Split comments
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -70,13 +148,14 @@ max-width:500px;
             <div class="panel-heading">Full report
             </div>
             <div class="panel-body">
-              <table class="table table-striped table-bordered table-condensed small">
+              <table class="maintable table table-striped table-bordered table-condensed small">
                 <thead>
                   <tr>
                     <th style="width:50px;"></th>
                     <th>File name</th>
-                    <th>Missing count</th>
-                    <th>Unwanted count</th>
+                    <th>Missing</th>
+                    <th>Unwanted</th>
+                    <th>Total</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -104,63 +183,37 @@ max-width:500px;
                   <tr id="idm${loop.index}" class="${css}">
                     <td class="text-center">
                       % if css != "success":
-                      <button class="btn btn-xs btn-primary glyphicon glyphicon-plus"></button>
+                      <button class="open btn btn-xs btn-primary glyphicon glyphicon-plus"></button>
                       % endif
                     </td>
                     <td> ${ c_file.replace(l_base, "") } </td>
                     % if css != "warning":
                     <td>${len(c_data["add"])}</td>
                     <td>${len(c_data["rm"])}</td>
+                    <td>${len(c_data["full"])}</td>
                     % else:
+                    <td>err.</td>
                     <td>err.</td>
                     <td>err.</td>
                     % endif
                   </tr>
-                  % if css != "success":
-                  <tr id="idm${loop.index}-details" style="display: none;">
-                    <td colspan="3">
-                      % if css == "warning":
-                      <pre style="max-height:300px; overflow:scroll;" class="small">
-${ c_data["errors"] | h}
+
+                  % if css == "warning":
+                  <tr class="idm${loop.index}-details" style="display: none;">
+                    <td></td>
+                    <td colspan="4">
+                      <pre class="includes bg-warning">
+${c_data["errors"] | h}
                       </pre>
-                      % else:
-                      <table class="table table-striped table-bordered table-condensed small">
-                        <thead>
-                          <tr>
-                            <th style="width:33%">Full</th>
-                            <th style="width:33%">Missing</th>
-                            <th style="width:34%">Unwanted</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <pre class="header small bg-info">
-                          % for c_inc in c_data["full"]:
-${c_inc | h}
-                          % endfor
-                              </pre>
-                            </td>
-                            <td>
-                              <pre class="header small bg-warning">
-                          % for c_inc in c_data["add"]:
-${c_inc | h}
-                          % endfor
-                              </pre>
-                            </td>
-                            <td>
-                              <pre class="header small bg-danger">
-                          % for c_inc in c_data["rm"]:
-${c_inc | h}
-                          % endfor
-                              </pre>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      % endif
                     </td>
                   </tr>
+                  % else:
+                  ${header(loop=loop, color="bg-info",    name="Full",     key="full", data=c_data)}
+                  ${header(loop=loop, color="bg-warning", name="Missing",  key="add",  data=c_data)}
+                  ${header(loop=loop, color="bg-danger",  name="Unwanted", key="rm",   data=c_data)}
+                  ${headersplit(loop=loop, color="bg-info",    name="Full",     key="full", data=c_data)}
+                  ${headersplit(loop=loop, color="bg-warning", name="Missing",  key="add",  data=c_data)}
+                  ${headersplit(loop=loop, color="bg-danger",  name="Unwanted", key="rm",   data=c_data)}
                   % endif
                   % endfor
                 </tbody>
