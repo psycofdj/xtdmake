@@ -32,17 +32,18 @@ Functions
 .. code-block:: cmake
 
   add_doc(module,
-    [INPUT             <dir>     [ <dir>     ... ]],
-    [FILE_PATTERNS     <pattern> [ <pattern> ... ]]
-    [EXCLUDE           <file>    [ <file>    ... ]],
-    [EXCLUDE_PATTERNS  <pattern> [ <pattern> ... ]],
-    [PREDEFINED        <name>    [ <name>    ... ]]
-    [EXPAND_AS_DEFINED <name>    [ <name>    ... ]]
-    [EXAMPLE           <dir> ]
-    [PLANTUML]         <jar> ]
-    [IMAGE]            <dir> ]
-    [WERROR            { YES | NO } ]
-    [CALL_GRAPHS       { YES | NO } ]
+    [INPUT              <dir>     [ <dir>     ... ]]
+    [FILE_PATTERNS      <pattern> [ <pattern> ... ]]
+    [EXCLUDE            <file>    [ <file>    ... ]]
+    [EXCLUDE_PATTERNS   <pattern> [ <pattern> ... ]]
+    [PREDEFINED         <name>    [ <name>    ... ]]
+    [EXPAND_AS_DEFINED  <name>    [ <name>    ... ]]
+    [EXAMPLE            <dir>  ]
+    [PLANTUML]          <jar>  ]
+    [IMAGE]             <dir>  ]
+    [CONFIGURE_TEMPLATE <file> ]
+    [WERROR             { YES | NO } ]
+    [CALL_GRAPHS        { YES | NO } ]
   )
 
 

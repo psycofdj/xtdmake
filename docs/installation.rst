@@ -28,7 +28,13 @@ Project homepage : https://launchpad.net/~psycofdj/+archive/ubuntu/xtdmake
 From source
 -----------
 
+
 Project homepage : https://github.com/psycofdj/xtdmake
+
+.. note::
+
+   Each packages requires a set of programs. You're not forced to install everything
+   if you don't need all XTDMake's modules.
 
 1. Install suggested dependencies
 
@@ -57,6 +63,8 @@ Project homepage : https://github.com/psycofdj/xtdmake
     # PMD
     wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip
     sudo unzip -d /usr/share pmd-bin-5.7.0.zip
+    # Include what you use
+    sudo apt-get install iwyu
 
 2. Download latest release
 

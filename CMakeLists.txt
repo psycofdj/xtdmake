@@ -11,6 +11,8 @@ list(APPEND l_dirs doc-coverage)
 list(APPEND l_dirs interface)
 list(APPEND l_dirs memcheck)
 list(APPEND l_dirs tracking)
+list(APPEND l_dirs codedup)
+list(APPEND l_dirs iwyu)
 
 file(GLOB l_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cmake")
 install(FILES ${l_files}

@@ -59,7 +59,7 @@ else()
   else()
     function(add_cov module)
       set(multiValueArgs  EXCLUDE_PATTERNS)
-      set(oneValueArgs    )
+      set(oneValueArgs    MIN_PERCENT)
       set(options         )
       cmake_parse_arguments(CovRule
         "${options}"

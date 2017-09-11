@@ -1,8 +1,8 @@
-.. _CodeDupRule:
+.. _IwyuRule:
 
------------
-CodeDupRule
------------
+--------
+IwyuRule
+--------
 
 .. contents::
    :local:
@@ -12,19 +12,13 @@ This module generates a report that shows detected code duplication blocks.
 Prerequisites
 -------------
 
-Java
-  Java runtime environment. Available from ubuntu packages or from
-  source at http://cppcheck.sourceforge.net/
+include-what-you-use
+  LLVM-based include analyzer. Available from ubuntu packages or from
+  source at https://include-what-you-use.org/
 
-  .. warning:: module requires Java 8 minimum version.
-
-Pmd
-  PMD is a source code analyzer. Available from source or binaries at
-  http://pmd.sourceforge.net/
-
-xsltproc
-  XSL Template rendering tool. Available from ubuntu packages or from
-  source at http://xmlsoft.org/
+Mako
+  Python template renderer. Available from ubuntu packages or from source at
+  http://www.makotemplates.org/
 
 
 Functions
@@ -32,18 +26,18 @@ Functions
 
 .. code-block:: cmake
 
-  add_codedup(module,
-    [INTPUT           <dir>     [ <dir>     ... ]],
-    [FILE_PATTERNS    <pattern> [ <pattern> ... ]],
-    [EXCLUDE_PATTERNS <regexp>  [ <regexp>  ... ]],
-    [SUPPRESSIONS     <file>]
-    [MIN_TOKENS       <int>]
-    [ARGS             <int>]
+  add_iwyu(module,
+    DEPENDS target1 [target2 ... ],
+    [EXCLUDE_PATTERN  <glob>],
+    [JOBS             <int>],
+    [MAPPING          <file>],
+    [VERBOSE]
   )
 
 
-This function generates cmake targets that produce codedup report for a given module.
-Generated targets are added as dependency of the global ``codedup`` and ``codedup-clean``
+This function generates cmake targets that produce a report about includes dependencies
+for a given module.
+Generated targets are added as dependency of the global ``iwyu`` and ``iwyu-clean``
 targets.
 
 
@@ -56,65 +50,65 @@ module
 
 INPUT
   List of directories where target should search source files process.
-  Default value is given by :py:obj:`CodeDupRule_DEFAULT_INPUT`
+  Default value is given by :py:obj:`IwyuRule_DEFAULT_INPUT`
 
 FILE_PATTERNS
   List of wildcards search files in given input directories.
-  Default value is given by :py:obj:`CodeDupRule_DEFAULT_FILE_PATTERNS`
+  Default value is given by :py:obj:`IwyuRule_DEFAULT_FILE_PATTERNS`
 
 EXCLUDE_PATTERNS
   List of regular expressions to exclude matched input files.
-  Default value is given by :py:obj:`CodeDupRule_DEFAULT_EXCLUDE_PATTERNS`
+  Default value is given by :py:obj:`IwyuRule_DEFAULT_EXCLUDE_PATTERNS`
 
 SUPPRESSIONS
   Path to suppression list.
-  Default value is given by :py:obj:`CodeDupRule_DEFAULT_SUPPRESSION`
+  Default value is given by :py:obj:`IwyuRule_DEFAULT_SUPPRESSION`
 
 Global variables
 ----------------
 
-.. py:attribute:: CodeDupRule_DEFAULT_PMD_VERSION
+.. py:attribute:: IwyuRule_DEFAULT_PMD_VERSION
                   "5.7.0"
 
-CodeDupRule PDM installed version.
+IwyuRule PDM installed version.
 
 
-.. py:attribute:: CodeDupRule_DEFAULT_PMD_HOME
-                  "/usr/share/pmd-bin-\${CodeDupRule_PMD_VERSION}"
+.. py:attribute:: IwyuRule_DEFAULT_PMD_HOME
+                  "/usr/share/pmd-bin-\${IwyuRule_PMD_VERSION}"
 
-CodeDupRule location of PDM installation.
+IwyuRule location of PDM installation.
 
 
-.. py:attribute:: CodeDupRule_DEFAULT_INPUT
+.. py:attribute:: IwyuRule_DEFAULT_INPUT
                   "${CMAKE_CURRENT_SOURCE_DIR}/src"
 
-CodeDupRule default list of input source directories
+IwyuRule default list of input source directories
 
-.. py:attribute:: CodeDupRule_DEFAULT_FILE_PATTERNS
+.. py:attribute:: IwyuRule_DEFAULT_FILE_PATTERNS
                   "*.cc;*.hh;*.hxx"
 
-CodeDupRule default list of wildcard patterns to search in INPUT directories
+IwyuRule default list of wildcard patterns to search in INPUT directories
 
-.. py:attribute:: CodeDupRule_DEFAULT_EXCLUDE_PATTERNS
+.. py:attribute:: IwyuRule_DEFAULT_EXCLUDE_PATTERNS
                   "\${CMAKE_CURRENT_SOURCE_DIR}/unit/.*"
 
-CodeDupRule default list of regexp to exclude from analysis
+IwyuRule default list of regexp to exclude from analysis
 
-.. py:attribute:: CodeDupRule_DEFAULT_MIN_TOKENS
+.. py:attribute:: IwyuRule_DEFAULT_MIN_TOKENS
                   "100"
 
-CodeDupRule default minimum token length which should be reported as a duplicate
+IwyuRule default minimum token length which should be reported as a duplicate
 
-.. py:attribute:: CodeDupRule_DEFAULT_ARGS
+.. py:attribute:: IwyuRule_DEFAULT_ARGS
                   "--skip-lexical-errors"
 
-CodeDupRule default additional arguments to give to PMD
+IwyuRule default additional arguments to give to PMD
 
 
-.. py:attribute:: CodeDupRule_DEFAULT_SUPPRESSION
+.. py:attribute:: IwyuRule_DEFAULT_SUPPRESSION
                   "\${CMAKE_CURRENT_SOURCE_DIR}/src/codedup.suppr"
 
-CodeDupRule default path to suppression file
+IwyuRule default path to suppression file
 
 
 
@@ -302,3 +296,4 @@ Bellow an example of generated html report :
    Local Variables:
    ispell-local-dictionary: "en"
    End:
+

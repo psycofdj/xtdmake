@@ -7,7 +7,7 @@ MemcheckRule
 .. contents::
    :local:
 
-This module generates a report that shows defects memory detected by valgrind for
+This module generates a report that shows memory defects detected by valgrind for
 available unit tests.
 
 Prerequisites
@@ -50,7 +50,7 @@ SUPPRESSIONS
 
 EXTRA_ARGS
   List of additional arguments to pass to valgrind. Use with caution,
-  parameters must be compatible with ```--tool=memcheck```.
+  parameters must be compatible with ``--tool=memcheck``.
 
 Generated targets
 -----------------

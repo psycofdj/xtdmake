@@ -32,7 +32,6 @@ set(IwyuRule_DEFAULT_EXCLUDE_PATTERN "\${CMAKE_CURRENT_SOURCE_DIR}/unit/*"   CAC
 set(IwyuRule_DEFAULT_JOBS            "4"                                     CACHE STRING "IwyuRule default number of concurrent jobs")
 set(IwyuRule_DEFAULT_MAPPING         "\${XTDMake_HOME}/iwyu/mapping.imp"     CACHE STRING "IwyuRule default mapping file")
 set(IwyuRule_DEFAULT_VERBOSE         "FALSE"                                 CACHE STRING   "IwyuRule default verbose status")
-set(IwyuRule_DEFAULT_COMMENTS        "FALSE"                                 CACHE STRING   "IwyuRule default comments status")
 
 if (NOT IwyuRule_FOUND)
   function(add_iwyu module)
@@ -47,7 +46,7 @@ else()
   function(add_iwyu module)
     set(multiValueArgs  DEPENDS)
     set(oneValueArgs    EXCLUDE_PATTERN JOBS MAPPING)
-    set(options         VERBOSE COMMENTS)
+    set(options         VERBOSE)
     cmake_parse_arguments(IwyuRule
       "${options}"
       "${oneValueArgs}"
@@ -58,7 +57,6 @@ else()
     xtdmake_set_default(IwyuRule JOBS)
     xtdmake_set_default(IwyuRule VERBOSE)
     xtdmake_set_default(IwyuRule MAPPING)
-    xtdmake_set_default(IwyuRule COMMENTS)
 
     set(IwyuRule_OUTPUT "${PROJECT_BINARY_DIR}/reports/iwyu/${module}")
     set(IwyuRule_DEPENDS ${IwyuRule_DEPENDS})
@@ -68,13 +66,9 @@ else()
       list(APPEND l_args "--verbose")
     endif()
 
-    if ("${IwyuRule_COMMENTS}" STREQUAL "FALSE" AND "${IwyuRule_DEFAULT_COMMENTS}" STREQUAL "FALSE")
-      list(APPEND l_args "-Xiwyu")
-      list(APPEND l_args "--no_comments")
-    else()
-      list(APPEND l_args "-Xiwyu")
-      list(APPEND l_args "--max_line_length=300")
-    endif()
+
+    list(APPEND l_args "-Xiwyu")
+    list(APPEND l_args "--max_line_length=300")
 
     if (NOT "${IwyuRule_MAPPING}" STREQUAL "")
       list(APPEND l_args "-Xiwyu")

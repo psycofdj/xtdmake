@@ -68,7 +68,7 @@ if(NOT CodeDupRule_FOUND)
 else()
   function(add_codedup module)
     set(multiValueArgs  INPUT FILE_PATTERNS EXCLUDE_PATTERNS)
-    set(oneValueArgs    MIN_TOKENS ARGS)
+    set(oneValueArgs    MIN_TOKENS ARGS SUPRESSION)
     set(options         )
     cmake_parse_arguments(CodeDupRule
       "${options}"
