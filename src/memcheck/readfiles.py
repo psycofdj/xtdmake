@@ -58,39 +58,16 @@ def process_file(p_path, p_data):
 
 def write_xml(p_data):
   sys.stdout.write(json.dumps(p_data))
-  return
-  l_root = ET.Element("memcheck")
-  l_tests = ET.SubElement(l_root, "tests")
-  for c_test in p_data["tests"]:
-    l_test = ET.SubElement(l_tests, "test")
-    l_name = c_test["args"]["bin"]
-    if l_name.startswith("./"):
-      l_name = l_name[2:]
-    l_test.attrib["name"] = l_name
-    l_cmd  = ET.SubElement(l_test,  "cmd")
-    l_cmd.text = "%s %s" % (c_test["args"]["bin"], " ".join(c_test["args"]["args"]))
-    l_errors = ET.SubElement(l_test, "errors")
-    for c_error in c_test["errors"]:
-      l_error = ET.SubElement(l_errors, "error")
-      l_error.attrib["kind"]  = c_error["kind"]
-      l_error.attrib["descr"] = c_error["descr"]
-      l_stack = ET.SubElement(l_error, "stack")
-      for c_frame in c_error["stack"]:
-        l_frame = ET.SubElement(l_stack, "frame")
-        for c_key in l_stackinfo:
-          l_frame.attrib[c_key] = c_frame[c_key]
-  l_stats = ET.SubElement(l_root, "stats")
-  for c_key,c_val in p_data["stats"].items():
-    c_key = c_key.replace("_", "")
-    l_item = ET.SubElement(l_stats, c_key)
-    l_item.attrib["count"] = str(c_val)
-  ET.dump(l_root)
 
 def main():
   l_data = { "tests" : [], "stats" : {} }
   for c_file in sys.argv[1:]:
     process_file(c_file, l_data)
   write_xml(l_data)
+  for c_test in l_data["tests"]:
+    if len(c_test["errors"]) != 0:
+      sys.exit(1)
+  sys.exit(0)
 
 if __name__ == "__main__":
   main()

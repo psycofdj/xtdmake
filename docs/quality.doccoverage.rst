@@ -7,7 +7,7 @@ DocCoverageRule
 .. contents::
    :local:
 
-This module generates a report from result of cppcheck static analysis.
+This modules generate a report about documentation's coverage.
 
 Prerequisites
 -------------

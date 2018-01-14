@@ -12,6 +12,7 @@ Code quality modules
    quality.cov
    quality.memcheck
    quality.codedup
+   quality.iwyu
    quality.reports
 
 

@@ -22,6 +22,9 @@
   { include: ["@<boost/fusion/tuple/.*>",                           private, "<boost/fusion/tuple.hpp>",                          public ] },
   { include: ["@<boost/fusion/view/.*>",                            private, "<boost/fusion/view.hpp>",                           public ] },
   { include: ["@<boost/format/.*>",                                 private, "<boost/format.hpp>",                                public ] },
+  { include: ["@<boost/asio/.*>",                                   private, "<boost/asio.hpp>",                                  public ] },
+  { include: ["@<boost/regex/.*>",                                  private, "<boost/regex.hpp>",                                 public ] },
+  { include: ["@<boost/thread/.*>",                                 private, "<boost/thread.hpp>",                                public ] },
   { include: ["@<boost/preprocessor/.*>",                           private, "<boost/preprocessor.hpp>",                          public ] },
   { include: ["<boost/circular_buffer/details.hpp>",                private, "<boost/circular_buffer.hpp>",                       public ] },
   { include: ["<boost/tuple/detail/tuple_basic.hpp>",               private, "<boost/tuple/tuple.hpp>",                           public ] },
@@ -31,8 +34,7 @@
   { include: ["<boost/algorithm/string/constants.hpp>",             private, "<boost/algorithm/string/split.hpp>",                public ] },
   { include: ["<boost/lexical_cast/bad_lexical_cast.hpp>",          private, "<boost/lexical_cast.hpp>",                          public ] },
   { include: ["<boost/date_time/posix_time/posix_time_io.hpp>",     private, "<boost/date_time/posix_time/posix_time_types.hpp>", public ] },
-  { include: ["<boost/date_time/gregorian/greg_date.hpp>",          private, "<boost/date_time/posix_time/posix_time.hpp>",       public ] },
-  { include: ["<boost/date_time/gregorian/greg_date.hpp>",          private, "<boost/date_time/posix_time/posix_time_types.hpp>", public ] },
-  { include: ["<boost/date_time/gregorian/greg_date.hpp>",          private, "<boost/date_time/gregorian/gregorian.hpp>",         public ] },
-  { include: ["<boost/date_time/gregorian/greg_date.hpp>",          private, "<boost/date_time/gregorian/gregorian_types.hpp>",   public ] }
+  { include: ["@<boost/date_time/gregorian_.*>",                    private, "<boost/date_time/gregorian/gregorian.hpp>",         public ] },
+  { include: ["@<boost/date_time/gregorian/.*_.*>",                 private, "<boost/date_time/gregorian/gregorian.hpp>",         public ] },
+  { include: ["@<boost/date_time/local_time/.*>",                   private, "<boost/date_time/local_time/local_time.hpp>",       public ] }
 ]

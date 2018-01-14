@@ -10,6 +10,22 @@ xtdmake_find_program(Xsltproc
   VERSION_POS "0"
   REQUIRED ${CheckRule_FIND_REQUIRED})
 
+if (USE_CLANG)
+  xtdmake_find_program(Lldb
+    NAMES lldb
+    DOC "LLVM-based debugger"
+    URL "https://lldb.llvm.org/"
+    VERSION_OPT "--version"
+    VERSION_POS "2")
+else()
+  xtdmake_find_program(Gdb
+    NAMES gdb
+    DOC "GNU project debugger"
+    URL "https://www.gnu.org/software/gdb/"
+    VERSION_OPT "--version"
+    VERSION_POS "3")
+endif()
+
 if (NOT Xsltproc_FOUND)
   set(CheckRule_FOUND 0)
   message(STATUS "Found module CheckRule : FALSE (unmet required dependencies)")
@@ -24,7 +40,7 @@ endif()
 
 set(CheckRule_FOUND 1)
 set(CheckRule_DEFAULT_ARGS           ""                                         CACHE STRING "CheckRule default unit-test binary parameter template")
-set(CheckRule_DEFAULT_DBG_ARGS       ""                                         CACHE STRING "CheckRule default unit-test binary parameter template when running gdb commands")
+set(CheckRule_DEFAULT_DBG_ARGS       ""                                         CACHE STRING "CheckRule default unit-test binary parameter template when running debugger")
 set(CheckRule_DEFAULT_ENV            ""                                         CACHE STRING "CheckRule default unit-test binary environment template")
 set(CheckRule_DEFAULT_INCLUDES       ""                                         CACHE STRING "CheckRule default unit-test header includes")
 set(CheckRule_DEFAULT_LINKS          ""                                         CACHE STRING "CheckRule default unit-test link libraries")
@@ -106,7 +122,7 @@ endfunction()
 
 
 function(add_check module)
-  set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS)
+  set(multiValueArgs  PATTERNS INCLUDES LINKS ENV ARGS DBG_ARGS)
   set(oneValueArgs    DIRECTORY PREFIX JOBS CMAKEVARS_NAME)
   set(options         NO_DEFAULT_ENV NO_DEFAULT_ARGS NO_DEFAULT_INCLUDES NO_DEFAULT_LINKS)
   cmake_parse_arguments(CheckRule
@@ -186,21 +202,27 @@ function(add_check module)
       list(APPEND l_test_list ${c_name_clean})
       list(APPEND l_target_list ${c_name_clean})
       list(APPEND l_dir_list  ${c_dir})
+
       add_custom_target(${module}-check-ut-${c_name_clean}
         COMMAND ${CheckRule_ENV} ./${c_name_clean} ${CheckRule_ARGS}
         DEPENDS ${c_name_clean})
 
-      if (USE_CLANG)
-        set(l_cmd ${CheckRule_ENV} lldb -o run ${c_name_clean} -- ${CheckRule_ARGS} ${CheckRule_DBG_ARGS})
-      else()
-        set(l_cmd ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} ${CheckRule_DBG_ARGS})
+      add_custom_target(${module}-check-ut-${c_name_clean}-cmd
+        COMMAND echo ${CheckRule_ENV} ${CMAKE_CURRENT_BINARY_DIR}/${c_name_clean} ${CheckRule_ARGS}
+        )
+
+      if (Gdb_FOUND OR Lldb_FOUND)
+        if (USE_CLANG)
+          set(l_cmd ${CheckRule_ENV} lldb -o run ${c_name_clean} -- ${CheckRule_ARGS} ${CheckRule_DBG_ARGS})
+        else()
+          set(l_cmd ${CheckRule_ENV} gdb -ex run --args ${c_name_clean} ${CheckRule_ARGS} ${CheckRule_DBG_ARGS})
+        endif()
+        add_custom_target(${module}-check-ut-${c_name_clean}-dbg
+          COMMAND ${l_cmd}
+          DEPENDS ${c_name_clean})
       endif()
 
-      add_custom_target(${module}-check-ut-${c_name_clean}-gdb
-        COMMAND ${l_cmd}
-        DEPENDS ${c_name_clean})
-      add_custom_target(${module}-check-ut-${c_name_clean}-cmd
-        COMMAND echo ${CheckRule_ENV} ${CMAKE_CURRENT_BINARY_DIR}/${c_name_clean} ${CheckRule_ARGS})
+
     endforeach()
   endforeach()
 

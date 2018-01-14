@@ -28,7 +28,6 @@ Functions
   add_cov(<module>
     [ EXCLUDE_PATTERNS <pattern> [ <pattern> .. ]]
     [ MIN_PERCENT      <value> ]
-    [ PREFIX                   ]
   )
 
 This function generates cmake targets that produce reports that show your code coverage.
