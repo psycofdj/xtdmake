@@ -137,6 +137,7 @@ else()
       ${MemcheckRule_OUTPUT}/memcheck.json
       ${MemcheckRule_OUTPUT}/index.html
       ${MemcheckRule_OUTPUT}/status.json
+      ${CMAKE_CURRENT_BINARY_DIR}/memcheck.success
       DEPENDS
       ${l_depends}
       ${XTDMake_HOME}/memcheck/readfiles.py

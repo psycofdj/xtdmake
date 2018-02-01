@@ -90,11 +90,11 @@ endif()
 if (DocCoverageRule_FOUND)
   add_custom_command(TARGET doc-coverage
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET doc-coverage-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -102,11 +102,11 @@ endif()
 if (ClocRule_FOUND)
   add_custom_command(TARGET cloc
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET cloc-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -114,33 +114,33 @@ endif()
 if (CppcheckRule_FOUND)
   add_custom_command(TARGET cppcheck
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET cppcheck-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (CodeDupRule_FOUND)
   add_custom_command(TARGET codedup
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET codedup-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (IwyuRule_FOUND)
   add_custom_command(TARGET iwyu
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET iwyu-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -148,32 +148,32 @@ endif()
 if (CheckRule_FOUND)
   add_custom_command(TARGET check
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET check-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (CovRule_FOUND)
   add_custom_command(TARGET cov
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET cov-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (MemcheckRule_FOUND)
   add_custom_command(TARGET memcheck
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET memcheck-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
