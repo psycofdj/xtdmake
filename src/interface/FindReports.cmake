@@ -78,11 +78,11 @@ endfunction()
 if (DocRule_FOUND)
   add_custom_command(TARGET doc
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET doc-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 

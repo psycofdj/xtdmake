@@ -178,11 +178,15 @@ else()
     endforeach()
 
     add_custom_target(${module}-doc
-      DEPENDS ${DocRule_OUTPUT}/html/index.html)
-    set_target_properties(${module}-doc
-      PROPERTIES OUTPUT_DIR "${DocRule_OUTPUT}")
+      DEPENDS
+      ${DocRule_OUTPUT}/html/index.html
+      ${DocRule_OUTPUT}/xml/index.xml)
     add_custom_target(${module}-doc-clean
       COMMAND rm -rf ${DocRule_OUTPUT})
+
+    set_target_properties(${module}-doc
+      PROPERTIES OUTPUT_DIR "${DocRule_OUTPUT}")
+
     add_dependencies(doc       ${module}-doc)
     add_dependencies(doc-clean ${module}-doc-clean)
   endfunction()
