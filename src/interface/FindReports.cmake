@@ -4,26 +4,35 @@ add_custom_target(reports-graph)
 add_custom_target(reports
   DEPENDS doc doc-coverage cloc cppcheck check cov memcheck codedup)
 add_custom_target(reports-clean
-  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean)
+  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean iwyu-clean)
+
 
 function(xtdmake_init_project name directory)
+
+  file(GLOB_RECURSE contribs
+    ${XTDMake_HOME}/interface/contribs/*)
+  foreach(c_file ${contribs})
+    string(REPLACE "${XTDMake_HOME}/interface/contribs" "${directory}/reports/contribs" file "${c_file}")
+    list(APPEND outputs ${file})
+  endforeach()
+
   add_custom_command(
     COMMENT "Installing report interface for ${name}"
     OUTPUT
     ${directory}/reports/menu.html
     ${directory}/reports/index.html
     ${directory}/reports/view.html
-    ${directory}/reports/contribs/
+    ${outputs}
     DEPENDS
     ${XTDMake_HOME}/interface/menu.html
     ${XTDMake_HOME}/interface/index.html
     ${XTDMake_HOME}/interface/view.html
-    ${XTDMake_HOME}/interface/contribs/
+    ${contribs}
     COMMAND mkdir -p ${directory}/reports
     COMMAND cp    ${XTDMake_HOME}/interface/menu.html   ${directory}/reports/
     COMMAND cp    ${XTDMake_HOME}/interface/index.html  ${directory}/reports/
     COMMAND cp    ${XTDMake_HOME}/interface/view.html   ${directory}/reports/
-    COMMAND cp -r ${XTDMake_HOME}/interface/contribs/ ${directory}/reports/
+    COMMAND cp -r ${XTDMake_HOME}/interface/contribs/   ${directory}/reports/
     VERBATIM)
 
   add_custom_command(
@@ -67,6 +76,8 @@ function(xtdmake_init_project name directory)
     DEPENDS ${directory}/reports/index.html
     )
 
+
+
   add_dependencies(reports-update reports-${name}-update)
   add_dependencies(reports-show reports-${name}-show)
   add_dependencies(reports reports-${name})
@@ -78,11 +89,11 @@ endfunction()
 if (DocRule_FOUND)
   add_custom_command(TARGET doc
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET doc-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -90,11 +101,11 @@ endif()
 if (DocCoverageRule_FOUND)
   add_custom_command(TARGET doc-coverage
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET doc-coverage-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -102,11 +113,11 @@ endif()
 if (ClocRule_FOUND)
   add_custom_command(TARGET cloc
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET cloc-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -114,33 +125,33 @@ endif()
 if (CppcheckRule_FOUND)
   add_custom_command(TARGET cppcheck
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET cppcheck-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (CodeDupRule_FOUND)
   add_custom_command(TARGET codedup
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET codedup-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (IwyuRule_FOUND)
   add_custom_command(TARGET iwyu
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET iwyu-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
@@ -148,32 +159,32 @@ endif()
 if (CheckRule_FOUND)
   add_custom_command(TARGET check
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET check-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (CovRule_FOUND)
   add_custom_command(TARGET cov
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET cov-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()
 
 if (MemcheckRule_FOUND)
   add_custom_command(TARGET memcheck
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
   add_custom_command(TARGET memcheck-clean
     POST_BUILD
-    COMMAND $(MAKE) reports-update
+    COMMAND ${CMAKE_MAKE_PROGRAM} reports-update
     VERBATIM)
 endif()

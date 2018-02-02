@@ -27,10 +27,12 @@ RUN apt-get install -y software-properties-common
 RUN apt-add-repository -y ppa:webupd8team/java
 RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
 RUN apt-get update -y && apt-get install -y oracle-java8-installer
-RUN pip install coverxygen
+RUN pip install coverxygen --index-url=https://pypi.python.org/simple
 RUN wget -O /tmp/pmd-bin-5.7.0.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip
 RUN unzip -d /usr/share/ /tmp/pmd-bin-5.7.0.zip
 RUN  mkdir -p /env
+ADD https://github.com/ninja-build/ninja/releases/download/v1.5.1/ninja-linux.zip .
+RUN unzip ninja-linux.zip && mv ninja /usr/bin/
 COPY ./src /env/src
 COPY ./tests /env/tests
 COPY ./CMakeLists.txt /env/CMakeLists.txt

@@ -3,6 +3,7 @@
 l_rootdir=$(dirname $(dirname $(readlink -m $0)))
 l_srcdir=$1
 l_buildType=$2
+l_generator=$3
 l_dir=$(mktemp -d)
 VERBOSE=""
 
@@ -20,19 +21,25 @@ if [ "${l_buildType}" == "Debug" ]; then
 fi
 
 cd ${l_dir}
-cmake "${l_srcdir}" -DCMAKE_BUILD_TYPE=${l_buildType} -DCMAKE_PREFIX_PATH=${l_rootdir}/src
+
+if [ ${l_generator} == "ninja" ]; then
+    cmake "${l_srcdir}" -DCMAKE_BUILD_TYPE=${l_buildType} -DCMAKE_PREFIX_PATH=${l_rootdir}/src -G Ninja -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja
+else
+    cmake "${l_srcdir}" -DCMAKE_BUILD_TYPE=${l_buildType} -DCMAKE_PREFIX_PATH=${l_rootdir}/src
+fi
+
 if [ $? -ne 0 ]; then
     echo "error: failed to initialize buildsystem"
     exit 1
 fi
 
-make  -j4 ${VERBOSE}
+${l_generator}  -j4 ${VERBOSE}
 if [ $? -ne 0 ]; then
     echo "error: failed to compile"
     exit 1
 fi
 
-make reports -j4  ${VERBOSE}
+${l_generator} reports -j4  ${VERBOSE}
 if [ $? -ne 0 ]; then
     echo "error: failed to generate reports"
     exit 1
@@ -47,7 +54,7 @@ done
 
 
 mkdir -p ${l_dir}/_tmp
-DESTDIR=${l_dir}/_tmp make install  ${VERBOSE}
+DESTDIR=${l_dir}/_tmp ${l_generator} install  ${VERBOSE}
 l_files=(lib/libp1m1.a lib/libp1m1.a lib/libp1m1.so.0.1.1 lib/libp1m1.so.0 lib/libp1m1.so)
 for c_file in $(echo ${l_files[@]}); do
   if [ ! -f "${l_dir}/_tmp/usr/local/${c_file}" ]; then
@@ -90,14 +97,14 @@ cat ${l_dir}/reports/check/m1/tests.xml | grep -q tMyTest || {
 # check check has incremental build
 l_mtime1=$(stat ${l_dir}/reports/check/m1/tests.xml | grep Modify | cut -d' ' -f2-3)
 touch ${l_srcdir}/m1/unit/TestCode.cc
-make check -j4
+${l_generator} check -j4
 l_mtime2=$(stat ${l_dir}/reports/check/m1/tests.xml | grep Modify | cut -d' ' -f2-3)
 if [ "${l_mtime1}" = "${l_mtime2}" ]; then
     echo "error : check target is not incremental"
     exit 1
 fi
 
-make  clean -j4  ${VERBOSE}
+${l_generator}  clean -j4  ${VERBOSE}
 if [ $? -ne 0 ]; then
     echo "error: failed to clean build tree"
     exit 1

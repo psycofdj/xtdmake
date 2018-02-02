@@ -19,8 +19,8 @@ RUN apt-get update -y && \
             openjdk-8-jre \
             wget
 
-RUN apt-get install -y rcs unzip
-RUN pip install coverxygen
+RUN apt-get install -y rcs unzip ninja-build
+RUN pip install coverxygen --index-url=https://pypi.python.org/simple
 RUN wget -O /tmp/pmd-bin-5.7.0.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F5.7.0/pmd-bin-5.7.0.zip
 RUN unzip -d /usr/share/ /tmp/pmd-bin-5.7.0.zip
 RUN  mkdir -p /env

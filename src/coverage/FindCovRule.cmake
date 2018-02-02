@@ -83,13 +83,14 @@ else()
         ${l_test_list}
         ${XTDMake_HOME}/coverage/coverage.sh
         COMMAND
-        PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
-        CMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
-        Lcov_EXECUTABLE="${Lcov_EXECUTABLE}"
-        module="${module}"
-        CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
-        CovRule_EXCLUDE_PATTERNS="${CovRule_EXCLUDE_PATTERNS}"
         ${XTDMake_HOME}/coverage/coverage.sh
+          --module "${module}"
+          --exclude "${CovRule_EXCLUDE_PATTERNS}"
+          --top-bindir "${PROJECT_BINARY_DIR}"
+          --bindir "${CMAKE_CURRENT_BINARY_DIR}"
+          --srcdir "${CMAKE_CURRENT_SOURCE_DIR}"
+          --make-bin "${CMAKE_MAKE_PROGRAM}"
+          --lcov-bin "${Lcov_EXECUTABLE}"
         )
 
       add_custom_command(
@@ -101,6 +102,7 @@ else()
         DEPENDS
         ${CMAKE_CURRENT_BINARY_DIR}/coverage.info
         ${XTDMake_HOME}/coverage/status.py
+        COMMAND mkdir -p ${CovRule_OUTPUT}/
         COMMAND ${Genhtml_EXECUTABLE} -q -o ${CovRule_OUTPUT}/ --function-coverage -t "${module} unit test coverage" --demangle-cpp ${CMAKE_CURRENT_BINARY_DIR}/coverage.info --legend -s
         COMMAND ${XTDMake_HOME}/coverage/lcov_cobertura.py ${CMAKE_CURRENT_BINARY_DIR}/coverage.info -d -o ${CovRule_OUTPUT}/coverage.xml
         COMMAND ${XTDMake_HOME}/coverage/status.py --module ${module}  --input-file=${CovRule_OUTPUT}/coverage.xml --output-file=${CovRule_OUTPUT}/status.json --min-percent=${CovRule_MIN_PERCENT}

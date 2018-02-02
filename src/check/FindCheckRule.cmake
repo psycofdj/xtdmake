@@ -264,12 +264,18 @@ function(add_check module)
     )
 
   add_custom_target(${module}-check-run-verbose
-    COMMAND $(MAKE) ${module}-check-build
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${module}-check-build
     COMMAND ${CheckRule_ENV} ctest --output-on-failure -j ${CheckRule_JOBS} -T Test -R "\\(${l_test_regex}\\)" || true)
 
   add_custom_target(${module}-check-run
     DEPENDS ${module}-check-build
-    COMMAND $(MAKE) ${module}-check-run-forced)
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${module}-check-run-forced)
+
+  # Ninja expects his control files in top_builddir
+  set(l_runTestsCmd ${CMAKE_MAKE_PROGRAM})
+  if (${CMAKE_GENERATOR} STREQUAL "Ninja")
+    set(l_runTestsCmd ${CMAKE_MAKE_PROGRAM} -C ${PROJECT_BINARY_DIR})
+  endif()
 
   add_custom_command(
     COMMENT "Generating ${module} tests HTML and XML reports"
@@ -285,7 +291,7 @@ function(add_check module)
     COMMAND mkdir -p ${CheckRule_OUTPUT}
     COMMAND rm -rf Testing/
     COMMAND touch DartConfiguration.tcl
-    COMMAND $(MAKE) ${module}-check-run-forced
+    COMMAND ${l_runTestsCmd}  ${module}-check-run-forced
     COMMAND cp Testing/*/*.xml ${CheckRule_OUTPUT}/tests.xml
     COMMAND ${Xsltproc_EXECUTABLE} ${XTDMake_HOME}/check/stylesheet.xsl ${CheckRule_OUTPUT}/tests.xml > ${CheckRule_OUTPUT}/index.html
     COMMAND ${XTDMake_HOME}/check/status.py --module ${module} --input-file ${CheckRule_OUTPUT}/tests.xml --output-file ${CheckRule_OUTPUT}/status.json

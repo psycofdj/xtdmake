@@ -87,7 +87,7 @@ else()
 
       COMMAND mkdir -p ${IwyuRule_OUTPUT}
       COMMAND ${XTDMake_HOME}/iwyu/analyze.py
-               --build-dir "${CMAKE_CURRENT_BINARY_DIR}"
+               --src-dir "${CMAKE_CURRENT_SOURCE_DIR}"
                --commands "${CMAKE_BINARY_DIR}/compile_commands.json"
                --iwyu-bin "${Iwyu_EXECUTABLE}"
                --exclude "${IwyuRule_EXCLUDE_PATTERN}"

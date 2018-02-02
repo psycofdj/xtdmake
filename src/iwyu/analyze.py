@@ -109,7 +109,7 @@ class Worker(threading.Thread):
 class App:
   def __init__(self):
     l_parser = argparse.ArgumentParser()
-    l_parser.add_argument("--build-dir",    action="store",      help ="current module build directory",              required=True)
+    l_parser.add_argument("--src-dir",      action="store",      help ="current module source directory",             required=True)
     l_parser.add_argument("--output-file",  action="store",      help ="output result to given file, '-' for stdout", required=False, default="-")
     l_parser.add_argument("--commands",     action="store",      help ="path to compile commands file",               required=True)
     l_parser.add_argument("--iwyu-bin",     action="store",      help ="include-what-you-use bin path",               required=False, default="include-what-you-use")
@@ -125,9 +125,8 @@ class App:
     l_list    = json.loads(l_content)
     l_res     = []
     for c_item in l_list:
-      l_dir  = c_item["directory"]
       l_file = c_item["file"]
-      if l_dir.startswith(self.build_dir):
+      if l_file.startswith(self.src_dir):
         if not fnmatch.fnmatch(l_file, self.exclude):
           l_res.append(c_item)
     return l_res
