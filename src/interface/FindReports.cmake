@@ -4,7 +4,7 @@ add_custom_target(reports-graph)
 add_custom_target(reports
   DEPENDS doc doc-coverage cloc cppcheck check cov memcheck codedup)
 add_custom_target(reports-clean
-  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean)
+  DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean iwyu-clean)
 
 
 function(xtdmake_init_project name directory)

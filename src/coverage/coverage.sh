@@ -180,7 +180,7 @@ function lcov_zero
   local l_src=$1; shift
 
   echo "[${g_module}-cov] (pid:$$) reset coverage data"
-  ${g_lcovProg} $(lcov_args) -z -d "${l_src}"
+  ${g_lcovProg} $(lcov_args) -z -d "${l_src}" || true
 }
 
 # collect initial coverage information from found .gnco files
@@ -188,13 +188,16 @@ function lcov_initial
 {
   local l_src=$1; shift
 
-  echo "[${g_module}-cov] (pid:$$) collect initial data"
+  echo "[${g_module}-cov] (pid:$$) collecting initial data"
   ${g_lcovProg} \
       $(lcov_args) \
       -c \
       -i \
       -d ${l_src} \
-      -o ${g_binDir}/coverage-initial.info
+      -o ${g_binDir}/coverage-initial.info || {
+    echo "[${g_module}-cov] error collecting initial data"
+    cp ${g_binDir}/coverage-initial.info ${g_binDir}/coverage.info
+  }
 }
 
 # collect reached code coverage information from generated  .gcda files
