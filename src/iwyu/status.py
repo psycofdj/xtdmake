@@ -5,7 +5,7 @@ import os
 import json
 import argparse
 from mako.template import Template
-
+from mako          import exceptions
 
 l_parser = argparse.ArgumentParser()
 l_parser.add_argument("--module",        action="store", help ="current module name",       required=True)
@@ -21,7 +21,12 @@ l_data    = json.loads(l_content)
 
 l_tplPath  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.tpl")
 l_tpl      = Template(filename=l_tplPath)
-l_content  = l_tpl.render(items=l_data)
+
+try:
+  l_content  = l_tpl.render(items=l_data)
+except:
+  print(exceptions.text_error_template().render())
+
 l_htmlFile = open(l_result.output_html, "w")
 l_htmlFile.write(l_content)
 

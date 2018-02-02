@@ -160,7 +160,7 @@ ${c_inc.split("//")[0].strip() | h}
                 </thead>
                 <tbody>
                   <%
-                  l_base = items.keys()[0]
+                  l_base = list(items.keys())[0]
                   while len(l_base):
                     l_found=True
                     for c_file in items.keys():
@@ -172,7 +172,7 @@ ${c_inc.split("//")[0].strip() | h}
                       break
                     l_base = "/".join(l_base.split("/")[:-1])
                   %>
-                  % for c_file, c_data in sorted(items.items(), cmp=lambda x,y:cmp(x[0],y[0])):
+                  % for c_file, c_data in sorted(items.items(), key=lambda x: x[0]):
                     <% css="warning" %>
                     % if c_data["errors"] == False:
                       <% css="success" %>

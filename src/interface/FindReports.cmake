@@ -6,24 +6,33 @@ add_custom_target(reports
 add_custom_target(reports-clean
   DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean)
 
+
 function(xtdmake_init_project name directory)
+
+  file(GLOB_RECURSE contribs
+    ${XTDMake_HOME}/interface/contribs/*)
+  foreach(c_file ${contribs})
+    string(REPLACE "${XTDMake_HOME}/interface/contribs" "${directory}/reports/contribs" file "${c_file}")
+    list(APPEND outputs ${file})
+  endforeach()
+
   add_custom_command(
     COMMENT "Installing report interface for ${name}"
     OUTPUT
     ${directory}/reports/menu.html
     ${directory}/reports/index.html
     ${directory}/reports/view.html
-    ${directory}/reports/contribs/
+    ${outputs}
     DEPENDS
     ${XTDMake_HOME}/interface/menu.html
     ${XTDMake_HOME}/interface/index.html
     ${XTDMake_HOME}/interface/view.html
-    ${XTDMake_HOME}/interface/contribs/
+    ${contribs}
     COMMAND mkdir -p ${directory}/reports
     COMMAND cp    ${XTDMake_HOME}/interface/menu.html   ${directory}/reports/
     COMMAND cp    ${XTDMake_HOME}/interface/index.html  ${directory}/reports/
     COMMAND cp    ${XTDMake_HOME}/interface/view.html   ${directory}/reports/
-    COMMAND cp -r ${XTDMake_HOME}/interface/contribs/ ${directory}/reports/
+    COMMAND cp -r ${XTDMake_HOME}/interface/contribs/   ${directory}/reports/
     VERBATIM)
 
   add_custom_command(
@@ -66,6 +75,8 @@ function(xtdmake_init_project name directory)
   add_custom_target(reports-${name}
     DEPENDS ${directory}/reports/index.html
     )
+
+
 
   add_dependencies(reports-update reports-${name}-update)
   add_dependencies(reports-show reports-${name}-show)
