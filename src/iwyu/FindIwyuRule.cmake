@@ -1,6 +1,11 @@
 add_custom_target(iwyu)
 add_custom_target(iwyu-clean)
 
+set(IwyuRule_DEFAULT_EXCLUDE_PATTERN "\${CMAKE_CURRENT_SOURCE_DIR}/unit/*"   CACHE STRING "IwyuRule default pattern to exclude source from analysis")
+set(IwyuRule_DEFAULT_JOBS            "4"                                     CACHE STRING "IwyuRule default number of concurrent jobs")
+set(IwyuRule_DEFAULT_MAPPING         "\${XTDMake_HOME}/iwyu/mapping.imp"     CACHE STRING "IwyuRule default mapping file")
+set(IwyuRule_DEFAULT_VERBOSE         "FALSE"                                 CACHE STRING   "IwyuRule default verbose status")
+
 xtdmake_find_program(Iwyu
   NAMES include-what-you-use
   DOC "Include-what-you-use header analyzer"
@@ -18,20 +23,23 @@ xtdmake_find_python_module(Mako
   VERSION_MEMBER "__version__"
   VERSION_POS 0)
 
-
-set(IwyuRule_FOUND 0)
 if (NOT CMAKE_EXPORT_COMPILE_COMMANDS)
   message(STATUS "Found module IwyuRule_FOUND : FALSE (CMAKE_EXPORT_COMPILE_COMMANDS is mandatory)")
   if (IwyuRule_FIND_REQUIRED)
     message(FATAL_ERROR "Unable to find compile commands")
   endif()
 endif()
-set(IwyuRule_FOUND 1)
 
-set(IwyuRule_DEFAULT_EXCLUDE_PATTERN "\${CMAKE_CURRENT_SOURCE_DIR}/unit/*"   CACHE STRING "IwyuRule default pattern to exclude source from analysis")
-set(IwyuRule_DEFAULT_JOBS            "4"                                     CACHE STRING "IwyuRule default number of concurrent jobs")
-set(IwyuRule_DEFAULT_MAPPING         "\${XTDMake_HOME}/iwyu/mapping.imp"     CACHE STRING "IwyuRule default mapping file")
-set(IwyuRule_DEFAULT_VERBOSE         "FALSE"                                 CACHE STRING   "IwyuRule default verbose status")
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS OR NOT Mako_FOUND OR NOT Iwyu_FOUND)
+  set(IwyuRule_FOUND 0)
+  message(STATUS "Found module IwyuRule : FALSE (unmet required dependencies : mako, include-what-you-use, compile-commands)")
+  if (IwyuRule_FIND_REQUIRED)
+    message(FATAL_ERROR "Unable to load required module IwyuRule")
+  endif()
+else()
+  set(IwyuRule_FOUND 1)
+  message(STATUS "Found module IwyuRule_FOUND : TRUE")
+endif()
 
 if (NOT IwyuRule_FOUND)
   function(add_iwyu module)
