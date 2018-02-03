@@ -107,7 +107,8 @@ function add_info
 
 function generate_archive
 {
-  l_libName=${l_target%.*}
+  l_libFile=$(basename ${l_target})
+  l_libName=${l_libFile%.*}
   l_tmpDir=$(mktemp -d)
   l_tmpFile=${l_tmpDir}/.version
 
