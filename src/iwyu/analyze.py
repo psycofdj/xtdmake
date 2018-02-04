@@ -19,7 +19,13 @@ class Worker(threading.Thread):
     self.m_app    = p_app
     self.m_result = {}
 
-  def analyze(self, p_data):
+
+  def normPath(self, p_file, p_dir):
+    l_joined = os.path.join(p_dir, p_file)
+    l_normed = os.path.normpath(l_joined)
+    return os.path.relpath(l_normed, self.m_app.src_dir)
+
+  def analyze(self, p_data, p_dir):
     l_fullTok  = "The full include-list for "
     l_addTok   = " should add these lines:"
     l_rmTok    = " should remove these lines:"
@@ -31,6 +37,7 @@ class Worker(threading.Thread):
     for c_line in l_lines:
       if c_line.startswith(l_fullTok):
         l_newFile = c_line.replace(l_fullTok, "")[:-1]
+        l_newFile = self.normPath(l_newFile, p_dir)
         if l_newFile != l_file:
           l_file = l_newFile
           l_res[l_file] = { "full" : [], "errors" : False, "add" : [], "rm" : [] }
@@ -39,6 +46,7 @@ class Worker(threading.Thread):
 
       if c_line.endswith(l_addTok):
         l_newFile = c_line.replace(l_addTok, "")
+        l_newFile = self.normPath(l_newFile, p_dir)
         if l_newFile != l_file:
           l_file = l_newFile
           l_res[l_file] = { "full" : [], "errors" : False, "add" : [], "rm" : [] }
@@ -47,6 +55,7 @@ class Worker(threading.Thread):
 
       if c_line.endswith(l_rmTok):
         l_newFile = c_line.replace(l_rmTok, "")
+        l_newFile = self.normPath(l_newFile, p_dir)
         if l_newFile != l_file:
           l_file = l_newFile
           l_res[l_file] = { "full" : [], "errors" : False, "add" : [], "rm" : [] }
@@ -55,6 +64,7 @@ class Worker(threading.Thread):
 
       if l_okTok in c_line:
         l_newFile = c_line.replace(l_okTok, "")[1:-1]
+        l_newFile = self.normPath(l_newFile, p_dir)
         if l_newFile != l_file:
           l_file = l_newFile
           l_res[l_file] = { "full" : [], "errors" : False, "add" : [], "rm" : [] }
@@ -77,6 +87,7 @@ class Worker(threading.Thread):
   def processItem(self, p_item):
     l_file = p_item["file"]
     l_cmd  = p_item["command"]
+    l_dir  = p_item["directory"]
     l_cmd  = re.sub(r'-D(.*)=\\"(.*)\\"', r'-D\1="\2"', l_cmd)
     l_args = [ self.m_app.iwyu_bin ]
     l_args += l_cmd.split("-o")[0].split(" ")[1:]
@@ -85,7 +96,7 @@ class Worker(threading.Thread):
     l_args = filter(lambda x:len(x) > 0, l_args)
     if self.m_app.verbose:
       print("  -> running : %s" % " ".join(l_args))
-    l_proc = subprocess.Popen(l_args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    l_proc = subprocess.Popen(l_args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=l_dir)
     l_proc.wait()
     l_content = l_proc.stderr.read()
     if self.m_app.verbose:
@@ -94,7 +105,7 @@ class Worker(threading.Thread):
     l_code = l_proc.returncode
     if l_code == -6:
       return { l_file : { "full" : [], "errors" : l_content, "add" : [], "rm" : [] } }
-    return self.analyze(l_content)
+    return self.analyze(l_content, l_dir)
 
   def run(self):
     while True:

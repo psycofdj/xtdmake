@@ -2,7 +2,7 @@ add_custom_target(reports-update)
 add_custom_target(reports-show)
 add_custom_target(reports-graph)
 add_custom_target(reports
-  DEPENDS doc doc-coverage cloc cppcheck check cov memcheck codedup)
+  DEPENDS doc doc-coverage cloc cppcheck check cov memcheck codedup iwyu)
 add_custom_target(reports-clean
   DEPENDS doc-clean doc-coverage-clean cloc-clean cppcheck-clean check-clean cov-clean memcheck-clean codedup-clean iwyu-clean)
 
