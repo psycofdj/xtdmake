@@ -44,6 +44,10 @@ In your root CMakeLists.txt
     CodeDupRule     REQUIRED
     Reports         REQUIRED)
 
+  # make XTDMake aware of current cmake project
+  xtdmake_init_project(<project_name> ${PROJECT_BINARY_DIR})
+
+  # (optional) configure XTDMake to injects dependency tracking informations in binaries and libraries
   enable_tracking()
 
   # ---------------------------
@@ -110,6 +114,9 @@ In your module CMakelists.txt, example core/CMakeLists.txt :
 
   # enable code duplication report
   add_codedup(core)
+
+  # enable code duplication report
+  add_iwyu(core)
 
 Adds some unittests
 -------------------
