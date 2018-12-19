@@ -97,7 +97,7 @@ else()
       --prefix ${DocCoverageRule_PREFIX}
       --scope ${DocCoverageRule_SCOPE}
       --kind ${DocCoverageRule_KIND}
-      --json
+      --format json-v1
 
       COMMAND ${XTDMake_HOME}/coverage/lcov_cobertura.py ${DocCoverageRule_OUTPUT}/doc-coverage.info -d -o ${DocCoverageRule_OUTPUT}/doc-coverage.xml
       COMMAND ${XTDMake_HOME}/doc-coverage/status.py --module ${module} --input-file=${DocCoverageRule_OUTPUT}/data.json --output-file=${DocCoverageRule_OUTPUT}/status.json --min-percent=${DocCoverageRule_MIN_PERCENT}
